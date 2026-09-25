@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="أكاديمية دويتشه فيلت لتعليم اللغة الألمانية مع هير خالد - كورسات احترافية من A1 حتى B2، تأهيل لسوق العمل والكول سنتر والألماني الطبي، ومتجر كتب المنهج.">
+  <meta name="keywords" content="اللغة الألمانية, كورسات ألماني, هير خالد, دويتشه فيلت, Deutsche Welt, A1, A2, B1, B2, C1, كول سنتر ألماني, تعلم الألماني في مصر">
+  <title>Deutsche Welt Akademie | أكاديمية دويتشه فيلت - هير خالد لتعليم اللغة الألمانية</title>
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="assets/css/style.css?v=19.0">
+  <link rel="stylesheet" href="assets/css/admin.css?v=16.0">
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg">
+</head>
+<body>
+
+  <!-- Background Mesh & Floating Particles Canvas -->
+  <div class="bg-mesh"></div>
+  <canvas id="particlesCanvas" class="particles-container"></canvas>
+
+
+  <!-- ==========================================================================
+       HEADER & NAVIGATION (الآب بار الرئيسي)
+       ========================================================================== -->
+  <header class="main-header" id="mainHeader">
+    <div class="nav-container">
+      <a href="#hero" class="brand-logo-link">
+        <div class="logo-wrapper">
+          <img src="assets/images/logo.jpg" alt="Deutsche Welt Logo">
+        </div>
+        <div class="brand-text">
+          <h1>Deutsche Welt</h1>
+          <span>AKADEMIE • HERR KHALED</span>
+        </div>
+      </a>
+
+      <!-- Nav Menu (Simplified & Clean) -->
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="#hero" class="nav-link active">الرئيسية</a></li>
+        <li><a href="#online-courses" class="nav-link">الكورسات الأونلاين 🎓</a></li>
+        <li><a href="#books-store" class="nav-link">متجر كتب المنهج 📚</a></li>
+        <li><a href="#reviews" class="nav-link">آراء الطلاب بالفيديو ⭐</a></li>
+        <li><a href="#branches" class="nav-link">فروعنا 📍</a></li>
+        <li><a href="#about-teacher" class="nav-link">عن هير خالد 🇩🇪</a></li>
+      </ul>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <a href="https://wa.me/2010552287454" target="_blank" class="btn btn-whatsapp btn-sm">
+          <i class="fab fa-whatsapp"></i> واتساب
+        </a>
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="تبديل الوضع">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="admin-quick-btn" id="adminPortalBtn" title="لوحة التحكم">
+          <i class="fas fa-user-shield"></i>
+        </button>
+        <button class="mobile-toggle-btn" id="mobileMenuBtn" aria-label="القائمة">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- German Ribbon Border Line -->
+    <div class="german-ribbon-bar"></div>
+
+    <!-- Promotional Announcement & Ad Marquee Bar (شريط الإعلانات والعروض الترويجي المتحرك) -->
+    <div class="top-announcement-bar" id="announcementBar">
+      <div class="announcement-wrapper">
+        <!-- Lead Badge -->
+        <div class="announcement-lead">
+          <span class="announcement-badge-pulse">
+            <span class="badge-fire-anim"><i class="fas fa-bolt"></i></span>
+            <span class="badge-text">عروض حصرية</span>
+          </span>
+        </div>
+
+        <!-- Center Dynamic Animated Scrolling Ad Ticker -->
+        <div class="announcement-ticker-viewport" id="announcementTickerViewport">
+          <div class="announcement-ticker-track">
+            <!-- Ad Item 1 -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-offer">🔥 خصم 25%</span>
+              <span class="ad-text">عرض الدفعة الجديدة: خصم خاص <strong>25%</strong> على باقة المستويات المجمعة والتسجيل المبكر لفترة محدودة!</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- Ad Item 2 -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-career">💼 وظائف كول سنتر</span>
+              <span class="ad-text">تأهيل فوري لكبرى شركات الـ Call Center الألمانية برواتب تبدأ من <strong>25,000 ج</strong> شهرياً</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- Ad Item 3 -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-exam">🏛️ جوته وتيلك</span>
+              <span class="ad-text">معسكرات التحضير المكثف لامتحانات <strong>Goethe & Telc B1/B2</strong> بنسبة نجاح 99% مع هير خالد</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- Ad Item 4 -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-gift">📚 كتاب المنهج</span>
+              <span class="ad-text">اطلب الآن <strong>كتاب دويتشه فيلت الشامل (مطبوع + تدريبات + صوتيات)</strong> بسعر 500 ج مع توصيل لأي مكان</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- Ad Item 5 -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-urgent">⏳ مقاعد محدودة</span>
+              <span class="ad-text">متبقي <strong>3 اشتراكات بالخصم</strong> — تعلّم أونلاين 24/7 من منصتنا مع متابعة شخصية مستمرة!</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- DUPLICATE SET FOR SEAMLESS 100% INFINITE LOOP -->
+            <!-- Ad Item 1 Dup -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-offer">🔥 خصم 25%</span>
+              <span class="ad-text">عرض الدفعة الجديدة: خصم خاص <strong>25%</strong> على باقة المستويات المجمعة والتسجيل المبكر لفترة محدودة!</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- Ad Item 2 Dup -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-career">💼 وظائف كول سنتر</span>
+              <span class="ad-text">تأهيل فوري لكبرى شركات الـ Call Center الألمانية برواتب تبدأ من <strong>25,000 ج</strong> شهرياً</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- Ad Item 3 Dup -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-exam">🏛️ جوته وتيلك</span>
+              <span class="ad-text">معسكرات التحضير المكثف لامتحانات <strong>Goethe & Telc B1/B2</strong> بنسبة نجاح 99% مع هير خالد</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- Ad Item 4 Dup -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-gift">📚 كتاب المنهج</span>
+              <span class="ad-text">اطلب الآن <strong>كتاب دويتشه فيلت الشامل (مطبوع + تدريبات + صوتيات)</strong> بسعر 500 ج مع توصيل لأي مكان</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+
+            <!-- Ad Item 5 Dup -->
+            <div class="ticker-ad-item">
+              <span class="ad-tag tag-urgent">⏳ مقاعد محدودة</span>
+              <span class="ad-text">متبقي <strong>3 اشتراكات بالخصم</strong> — تعلّم أونلاين 24/7 من منصتنا مع متابعة شخصية مستمرة!</span>
+            </div>
+            <span class="ticker-separator"><i class="fas fa-diamond"></i></span>
+          </div>
+        </div>
+
+        <!-- Trailing Action Controls -->
+        <div class="announcement-actions">
+          <div class="announcement-timer" title="ينتهي العرض قريباً">
+            <i class="fas fa-stopwatch"></i>
+            <span class="timer-label">ينتهي خلال:</span>
+            <span id="announcementTimer">47:59:59</span>
+          </div>
+          <a href="#books-store" class="announcement-cta-btn">
+            <span>اطلب كتابك الآن</span>
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <button class="announcement-close" onclick="document.getElementById('announcementBar').style.display='none'" title="إغلاق">&times;</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       HERO SECTION (واجهة الأكاديمية الرسمية)
+       ========================================================================== -->
+  <section class="hero-section" id="hero">
+    <div class="hero-grid">
+      <div class="hero-content-side">
+        <div class="hero-badge-row">
+          <div class="hero-tag hero-tag-online" title="منصة تعليمية أونلاين 100% عبر زووم">
+            <span class="live-pulse-dot"></span>
+            <span class="hero-tag-text">🔴 منصة تعليمية Live Online عبر Zoom + جروبات واتساب</span>
+          </div>
+          <div class="hero-tag hero-tag-premium" title="الأكاديمية الألمانية المعتمدة">
+            <span class="hero-tag-ping"></span>
+            <span class="hero-tag-icon-wrap"><i class="fas fa-award"></i></span>
+            <span class="hero-tag-text">الأكاديمية الأولى لسوق العمل والشركات</span>
+            <span class="hero-tag-shine"></span>
+          </div>
+          <div class="hero-tag hero-tag-gold" title="خبرة تدريس عملية +10 سنوات">
+            <span class="hero-tag-icon-wrap gold-icon"><i class="fas fa-star"></i></span>
+            <span class="hero-tag-text"><strong class="exp-number">+10</strong> سنوات خبرة</span>
+            <span class="hero-tag-sparkle"><i class="fas fa-sparkles"></i></span>
+            <span class="hero-tag-shine"></span>
+          </div>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="hero-title-main">اتعلم الألماني أونلاين من الصفر حتى الاحتراف</span>
+          <span class="hero-title-sub">مع <span class="gradient-text-animated">هير خالد 🇩🇪</span></span>
+        </h1>
+
+        <p class="hero-desc">
+          محاضرات تفاعلية مباشرة Live عبر Zoom من <strong>A1 حتى B2</strong> وتأهيل فوري لكبرى الشركات العالمية (Concentrix & Vodafone) واختبارات جوته، مع جروبات واتساب خاصة للمتابعة والتسجيلات.
+        </p>
+
+        <!-- Action CTAs -->
+        <div class="hero-cta-group">
+          <a href="#online-courses" class="btn btn-whatsapp btn-lg">
+            <i class="fas fa-graduation-cap"></i> الكورسات وحجز المستويات أونلاين 🎓
+          </a>
+          <a href="#books-store" class="btn btn-gold btn-lg">
+            <i class="fas fa-shopping-bag"></i> متجر كتب المنهج (500ج)
+          </a>
+          <button type="button" class="btn btn-primary btn-lg" onclick="window.dwApp.openCvModal()">
+            <i class="fas fa-id-card"></i> السيرة الذاتية لهير خالد 📄
+          </button>
+        </div>
+
+        <!-- Interactive Stats Counter & CV Trigger -->
+        <div class="hero-cv-banner-trigger" onclick="window.dwApp.openCvModal()" title="انقر لاستعراض السيرة الذاتية الرسمية والشهادات المعتمدة لهير خالد">
+          <div class="cv-trigger-glow"></div>
+          <div class="cv-trigger-content">
+            <div class="cv-trigger-left">
+              <span class="cv-trigger-badge-live">
+                <span class="cv-badge-radar"></span>
+                <i class="fas fa-certificate"></i> السيرة الذاتية الرسمية
+              </span>
+              <span class="cv-trigger-title">الملف المهني والشهادات المعتمدة للمحاضر هير خالد 🇩🇪</span>
+            </div>
+            <div class="cv-trigger-right">
+              <span class="cv-trigger-btn-pill">
+                <span>استعراض الـ CV كاملاً</span>
+                <i class="fas fa-arrow-left"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-stats-grid interactive-stats-grid" title="انقر على أي بطاقة لعرض السيرة الذاتية والشهادات">
+          <div class="hero-stat-item interactive-stat" onclick="window.dwApp.openCvModal('overview')" role="button" tabindex="0">
+            <div class="stat-icon-mini"><i class="fas fa-user-graduate"></i></div>
+            <h4>+5,000</h4>
+            <p>طالب وخريج ناجح</p>
+            <span class="stat-hover-hint"><i class="fas fa-eye"></i> استعراض</span>
+          </div>
+          <div class="hero-stat-item interactive-stat" onclick="window.dwApp.openCvModal('experience')" role="button" tabindex="0">
+            <div class="stat-icon-mini gold"><i class="fas fa-award"></i></div>
+            <h4>+10</h4>
+            <p>سنوات خبرة تدريس</p>
+            <span class="stat-hover-hint"><i class="fas fa-eye"></i> استعراض</span>
+          </div>
+          <div class="hero-stat-item interactive-stat" onclick="window.dwApp.openCvModal('certifications')" role="button" tabindex="0">
+            <div class="stat-icon-mini green"><i class="fas fa-check-double"></i></div>
+            <h4>98%</h4>
+            <p>نسبة اجتياز الامتحانات</p>
+            <span class="stat-hover-hint"><i class="fas fa-eye"></i> استعراض</span>
+          </div>
+          <div class="hero-stat-item interactive-stat" onclick="window.dwApp.openCvModal('languages')" role="button" tabindex="0">
+            <div class="stat-icon-mini blue"><i class="fas fa-stethoscope"></i></div>
+            <h4>B2 & Medizin</h4>
+            <p>تأهيل سوق العمل والأطباء</p>
+            <span class="stat-hover-hint"><i class="fas fa-eye"></i> استعراض</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Visual Side with Herr Khaled's Photos & Glowing Cards -->
+      <div class="hero-visual-box">
+        <div class="visual-glow-circle"></div>
+
+        <!-- Floating Achievement Chips -->
+        <div class="floating-chip chip-top-left" onclick="window.dwApp.openCvModal('experience')" style="cursor:pointer;" title="انقر لعرض خبرات الشركات">
+          <div class="chip-icon"><i class="fas fa-award"></i></div>
+          <div class="chip-text">
+            <strong>شراكة Concentrix</strong>
+            <small>محاضر كورسات الـ Upskilling ↗</small>
+          </div>
+        </div>
+
+        <div class="floating-chip chip-bottom-right" onclick="window.dwApp.openCvModal('experience')" style="cursor:pointer;" title="انقر لعرض خبرات فودافون">
+          <div class="chip-icon gold"><i class="fas fa-briefcase"></i></div>
+          <div class="chip-text">
+            <strong>Vodafone DE & UK</strong>
+            <small>5 سنوات كول سنتر & إدارة ↗</small>
+          </div>
+        </div>
+
+        <div class="floating-chip chip-center-right" onclick="window.dwApp.openCvModal('experience')" style="cursor:pointer;" title="انقر لعرض تفاصيل خبرة مايكروسوفت">
+          <div class="chip-icon"><i class="fas fa-laptop-code"></i></div>
+          <div class="chip-text">
+            <strong>Microsoft IT</strong>
+            <small>خبرة 3 سنوات بـ Concentrix ↗</small>
+          </div>
+        </div>
+
+        <!-- Main Photo Frame -->
+        <div class="hero-card-frame">
+          <div class="hero-image-slider">
+            <img src="assets/images/herr_khaled_1.jpg" alt="هير خالد - خبير اللغة الألمانية" class="hero-photo-1">
+            <img src="assets/images/herr_khaled_2.jpg" alt="هير خالد - Deutsche Welt Akademie" class="hero-photo-2">
+          </div>
+          <div style="padding:14px 10px 8px; text-align:center;">
+            <h3 style="font-size:1.15rem; font-weight:800; color:#fff;">Herr Khaled El-Halawany</h3>
+            <p style="font-size:0.8rem; color:var(--gold-light); font-weight:700; margin-bottom:8px;">مؤسس أكاديمية دويتشه فيلت & كبير مدربي اللغة الألمانية</p>
+            <button class="hero-card-cv-btn" onclick="window.dwApp.openCvModal()">
+              <i class="fas fa-id-card"></i> عرض الـ CV والشهادات المعتمدة 📄✨
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       ONLINE LIVE COURSES & LEVEL ENROLLMENT SYSTEM (الكورسات الأونلاين ونظام تفعيل المستويات)
+       ========================================================================== -->
+  <section class="section online-groups-section" id="online-courses">
+    <div class="online-groups-bg-glow"></div>
+    <div class="section-container" style="position:relative; z-index:2;">
+      
+      <!-- Section Header -->
+      <div class="section-header">
+        <div class="online-live-badge-top">
+          <span class="live-pulse-dot"></span>
+          <i class="fas fa-video"></i>
+          <span>محاضرات Live تفاعلية عبر Zoom • تفعيل المستوى والجروب من الأدمن (هير خالد)</span>
+        </div>
+        <h2 class="section-title">
+          الكورسات التدريبية الأونلاين المعتمدة — اختر مستواك واحجز مقعدك
+        </h2>
+        <p class="section-desc">
+          التعليم أونلاين 100% بنظام البث المباشر والتفاعل الشخصي. اختر مستواك وسجل بياناتك ليتم إرسالها للواتساب وتفعيل حسابك وإضافتك لجروب المستوى والمحاضرات من قبل الأدمن فوراً.
+        </p>
+      </div>
+
+      <!-- 3-Step Enrollment & Activation Flow -->
+      <div class="course-steps-flow-bar">
+        <div class="course-step-item">
+          <div class="step-num-circle">1</div>
+          <div class="step-text-wrap">
+            <strong>اختر مستواك المناسب</strong>
+            <span>من A1 للمبتدئين حتى B2 وسوق العمل الطبي والشركات</span>
+          </div>
+        </div>
+        <div class="course-step-item">
+          <div class="step-num-circle">2</div>
+          <div class="step-text-wrap">
+            <strong>سجل بياناتك وأرسلها للواتساب</strong>
+            <span>إرسال تفاصيل الحجز إلى الأدمن هير خالد لتأكيد البيانات</span>
+          </div>
+        </div>
+        <div class="course-step-item active-step">
+          <div class="step-num-circle">3</div>
+          <div class="step-text-wrap">
+            <strong>تفعيل المستوى والجروب من الأدمن 🔓</strong>
+            <span>إضافتك لجروب الواتساب وتزويدك بروابط Zoom والماتريال</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Online Learning Highlights / Perks Bar -->
+      <div class="online-perks-grid">
+        <div class="online-perk-card">
+          <div class="perk-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+          <div class="perk-info">
+            <strong>محاضرات Live تفاعلية عبر Zoom</strong>
+            <span>تفاعل صوت وصورة ونطق مباشر مع هير خالد</span>
+          </div>
+        </div>
+        <div class="online-perk-card">
+          <div class="perk-icon gold"><i class="fab fa-whatsapp"></i></div>
+          <div class="perk-info">
+            <strong>جروب واتساب خاص لكل مستوى</strong>
+            <span>متابعة يومية وتصحيح واجبات وتدريب صوتي 24/7</span>
+          </div>
+        </div>
+        <div class="online-perk-card">
+          <div class="perk-icon red"><i class="fas fa-shield-alt"></i></div>
+          <div class="perk-info">
+            <strong>حقوق الملكية والنشر محفوظة 🔒</strong>
+            <span>يُمنع منعاً باتاً تسجيل المحاضرات أو تصوير منهج كتب هير خالد</span>
+          </div>
+        </div>
+        <div class="online-perk-card">
+          <div class="perk-icon green"><i class="fas fa-user-check"></i></div>
+          <div class="perk-info">
+            <strong>تفعيل وإشراف مباشر من هير خالد</strong>
+            <span>متابعة دورية وتقييم مستوى وتأهيل لسوق العمل</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- WhatsApp Level Courses Grid (5 Levels) -->
+      <div class="level-groups-grid">
+
+        <!-- LEVEL A1 -->
+        <div class="level-group-card" data-level="a1">
+          <div class="level-card-top-tag">
+            <span class="level-badge badge-a1">كورس لغة ألمانية A1</span>
+            <span class="level-status-pill"><span class="pulse-mini"></span> متاح التسجيل الآن</span>
+          </div>
+          <div class="level-card-header">
+            <div class="level-big-pill">A1</div>
+            <div>
+              <h3>كورس اللغة الألمانية - المستوى A1</h3>
+              <p class="level-sub">تعليم اللغة الألمانية للمبتدئين من الصفر — أونلاين Live</p>
+            </div>
+          </div>
+          <p class="level-desc">
+            شرح وتدريب على أساسيات اللغة الألمانية، النطق الصحيح، تصريف الأفعال، تكوين الجمل والمحادثات اليومية البسيطة.
+          </p>
+          <div class="level-card-footer">
+            <button type="button" class="btn-level-enroll" onclick="window.dwApp.openEnrollModal('course-a1', 'كورس اللغة الألمانية - المستوى A1', 0)">
+              <i class="fas fa-user-plus"></i>
+              <span>سجل في كورس A1</span>
+            </button>
+            <a href="https://wa.me/2010552287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D9%83%D9%88%D8%B1%D8%B3%20%D8%A7%D9%84%D9%84%D8%BA%D8%A9%20%D8%A7%D9%84%D8%A3%D9%84%D9%85%D8%A7%D9%86%D9%8A%D8%A9%20A1" target="_blank" class="btn-level-whatsapp">
+              <i class="fab fa-whatsapp"></i>
+              <span>تواصل للاشتراك في كورس A1</span>
+              <i class="fas fa-arrow-left"></i>
+            </a>
+            <a href="#books-store" class="level-book-hint">
+              <i class="fas fa-book-open"></i> تصفح كتاب منهج A1 (500ج)
+            </a>
+          </div>
+        </div>
+
+        <!-- LEVEL A2 -->
+        <div class="level-group-card" data-level="a2">
+          <div class="level-card-top-tag">
+            <span class="level-badge badge-a2">كورس لغة ألمانية A2</span>
+            <span class="level-status-pill"><span class="pulse-mini"></span> متاح التسجيل الآن</span>
+          </div>
+          <div class="level-card-header">
+            <div class="level-big-pill a2-pill">A2</div>
+            <div>
+              <h3>كورس اللغة الألمانية - المستوى A2</h3>
+              <p class="level-sub">المستوى المتوسط وتطوير المحادثة والقواعد — أونلاين Live</p>
+            </div>
+          </div>
+          <p class="level-desc">
+            شرح وتدريب على قواعد المستوى A2، التوسع في المفردات، كتابة الرسائل، وتطوير مهارات التحدث والتعبير.
+          </p>
+          <div class="level-card-footer">
+            <button type="button" class="btn-level-enroll" onclick="window.dwApp.openEnrollModal('course-a2', 'كورس اللغة الألمانية - المستوى A2', 0)">
+              <i class="fas fa-user-plus"></i>
+              <span>سجل في كورس A2</span>
+            </button>
+            <a href="https://wa.me/2010552287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D9%83%D9%88%D8%B1%D8%B3%20%D8%A7%D9%84%D9%84%D8%BA%D8%A9%20%D8%A7%D9%84%D8%A3%D9%84%D9%85%D8%A7%D9%86%D9%8A%D8%A9%20A2" target="_blank" class="btn-level-whatsapp">
+              <i class="fab fa-whatsapp"></i>
+              <span>تواصل للاشتراك في كورس A2</span>
+              <i class="fas fa-arrow-left"></i>
+            </a>
+            <a href="#books-store" class="level-book-hint">
+              <i class="fas fa-book-open"></i> تصفح كتاب منهج A2 (500ج)
+            </a>
+          </div>
+        </div>
+
+        <!-- LEVEL B1 -->
+        <div class="level-group-card" data-level="b1">
+          <div class="level-card-top-tag">
+            <span class="level-badge badge-b1">كورس لغة ألمانية B1</span>
+            <span class="level-status-pill"><span class="pulse-mini"></span> متاح التسجيل الآن</span>
+          </div>
+          <div class="level-card-header">
+            <div class="level-big-pill b1-pill">B1</div>
+            <div>
+              <h3>كورس اللغة الألمانية - المستوى B1</h3>
+              <p class="level-sub">المستوى فوق المتوسط والمحادثات المتقدمة — أونلاين Live</p>
+            </div>
+          </div>
+          <p class="level-desc">
+            شرح وتدريب شامل على قواعد ومفردات المستوى B1، التحدث بطلاقة، والتدريب على نماذج امتحانات اللغة الألمانية.
+          </p>
+          <div class="level-card-footer">
+            <button type="button" class="btn-level-enroll" onclick="window.dwApp.openEnrollModal('course-b1', 'كورس اللغة الألمانية - المستوى B1', 0)">
+              <i class="fas fa-user-plus"></i>
+              <span>سجل في كورس B1</span>
+            </button>
+            <a href="https://wa.me/2010552287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D9%83%D9%88%D8%B1%D8%B3%20%D8%A7%D9%84%D9%84%D8%BA%D8%A9%20%D8%A7%D9%84%D8%A3%D9%84%D9%85%D8%A7%D9%86%D9%8A%D8%A9%20B1" target="_blank" class="btn-level-whatsapp">
+              <i class="fab fa-whatsapp"></i>
+              <span>تواصل للاشتراك في كورس B1</span>
+              <i class="fas fa-arrow-left"></i>
+            </a>
+            <a href="#books-store" class="level-book-hint">
+              <i class="fas fa-book-open"></i> تصفح كتاب منهج B1 (500ج)
+            </a>
+          </div>
+        </div>
+
+        <!-- LEVEL B2 -->
+        <div class="level-group-card" data-level="b2">
+          <div class="level-card-top-tag">
+            <span class="level-badge badge-b2">كورس لغة ألمانية B2</span>
+            <span class="level-status-pill"><span class="pulse-mini"></span> متاح التسجيل الآن</span>
+          </div>
+          <div class="level-card-header">
+            <div class="level-big-pill b2-pill">B2</div>
+            <div>
+              <h3>كورس اللغة الألمانية - المستوى B2</h3>
+              <p class="level-sub">المستوى المتقدم والطلاقة اللغوية — أونلاين Live</p>
+            </div>
+          </div>
+          <p class="level-desc">
+            شرح وتدريب على التراكيب اللغوية المتقدمة، التعبير بطلاقة، ومناقشة مختلف الموضوعات العامة والتخصصية.
+          </p>
+          <div class="level-card-footer">
+            <button type="button" class="btn-level-enroll" onclick="window.dwApp.openEnrollModal('course-b2', 'كورس اللغة الألمانية - المستوى B2', 0)">
+              <i class="fas fa-user-plus"></i>
+              <span>سجل في كورس B2</span>
+            </button>
+            <a href="https://wa.me/2010552287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D9%83%D9%88%D8%B1%D8%B3%20%D8%A7%D9%84%D9%84%D8%BA%D8%A9%20%D8%A7%D9%84%D8%A3%D9%84%D9%85%D8%A7%D9%86%D9%8A%D8%A9%20B2" target="_blank" class="btn-level-whatsapp">
+              <i class="fab fa-whatsapp"></i>
+              <span>تواصل للاشتراك في كورس B2</span>
+              <i class="fas fa-arrow-left"></i>
+            </a>
+            <a href="#books-store" class="level-book-hint">
+              <i class="fas fa-book-open"></i> تصفح كتاب منهج B2 (500ج)
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       DEDICATED BOOKS & STUDY MATERIAL STORE (متجر الكتب وسلسلة دويتشه فيلت)
+       ========================================================================== -->
+  <section class="section books-store-section" id="books-store">
+    <div class="section-container">
+      
+
+
+      <!-- Highlight Banner -->
+      <div class="books-banner-highlight">
+        <div class="books-banner-text">
+          <span class="section-tag gold"><i class="fas fa-crown"></i> إصدارات دويتشه فيلت الحصرية 2026</span>
+          <h3>سلسلة كتب هير خالد الحلواني الشاملة لتعلم الألمانية</h3>
+          <p>
+            كتب مطبوعة فاخرة ملونة ومغلفة بجودة ألمانية، صممت خصيصاً للدارسين العرب لتجاوز عقدة القواعد والبدء في المحادثة بطلاقة من أول درس، مع باركودات QR للاستماع الصوتي وبنك أسئلة امتحانات جوته السابقة!
+          </p>
+        </div>
+        <div class="books-bundle-badge-wrap">
+          <div class="books-bundle-price">
+            <span>سعر النسخة الورقية الفاخرة</span>
+            <strong>500 <small style="font-size:1.1rem; color:#f1f5f9;">جنيه</small> <del>750 ج.م</del></strong>
+            <div style="font-size:0.75rem; color:#38bdf8; margin-top:6px; font-weight:700;"><i class="fas fa-bolt"></i> خصم خاص 33% لفترة محدودة</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-bottom:35px;">
+        <span class="section-tag"><i class="fas fa-layer-group"></i> معرض المطبوعات الرسمية</span>
+        <h2 class="section-title">تصفح واطلب نسختك المطبوعة الآن</h2>
+        <p class="section-desc">يمكنك استعراض صفحات الفهرس والعينة مجاناً أو طلب النسخة الورقية لتصلك حتى باب منزلك مع كافة التسجيلات الصوتية.</p>
+      </div>
+
+      <!-- Books Grid (Ultra-Premium 3D Showroom) -->
+      <div class="books-grid">
+
+        <!-- ================= BOOK A1 ================= -->
+        <div class="book-card">
+          <!-- 3D Showcase Stage -->
+          <div class="book-showcase-stage">
+            <span class="book-stage-badge"><i class="fas fa-fire"></i> الأكثر طلباً للمبتدئين</span>
+            <span class="book-format-tag"><i class="fas fa-book"></i> Hardcover + QR</span>
+            
+            <div class="book-3d-scene" onclick="window.dwApp.openBookPreviewModal('A1')" title="انقر لمعاينة صفحات الكتاب">
+              <div class="book-3d-cover book-cover-a1">
+                <div class="book-cover-header">
+                  <span class="book-level-pill">A1</span>
+                  <i class="fas fa-shield-halved book-crest"></i>
+                </div>
+                <div class="book-cover-center">
+                  <div class="book-cover-main-title">DEUTSCHE WELT</div>
+                  <div class="book-cover-subtitle">Schritt für Schritt (A1)</div>
+                </div>
+                <div class="book-cover-footer">
+                  <div class="book-author-tag">Herr Khaled El-Halawany</div>
+                </div>
+              </div>
+              <div class="book-ribbon"></div>
+            </div>
+
+            <button class="book-audio-sample-btn" onclick="window.dwApp.speakGerman('Herzlich willkommen in der Deutschen Welt. Deutsch lernen ist einfach und macht Spaß!')">
+              <i class="fas fa-volume-high"></i> اسمع عينة نطق الكتاب
+            </button>
+          </div>
+
+          <!-- Book Info Body -->
+          <div class="book-info">
+            <div>
+              <h4>كتاب دويتشه فيلت الشامل (A1) 📖</h4>
+              <p class="book-desc">دليلك الشامل لتعلم الألمانية خطوة بخطوة من الصفر، يشمل النطق السليم، أدوات التعريف Der/Die/Das، تصريف الأفعال ومحادثات التعارف والمطاعم والحياة اليومية.</p>
+              
+              <div class="book-features-pills">
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> 190 صفحة ملونة وفاخرة</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> باركود QR لكل درس</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> 400+ تمرين تطبيقي</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> نماذج جوته وتيلك A1</div>
+              </div>
+            </div>
+
+            <div class="book-footer-actions">
+              <div class="book-price-row">
+                <div>
+                  <div class="book-price-val"><del>750</del> 500 <small style="font-size:0.85rem;">جنيه</small></div>
+                  <div style="font-size:0.72rem; color:var(--text-subtle);">توفير 250 جنيه (خصم 33%)</div>
+                </div>
+                <div class="book-stock-badge">
+                  <i class="fas fa-circle-check"></i> متوفر بالمخزن - شحن فوري
+                </div>
+              </div>
+
+              <div class="book-actions-btns">
+                <button class="btn btn-glass" onclick="window.dwApp.openBookPreviewModal('A1')">
+                  <i class="fas fa-eye"></i> معاينة الفهرس
+                </button>
+                <button class="btn btn-gold" onclick="window.dwApp.openBookOrderModal('book-a1', 'كتاب دويتشه فيلت الشامل (A1)', 500)">
+                  <i class="fas fa-shopping-cart"></i> اطلب نسختك
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= BOOK A2 ================= -->
+        <div class="book-card">
+          <!-- 3D Showcase Stage -->
+          <div class="book-showcase-stage">
+            <span class="book-stage-badge" style="border-color:#818cf8; color:#a5b4fc;"><i class="fas fa-star"></i> المنهج الشامل</span>
+            <span class="book-format-tag"><i class="fas fa-book"></i> Hardcover + QR</span>
+            
+            <div class="book-3d-scene" onclick="window.dwApp.openBookPreviewModal('A2')" title="انقر لمعاينة صفحات الكتاب">
+              <div class="book-3d-cover book-cover-a2">
+                <div class="book-cover-header">
+                  <span class="book-level-pill">A2</span>
+                  <i class="fas fa-gem book-crest"></i>
+                </div>
+                <div class="book-cover-center">
+                  <div class="book-cover-main-title">DEUTSCHE WELT</div>
+                  <div class="book-cover-subtitle">Mittelstufe Praxis (A2)</div>
+                </div>
+                <div class="book-cover-footer">
+                  <div class="book-author-tag">Herr Khaled El-Halawany</div>
+                </div>
+              </div>
+              <div class="book-ribbon" style="background:linear-gradient(180deg, #6366f1, #4338ca);"></div>
+            </div>
+
+            <button class="book-audio-sample-btn" onclick="window.dwApp.speakGerman('Im A2 Niveau lernen wir das Perfekt, Modalverben und wie man offizielle E-Mails schreibt.')">
+              <i class="fas fa-volume-high"></i> اسمع عينة نطق الكتاب
+            </button>
+          </div>
+
+          <!-- Book Info Body -->
+          <div class="book-info">
+            <div>
+              <h4>كتاب دويتشه فيلت المتقدم (A2) 📖</h4>
+              <p class="book-desc">إتقان الزمن الماضي Perfekt، حروف الجر المشتركة Dativ & Akkusativ، كتابة الإيميلات الرسمية، والتأهيل للعمل والتقديم على الوظائف باللغة الألمانية.</p>
+              
+              <div class="book-features-pills">
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> 220 صفحة شرح مكثف</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> تسجيلات QR عالية النقاء</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> جداول وتراكيب قواعد</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> نماذج امتحانات A2 الرسمية</div>
+              </div>
+            </div>
+
+            <div class="book-footer-actions">
+              <div class="book-price-row">
+                <div>
+                  <div class="book-price-val"><del>750</del> 500 <small style="font-size:0.85rem;">جنيه</small></div>
+                  <div style="font-size:0.72rem; color:var(--text-subtle);">توفير 250 جنيه (خصم 33%)</div>
+                </div>
+                <div class="book-stock-badge">
+                  <i class="fas fa-circle-check"></i> متوفر بالمخزن - شحن فوري
+                </div>
+              </div>
+
+              <div class="book-actions-btns">
+                <button class="btn btn-glass" onclick="window.dwApp.openBookPreviewModal('A2')">
+                  <i class="fas fa-eye"></i> معاينة الفهرس
+                </button>
+                <button class="btn btn-gold" onclick="window.dwApp.openBookOrderModal('book-a2', 'كتاب دويتشه فيلت المتقدم (A2)', 500)">
+                  <i class="fas fa-shopping-cart"></i> اطلب نسختك
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= BOOK B1 ================= -->
+        <div class="book-card" style="border-color: rgba(217, 119, 6, 0.45);">
+          <!-- 3D Showcase Stage -->
+          <div class="book-showcase-stage" style="background: radial-gradient(circle at center, rgba(69, 26, 3, 0.8) 0%, rgba(15, 23, 42, 1) 100%);">
+            <span class="book-stage-badge" style="background:#d97706; color:#ffffff; border-color:#fbbf24;"><i class="fas fa-trophy"></i> الأفضل لاجتياز جوته وسوق العمل</span>
+            <span class="book-format-tag"><i class="fas fa-book"></i> Gold Edition + بنك امتحانات</span>
+            
+            <div class="book-3d-scene" onclick="window.dwApp.openBookPreviewModal('B1')" title="انقر لمعاينة صفحات الكتاب">
+              <div class="book-3d-cover book-cover-b1">
+                <div class="book-cover-header">
+                  <span class="book-level-pill">B1</span>
+                  <i class="fas fa-award book-crest" style="color:#fbbf24;"></i>
+                </div>
+                <div class="book-cover-center">
+                  <div class="book-cover-main-title" style="color:#fef08a;">DEUTSCHE WELT</div>
+                  <div class="book-cover-subtitle" style="color:#fde68a;">Zertifikat B1 & Karriere</div>
+                </div>
+                <div class="book-cover-footer">
+                  <div class="book-author-tag" style="color:#fbbf24;">Herr Khaled El-Halawany</div>
+                </div>
+              </div>
+              <div class="book-ribbon" style="background:linear-gradient(180deg, #f59e0b, #b45309);"></div>
+            </div>
+
+            <button class="book-audio-sample-btn" onclick="window.dwApp.speakGerman('Das B1 Zertifikat öffnet Ihnen alle Türen für das Berufsleben und die Arbeit in Deutschland.')">
+              <i class="fas fa-volume-high"></i> اسمع عينة نطق الكتاب
+            </button>
+          </div>
+
+          <!-- Book Info Body -->
+          <div class="book-info">
+            <div>
+              <h4>كتاب التأهيل والامتحانات الدولية (B1) 🏆</h4>
+              <p class="book-desc">سلسلة هير خالد الذهبية لتخطي امتحان معهد جوته وتيلك وتأهيلك المباشر لمقابلات العمل في كبرى شركات الكول سنتر العالمية مثل كونسنتركس وفودافون ألمانيا.</p>
+              
+              <div class="book-features-pills">
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> 260 صفحة احترافية</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> بنك أسئلة جوته وتيلك الشامل</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> نماذج محادثات انترفيو الشركات</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> أسرار كتابة مقالات B1</div>
+              </div>
+            </div>
+
+            <div class="book-footer-actions">
+              <div class="book-price-row">
+                <div>
+                  <div class="book-price-val"><del>850</del> 500 <small style="font-size:0.85rem;">جنيه</small></div>
+                  <div style="font-size:0.72rem; color:var(--text-subtle);">توفير 350 جنيه (خصم 41%)</div>
+                </div>
+                <div class="book-stock-badge">
+                  <i class="fas fa-circle-check"></i> متوفر بالمخزن - شحن فوري
+                </div>
+              </div>
+
+              <div class="book-actions-btns">
+                <button class="btn btn-glass" onclick="window.dwApp.openBookPreviewModal('B1')">
+                  <i class="fas fa-eye"></i> معاينة الفهرس
+                </button>
+                <button class="btn btn-gold" onclick="window.dwApp.openBookOrderModal('book-b1', 'كتاب التأهيل والامتحانات الدولية (B1)', 500)">
+                  <i class="fas fa-shopping-cart"></i> اطلب نسختك
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= BOOK B2 (Pre-order) ================= -->
+        <div class="book-card" style="border: 1.5px dashed rgba(16, 185, 129, 0.4); opacity: 0.95;">
+          <!-- 3D Showcase Stage -->
+          <div class="book-showcase-stage" style="background: radial-gradient(circle at center, rgba(6, 78, 59, 0.8) 0%, rgba(15, 23, 42, 1) 100%);">
+            <span class="book-stage-badge" style="background:#059669; color:#ffffff; border-color:#34d399;"><i class="fas fa-hourglass-half"></i> قريباً خلال 2026</span>
+            <span class="book-format-tag"><i class="fas fa-stethoscope"></i> للأطباء والمهندسين</span>
+            
+            <div class="book-3d-scene" onclick="window.dwApp.openBookPreviewModal('B2')" title="انقر لمعاينة عينة من الكتاب">
+              <div class="book-3d-cover book-cover-b2">
+                <div class="book-cover-header">
+                  <span class="book-level-pill">B2</span>
+                  <i class="fas fa-user-doctor book-crest" style="color:#6ee7b7;"></i>
+                </div>
+                <div class="book-cover-center">
+                  <div class="book-cover-main-title" style="color:#a7f3d0;">DEUTSCHE WELT</div>
+                  <div class="book-cover-subtitle" style="color:#d1fae5;">Beruf & Medizin (B2)</div>
+                </div>
+                <div class="book-cover-footer">
+                  <div class="book-author-tag" style="color:#6ee7b7;">Herr Khaled El-Halawany</div>
+                </div>
+              </div>
+              <div class="book-ribbon" style="background:linear-gradient(180deg, #10b981, #047857);"></div>
+            </div>
+
+            <button class="book-audio-sample-btn" onclick="window.dwApp.speakGerman('Das B2 Niveau ist die Voraussetzung für Ärzte, Ingenieure und medizinisches Fachpersonal.')">
+              <i class="fas fa-volume-high"></i> اسمع عينة صوتية
+            </button>
+          </div>
+
+          <!-- Book Info Body -->
+          <div class="book-info">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <h4 style="margin-bottom:0;">كتاب الاحتراف وسوق العمل (B2) ⏳</h4>
+                <span class="status-badge pending" style="font-size:0.7rem;">حجز مسبق</span>
+              </div>
+              <p class="book-desc">المنهج المتقدم المتخصص لتأهيل الأطباء، التمريض، والمهندسين لمعادلة الشهادات والعمل في ألمانيا، مصطلحات تخصصية متقدمة وتدريبات على امتحان B2 Beruf.</p>
+              
+              <div class="book-features-pills">
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> 280 صفحة متقدمة</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> ألماني تخصصي وطبي</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> مصطلحات المستشفيات</div>
+                <div class="book-feature-pill"><i class="fas fa-check-circle"></i> أولوية الشحن للحاجزين</div>
+              </div>
+            </div>
+
+            <div class="book-footer-actions">
+              <div class="book-price-row">
+                <div>
+                  <div class="book-price-val">500 <small style="font-size:0.85rem;">جنيه</small></div>
+                  <div style="font-size:0.72rem; color:#10b981; font-weight:700;">سعر الحجز المسبق المخفض</div>
+                </div>
+                <div class="book-stock-badge" style="color:#d97706;">
+                  <i class="fas fa-clock"></i> قيد الطباعة النهائية
+                </div>
+              </div>
+
+              <div class="book-actions-btns">
+                <button class="btn btn-glass" onclick="window.dwApp.openBookPreviewModal('B2')">
+                  <i class="fas fa-eye"></i> معاينة عينة
+                </button>
+                <button class="btn btn-primary" onclick="window.dwApp.openEnrollModal('book-b2', 'حجز مسبق لكتاب B2 عند الصدور', 500)">
+                  <i class="fas fa-bell"></i> احجز نسختك مسبقاً
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Triple Bundle Special Offer Card -->
+      <div style="margin-top:40px; background:linear-gradient(135deg, #1e293b, #0f172a); border:2px solid #f59e0b; border-radius:var(--radius-lg); padding:28px 32px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
+        <div style="max-width:650px;">
+          <div style="display:inline-flex; align-items:center; gap:6px; background:#d97706; color:#fff; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:var(--radius-full); margin-bottom:8px;">
+            <i class="fas fa-gift"></i> عرض باقة التوفير الكبرى 🎁
+          </div>
+          <h4 style="font-size:1.4rem; font-weight:900; color:#fff; margin-bottom:6px;">اطلب السلسلة الكاملة (A1 + A2 + B1) معاً واحصل على الشحن مجاناً!</h4>
+          <p style="font-size:0.88rem; color:#cbd5e1; margin:0;">احصل على الكتب الثلاثة المطبوعة + كافة الباركودات الصوتية + بنك الامتحانات الدولي + شحن مجاني لكافة المحافظات.</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="text-align:center;">
+            <div style="font-family:'Outfit', sans-serif; font-size:1.8rem; font-weight:900; color:#fbbf24; line-height:1;"><del style="font-size:1rem; color:#64748b;">2,350</del> 1,350 <small style="font-size:0.9rem; color:#fff;">ج.م</small></div>
+            <div style="font-size:0.72rem; color:#34d399; font-weight:700;">وفر 1,000 جنيه + شحن مجاني</div>
+          </div>
+          <button class="btn btn-gold btn-lg" onclick="window.dwApp.openBookOrderModal('bundle-triple', 'باقة السلسلة الكاملة (A1 + A2 + B1) + شحن مجاني', 1350)">
+            <i class="fas fa-box-open"></i> اطلب الباقة الكاملة الآن
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       BRANCHES SECTION (فروع أكاديمية دويتشه فيلت)
+       ========================================================================== -->
+  <section class="section branches-section" id="branches">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-map-location-dot"></i> فروعنا المعتمدة في مصر وأونلاين</span>
+        <h2 class="section-title">احجز مقعدك في أقرب فرع أو أونلاين</h2>
+        <p class="section-desc">أكاديمية دويتشه فيلت موجودة في أكثر من 4 محافظات بجانب خدمة التعليم الأونلاين المباشرة لجميع المحافظات والدول.</p>
+      </div>
+      <!-- Branches Grid - Injected via JavaScript -->
+      <div class="branches-grid" id="branchesContainer">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+       HERR KHALED'S EXECUTIVE CV & CAREER SHOWCASE (الملف المهني والسيرة الذاتية)
+       ========================================================================== -->
+  <section class="section about-section" id="about-teacher">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag gold"><i class="fas fa-id-card-clip"></i> السيرة الذاتية والخبرات المهنية المعتمدة</span>
+        <h2 class="section-title">السيرة المهنية للمحاضر: هير خالد الحلواني</h2>
+        <p class="section-desc">
+          خريج كلية الألسن، مدرب معتمد لكبرى الشركات العالمية (Concentrix & Vodafone DE)، وخبرة تزيد عن 10 سنوات في صناعة المتحدثين بطلاقة.
+        </p>
+        <div style="margin-top: 14px;">
+          <button class="btn btn-gold btn-sm" onclick="window.dwApp.openCvModal()">
+            <i class="fas fa-file-invoice"></i> فتح السيرة الذاتية التفاعلية الكاملة (CV Dossier) 📄✨
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Executive CV Dossier Box -->
+      <div class="cv-executive-dossier">
+        
+        <!-- Profile Column (Sidebar Card) -->
+        <div class="cv-profile-card">
+          <div class="cv-avatar-wrap">
+            <img src="assets/images/herr_khaled_2.jpg" alt="Herr Khaled El-Halawany" class="cv-avatar-img">
+            <div class="cv-verified-badge" title="محاضر ومدرب معتمد"><i class="fas fa-check-circle"></i> مدرب معتمد</div>
+          </div>
+
+          <div class="cv-profile-details">
+            <h3 class="cv-profile-name">هير خالد الحلواني</h3>
+            <span class="cv-profile-role">Founder & Head Instructor • Deutsche Welt</span>
+
+            <!-- Key Quick Attributes -->
+            <div class="cv-key-pills">
+              <span><i class="fas fa-university"></i> ليسانس الألسن عين شمس 2015</span>
+              <span><i class="fas fa-handshake"></i> شريك تدريب Concentrix رسمي</span>
+              <span><i class="fas fa-award"></i> 10+ سنوات خبرة تدريس وتدريب</span>
+            </div>
+
+            <!-- Language Proficiency Matrix -->
+            <div class="cv-language-matrix">
+              <h5 class="cv-section-mini-title"><i class="fas fa-language"></i> الكفاءة اللغوية المعتمدة:</h5>
+              
+              <div class="lang-skill-item">
+                <div class="lang-skill-header">
+                  <span>الألمانية (Deutsch)</span>
+                  <span class="lang-level">C2 Mastery • Native-like</span>
+                </div>
+                <div class="lang-skill-bar"><div class="lang-skill-fill" style="width: 100%;"></div></div>
+              </div>
+
+              <div class="lang-skill-item">
+                <div class="lang-skill-header">
+                  <span>العربية (Arabisch)</span>
+                  <span class="lang-level">اللغة الأم (Native)</span>
+                </div>
+                <div class="lang-skill-bar"><div class="lang-skill-fill" style="width: 100%;"></div></div>
+              </div>
+
+              <div class="lang-skill-item">
+                <div class="lang-skill-header">
+                  <span>الإنجليزية (Englisch)</span>
+                  <span class="lang-level">C1 Professional Business</span>
+                </div>
+                <div class="lang-skill-bar"><div class="lang-skill-fill" style="width: 95%;"></div></div>
+              </div>
+            </div>
+
+            <!-- Quick Direct Contact CTA -->
+            <a href="https://wa.me/2010552287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D8%8C%20%D8%A3%D8%B1%D8%BA%D8%A8%20%D9%81%D9%8A%20%D8%AD%D8%AC%D8%B2%20%D9%85%D9%82%D8%B9%D8%AF%20%D9%85%D8%B9%D9%83%D9%85" target="_blank" class="btn btn-whatsapp btn-block cv-contact-btn">
+              <i class="fab fa-whatsapp"></i> تواصل مع هير خالد مباشرة
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive Career Tabs Area -->
+        <div class="cv-content-tabs-wrap">
+          
+          <!-- Nav Tabs Header -->
+          <div class="cv-nav-tabs" id="cvNavTabs">
+            <button class="cv-tab-btn active" data-target="cvTabExperience">
+              <i class="fas fa-briefcase"></i> الخبرات وسوق العمل
+            </button>
+            <button class="cv-tab-btn" data-target="cvTabEducation">
+              <i class="fas fa-graduation-cap"></i> المؤهلات والمناهج
+            </button>
+            <button class="cv-tab-btn" data-target="cvTabMilestones">
+              <i class="fas fa-trophy"></i> الإنجازات والشراكات
+            </button>
+            <button class="cv-tab-btn" data-target="cvTabQuote">
+              <i class="fas fa-quote-right"></i> قصة الكفاح والرسالة
+            </button>
+          </div>
+
+          <!-- Tab Pane 1: Corporate Experience -->
+          <div class="cv-tab-pane active" id="cvTabExperience">
+            <div class="cv-experience-list">
+              
+              <!-- Job 1 -->
+              <div class="cv-job-card">
+                <div class="cv-job-header">
+                  <div class="cv-job-logo-tag"><i class="fas fa-graduation-cap"></i></div>
+                  <div class="cv-job-info">
+                    <h4>مؤسس ومدير التدريب الأكاديمي</h4>
+                    <span class="cv-job-company">Deutsche Welt Akademie • 2023 - حتى الآن</span>
+                  </div>
+                  <span class="cv-job-badge current">العمل الحالي</span>
+                </div>
+                <p class="cv-job-desc">
+                  إدارة وتدريب أكثر من 5,000 طالب عبر كورسات A1 حتى C1 وتأهيل الكول سنتر والألماني الطبي، وإعداد سلسلة كتب المنهج المطبوعة الخاصة بالأكاديمية.
+                </p>
+              </div>
+
+              <!-- Job 2 -->
+              <div class="cv-job-card">
+                <div class="cv-job-header">
+                  <div class="cv-job-logo-tag"><i class="fas fa-laptop-code"></i></div>
+                  <div class="cv-job-info">
+                    <h4>أخصائي الدعم التقني لحساب Microsoft العالمي</h4>
+                    <span class="cv-job-company">Concentrix International • 2020 - 2023 (3 سنوات)</span>
+                  </div>
+                  <span class="cv-job-badge">3 سنوات</span>
+                </div>
+                <p class="cv-job-desc">
+                  إدارة المشكلات والخدمات التقنية المتقدمة باللغة الألمانية لعملاء Microsoft حول العالم، بالإضافة إلى تدريب وتأهيل المتقدمين لاجتياز المقابلات الوظيفية باللغة الألمانية.
+                </p>
+              </div>
+
+              <!-- Job 3 -->
+              <div class="cv-job-card">
+                <div class="cv-job-header">
+                  <div class="cv-job-logo-tag"><i class="fas fa-headset"></i></div>
+                  <div class="cv-job-info">
+                    <h4>خدمة عملاء ألمانية وHR ومسؤول إدارة الحوادث التقنية</h4>
+                    <span class="cv-job-company">Vodafone Deutschland • 2015 - 2020 (5 سنوات)</span>
+                  </div>
+                  <span class="cv-job-badge">5 سنوات</span>
+                </div>
+                <p class="cv-job-desc">
+                  العمل كـ Customer Advisor ألماني، والانتقال إلى وظيفة HR Phone Screener لاختبار وتقييم المتقدمين للوظائف، ثم إدارة الحوادث التقنية (Incident Management).
+                </p>
+              </div>
+
+              <!-- Job 4 -->
+              <div class="cv-job-card">
+                <div class="cv-job-header">
+                  <div class="cv-job-logo-tag"><i class="fas fa-chalkboard-teacher"></i></div>
+                  <div class="cv-job-info">
+                    <h4>مدرب ومحاضر لغة ألمانية</h4>
+                    <span class="cv-job-company">جمعية رسالة (RTC) والكورسات الحرة • 2013 - 2015</span>
+                  </div>
+                  <span class="cv-job-badge">البداية</span>
+                </div>
+                <p class="cv-job-desc">
+                  انستراكتور لغة ألمانية ومساعد لكبار مدربي الألمانية في مصر، وبداية مسيرة التدريس وإعداد المناهج المبسطة.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Tab Pane 2: Education & Credentials -->
+          <div class="cv-tab-pane" id="cvTabEducation">
+            <div class="cv-credentials-grid">
+              
+              <div class="cv-cred-card">
+                <div class="cv-cred-icon"><i class="fas fa-university"></i></div>
+                <div class="cv-cred-body">
+                  <h4>ليسانس الألسن - جامعة عين شمس</h4>
+                  <span class="cv-cred-meta">قسم اللغة الألمانية • دفعة 2015 بتقدير امتياز</span>
+                  <p>دراسة متعمقة في اللغويات، الترجمة الفورية، والأدب الألماني، مع التركيز على طرائق تدريس اللغة للناطقين بغيرها.</p>
+                </div>
+              </div>
+
+              <div class="cv-cred-card">
+                <div class="cv-cred-icon"><i class="fas fa-book-open"></i></div>
+                <div class="cv-cred-body">
+                  <h4>مؤلف سلسلة كتب Deutsche Welt المطبوعة</h4>
+                  <span class="cv-cred-meta">منهج A1 & A2 المعتمد والمصمم خصيصاً للمتعلم العربي</span>
+                  <p>تأليف وتصميم كتابي الشرح والتدريبات (Kursbuch & Arbeitsbuch) المعتمدة على محاكاة سوق العمل والامتحانات الدولية.</p>
+                </div>
+              </div>
+
+              <div class="cv-cred-card">
+                <div class="cv-cred-icon"><i class="fas fa-user-tie"></i></div>
+                <div class="cv-cred-body">
+                  <h4>خبير إعداد وتأهيل مقابلات الـ HR & Technical</h4>
+                  <span class="cv-cred-meta">خبرة عملية داخل غرف مقابلات Vodafone & Concentrix</span>
+                  <p>تدريب شامل ومباشر على إجابة كافة أسئلة الإنترفيو باللغة الألمانية وكسر حاجز الخوف والارتباك.</p>
+                </div>
+              </div>
+
+              <div class="cv-cred-card">
+                <div class="cv-cred-icon"><i class="fas fa-hospital-user"></i></div>
+                <div class="cv-cred-body">
+                  <h4>مدرب التأهيل لامتحان الألماني الطبي (FSP)</h4>
+                  <span class="cv-cred-meta">معادلة الأطباء والصيادلة والتمريض في ألمانيا</span>
+                  <p>تدريب متخصص للأطباء الراغبين في السفر إلى ألمانيا على مصطلحات التشخيص والتواصل مع المرضى والزملاء.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Tab Pane 3: Milestones & Partnerships -->
+          <div class="cv-tab-pane" id="cvTabMilestones">
+            <div class="cv-milestones-box">
+              
+              <div class="cv-partner-highlight">
+                <div class="cv-partner-icon"><i class="fas fa-handshake"></i></div>
+                <div class="cv-partner-info">
+                  <h4>شراكة الـ Upskilling الحصرية مع Concentrix</h4>
+                  <p>إبرام بروتوكول تدريب رسمي لتأهيل الطلاب المتميزين وتوصيلهم مباشرة بمسؤولي التوظيف والـ HR داخل كبرى الشركات العالمية.</p>
+                </div>
+              </div>
+
+              <div class="cv-stats-kpi-grid">
+                <div class="cv-kpi-item">
+                  <span class="cv-kpi-num">+5,000</span>
+                  <span class="cv-kpi-label">طالب وطالبة تم تدريبهم بنجاح</span>
+                </div>
+                <div class="cv-kpi-item">
+                  <span class="cv-kpi-num">98%</span>
+                  <span class="cv-kpi-label">نسبة اجتياز امتحانات جوته من أول مرة</span>
+                </div>
+                <div class="cv-kpi-item">
+                  <span class="cv-kpi-num">25k - 45k</span>
+                  <span class="cv-kpi-label">متوسط الرواتب الشهرية لخريجينا بسوق العمل</span>
+                </div>
+                <div class="cv-kpi-item">
+                  <span class="cv-kpi-num">+70</span>
+                  <span class="cv-kpi-label">رأي ومحادثة موثقة بالفيديو والواتساب</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Tab Pane 4: Teacher Philosophy & Story -->
+          <div class="cv-tab-pane" id="cvTabQuote">
+            <div class="cv-philosophy-card">
+              <div class="cv-quote-mark"><i class="fas fa-quote-right"></i></div>
+              <p class="cv-philosophy-text">
+                "عصارة كل السنين والخبرات ديه بفضل ربنا علمتني إن الرزق كله بإيد ربنا سبحانه وتعالى، وإن ما على الإنسان إلا السعي. لو فضلنا نشكر ربنا على ترتيباته وخططه مش هنوفي حقه أبداً.. السعي ثم السعي ثم السعي، والنتيجة دايماً هتبهرك!"
+              </p>
+              <div class="cv-philosophy-signature">
+                <strong>هير خالد الحلواني</strong>
+                <span>مؤسس أكاديمية دويتشه فيلت لتعليم اللغة الألمانية</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Quick KPI Bottom Summary Bar -->
+      <div class="cv-bottom-stats-bar">
+        <div class="cv-stat-box">
+          <i class="fas fa-award"></i>
+          <div>
+            <strong>10+ سنوات</strong>
+            <span>خبرة تدريب وتدريس</span>
+          </div>
+        </div>
+
+        <div class="cv-stat-box">
+          <i class="fas fa-building"></i>
+          <div>
+            <strong>8+ سنوات</strong>
+            <span>في كبرى الشركات العالمية</span>
+          </div>
+        </div>
+
+        <div class="cv-stat-box">
+          <i class="fas fa-book"></i>
+          <div>
+            <strong>مناهج مطبوعة</strong>
+            <span>Deutsche Welt A1 & A2</span>
+          </div>
+        </div>
+
+        <div class="cv-stat-box">
+          <i class="fas fa-user-check"></i>
+          <div>
+            <strong>+5,000 خريج</strong>
+            <span>في ألمانيا ومصر والخليج</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+
+  <!-- ==========================================================================
+       WALL OF FAME & REAL REVIEWS & VIDEO (لوحة الشرف وآراء وفيديو الطلاب)
+       ========================================================================== -->
+  <section class="section" id="reviews">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-video"></i> فيديو وتجارب حقيقية موثقة</span>
+        <h2 class="section-title">شاهد بنفسك: آراء وتجارب طلاب وخريجي هير خالد</h2>
+        <p class="section-desc">
+          أكثر من 5000 طالب حققوا أهدافهم ووصلوا لأعلى المناصب في كبرى الشركات العالمية والمستشفيات الألمانية.
+        </p>
+      </div>
+
+      <!-- Video Showcase Card -->
+      <div class="video-showcase-card">
+        <div class="video-player-wrap">
+          <video controls playsinline preload="metadata" poster="assets/images/video_poster.jpg?v=1">
+            <source src="assets/videos/video_reviews.mp4?v=2" type="video/mp4">
+            متصفحك لا يدعم تشغيل الفيديو المباشر.
+          </video>
+        </div>
+        <div class="video-details-wrap">
+          <span class="section-tag gold"><i class="fas fa-star"></i> تجارب حية بالفيديو</span>
+          <h3>قصص نجاح من قلب المحاضرات والمقابلات</h3>
+          <p>
+            استمع مباشرة لخريجي أكاديمية دويتشه فيلت وكيف ساعدهم هير خالد في اجتياز المقابلات الصعبة للعمل في Concentrix و Vodafone DE وتحقيق طلاقة التحدث بالألماني.
+          </p>
+          <ul class="video-features-list">
+            <li><i class="fas fa-check-circle"></i> تأهيل واجتياز مقابلات الـ HR & Technical</li>
+            <li><i class="fas fa-check-circle"></i> التحضير المباشر لامتحانات معهد جوته Goethe B1 & B2</li>
+            <li><i class="fas fa-check-circle"></i> كسر حاجز الخوف من التحدث باللغة الألمانية</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Real Screenshots Reviews Swiper (سلايدر محادثات ورسائل شكر الطلاب الموثقة) -->
+      <div class="reviews-swiper-section" style="margin-top:50px; margin-bottom:50px;">
+        <div class="swiper-header-bar">
+          <div class="swiper-header-titles">
+            <span class="section-tag gold"><i class="fab fa-whatsapp"></i> +70 رأي موثق من شات وواتساب الطلاب</span>
+            <h3 class="section-title" style="font-size:1.8rem; margin-top:8px;">سلايدر محادثات ورسائل شكر طلاب الأكاديمية</h3>
+            <p class="section-desc" style="margin-bottom:0;">اسحب وتصفح آراء الطلاب الحقيقية، واضغط على أي صورة لتكبيرها وقراءة المحادثة بوضوح.</p>
+          </div>
+          <div class="swiper-controls-group">
+            <div class="swiper-counter-badge" id="reviewSwiperCounter">1 - 4 من 74</div>
+            <div class="swiper-nav-btns">
+              <button class="swiper-btn swiper-prev-btn" id="reviewSwiperPrev" aria-label="السابق" title="السابق">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+              <button class="swiper-btn swiper-next-btn" id="reviewSwiperNext" aria-label="التالي" title="التالي">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Swiper Track Wrap -->
+        <div class="reviews-swiper-wrapper" id="reviewSwiperWrapper">
+          <div class="reviews-swiper-track" id="reviewSwiperTrack">
+            <!-- 74 Review Cards Injected via JavaScript (app.js) -->
+          </div>
+        </div>
+
+        <!-- Progress bar & auto-play indicator -->
+        <div class="swiper-progress-container">
+          <div class="swiper-progress-bar" id="reviewSwiperProgressBar"></div>
+        </div>
+      </div>
+
+      <!-- Top Text Reviews Swiper / Carousel -->
+      <div class="section-header" style="margin-top:40px; margin-bottom:25px;">
+        <span class="section-tag"><i class="fas fa-quote-right"></i> قصص نجاح وتوظيف</span>
+        <h3 class="section-title" style="font-size:1.6rem;">ماذا يقول خريجو الأكاديمية عن تجربتهم؟</h3>
+      </div>
+
+      <div class="text-reviews-carousel-box">
+        <div class="reviews-grid text-reviews-grid" id="textReviewsGrid">
+          <!-- Review 1 -->
+          <div class="review-card">
+            <div>
+              <div class="review-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+              <p class="review-text">
+                "بدأت مع هير خالد من الصفر في A1، أسلوبه في تبسيط الجرامر وربطه بسوق العمل والكول سنتر خلاني أتقبل في Concentrix من أول إنترفيو بعد كورس B1، وحالياً بقيت Team Leader بفضل ربنا ثم هير خالد!"
+              </p>
+            </div>
+            <div class="review-author">
+              <div class="review-avatar">م</div>
+              <div class="review-info">
+                <h5>محمد عبدالرحمن</h5>
+                <span>Senior Team Leader • Concentrix</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review 2 -->
+          <div class="review-card">
+            <div>
+              <div class="review-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+              <p class="review-text">
+                "كورس الـ Upskilling مع هير خالد كان نقطة تحول في حياتي المهنية. التدريب على مكالمات الـ Incident Management وطريقة التعامل مع الألمان كانت واقعية جداً. شكراً يا أحسن هير في مصر!"
+              </p>
+            </div>
+            <div class="review-author">
+              <div class="review-avatar">ي</div>
+              <div class="review-info">
+                <h5>ياسمين الشناوي</h5>
+                <span>Senior Customer Advisor • Vodafone DE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review 3 -->
+          <div class="review-card">
+            <div>
+              <div class="review-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+              <p class="review-text">
+                "كنت محتاج ألماني طبي عشان معادلة الأطباء في ألمانيا، كورس الـ Medizin مع هير خالد وكتاب الأكاديمية خلوني أعدي امتحان الـ FSP من أول مرة وبكل سهولة. ربنا يباركلك في علمك يا هير."
+              </p>
+            </div>
+            <div class="review-author">
+              <div class="review-avatar">د</div>
+              <div class="review-info">
+                <h5>د. أحمد سامي</h5>
+                <span>طبيب مقيم في مستشفى بمدينة شتوتغارت 🇩🇪</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox Modal for Review Screenshots -->
+  <div class="lightbox-modal" id="reviewLightboxModal" onclick="if(event.target===this) window.dwApp.closeLightbox()">
+    <div class="lightbox-content-box">
+      <button class="lightbox-close-btn" onclick="window.dwApp.closeLightbox()" title="إغلاق">&times;</button>
+      <button class="lightbox-nav-btn lightbox-prev" onclick="window.dwApp.prevLightboxImage()" title="السابق"><i class="fas fa-chevron-right"></i></button>
+      <img id="lightboxImg" class="lightbox-img-viewer" src="" alt="رأي الطالب بالحجم الكامل">
+      <button class="lightbox-nav-btn lightbox-next" onclick="window.dwApp.nextLightboxImage()" title="التالي"><i class="fas fa-chevron-left"></i></button>
+      <div class="lightbox-counter" id="lightboxCounter">1 / 74</div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+  <!-- ==========================================================================
+       CONTACT & CTA SECTION (EMERALD GERMAN LUXURY BANNER)
+       ========================================================================== -->
+  <section class="section cta-emerald-section" id="contact">
+    <div class="cta-mesh-bg"></div>
+    <div class="cta-glow-orb orb-1"></div>
+    <div class="cta-glow-orb orb-2"></div>
+    <div class="section-container" style="position:relative; z-index:2;">
+      <div class="section-header cta-header">
+        <div class="cta-online-badge">
+          <span class="live-pulse-dot"></span>
+          <i class="fas fa-headset"></i>
+          <span>فريق هير خالد متاح للرد الفوري على مدار اليوم</span>
+        </div>
+        <h2 class="section-title cta-title">
+          تواصل معنا الآن <span class="gold-gradient-text">واحجز مقعدك</span> في الجروب القادم
+        </h2>
+        <p class="section-desc cta-desc">
+          المقاعد محدودة لضمان أقصى استفادة وتفاعل شخصي ونطق سليم مع هير خالد مباشرة.
+        </p>
+      </div>
+
+      <div class="cta-dual-lines-grid">
+        <!-- LINE 1 CARD (010552287454) -->
+        <div class="cta-line-card">
+          <div class="cta-line-badge"><i class="fab fa-whatsapp"></i> <i class="fas fa-phone-alt"></i> الخط الأول (واتساب & مكالمات)</div>
+          <div class="cta-line-number-display">
+            <strong>010552287454</strong>
+            <span>متاح على مدار الساعة للحجز والاستفسار الفوري</span>
+          </div>
+          <div class="cta-line-actions-row">
+            <a href="https://wa.me/2010552287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D9%86%D8%B6%D9%85%D8%A7%D9%85%20%D9%84%D9%84%D9%85%D8%B3%D8%AA%D9%88%D9%8A%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D9%88%D9%86%D9%84%D8%A7%D9%8A%D9%86%20%D9%88%D8%AD%D8%AC%D8%B2%20%D9%85%D9%82%D8%B9%D8%AF%D9%8A" target="_blank" class="btn-line-action btn-line-wa">
+              <i class="fab fa-whatsapp"></i> تواصل عبر الواتساب
+            </a>
+            <a href="tel:010552287454" class="btn-line-action btn-line-call">
+              <i class="fas fa-phone-alt"></i> اتصال هاتفي مباشر
+            </a>
+          </div>
+        </div>
+
+        <!-- LINE 2 CARD (01144151673) -->
+        <div class="cta-line-card gold-border">
+          <div class="cta-line-badge gold"><i class="fab fa-whatsapp"></i> <i class="fas fa-phone-alt"></i> الخط الثاني (واتساب & مكالمات)</div>
+          <div class="cta-line-number-display">
+            <strong>01144151673</strong>
+            <span>خدمة العملاء ومتابعة التسجيل والكتب</span>
+          </div>
+          <div class="cta-line-actions-row">
+            <a href="https://wa.me/201144151673?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D9%88%D9%86%D9%84%D8%A7%D9%8A%D9%86%20%D9%88%D8%A7%D9%84%D9%83%D8%AA%D8%A8" target="_blank" class="btn-line-action btn-line-wa gold-wa">
+              <i class="fab fa-whatsapp"></i> تواصل عبر الواتساب
+            </a>
+            <a href="tel:01144151673" class="btn-line-action btn-line-call">
+              <i class="fas fa-phone-alt"></i> اتصال هاتفي مباشر
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Pillars / Micro Badges -->
+      <div class="cta-trust-bar">
+        <div class="cta-trust-pill">
+          <i class="fas fa-bolt"></i>
+          <span>رد وتأكيد فوري عبر الواتساب والمكالمات</span>
+        </div>
+        <div class="cta-trust-pill">
+          <i class="fas fa-user-graduate"></i>
+          <span>استشارة لغوية مجانية وتحديد مستوى</span>
+        </div>
+        <div class="cta-trust-pill">
+          <i class="fas fa-users"></i>
+          <span>جروبات تفاعلية بنظام المجموعات الصغيرة</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       FOOTER (GERMAN OBSIDIAN & GOLD)
+       ========================================================================== -->
+  <footer class="main-footer">
+    <!-- Animated Background Glowing Orbs -->
+    <div class="footer-bg-orbs">
+      <div class="footer-orb footer-orb-gold"></div>
+      <div class="footer-orb footer-orb-red"></div>
+      <div class="footer-orb footer-orb-orange"></div>
+    </div>
+    <div class="footer-top-accent"></div>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-brand-wrap">
+          <img src="assets/images/logo.jpg" alt="Logo" class="footer-logo">
+          <div>
+            <h3 class="footer-brand-title">Deutsche Welt Akademie</h3>
+            <span class="footer-brand-sub">أكاديمية دويتشه فيلت — هير خالد</span>
+          </div>
+        </div>
+        <p class="footer-bio-text">
+          الأكاديمية المتخصصة في تدريس اللغة الألمانية وتأهيل الخريجين لسوق العمل العالمي والألماني الطبي تحت إشراف هير خالد بخبرة +10 سنوات.
+        </p>
+        <div class="footer-dual-contact-wrap">
+          <div class="footer-contact-row">
+            <span class="footer-line-label">الخط 1:</span>
+            <a href="https://wa.me/2010552287454" target="_blank" class="footer-chip" title="واتساب 010552287454"><i class="fab fa-whatsapp"></i> 010552287454</a>
+            <a href="tel:010552287454" class="footer-chip" title="اتصال 010552287454"><i class="fas fa-phone-alt"></i> اتصال</a>
+          </div>
+          <div class="footer-contact-row">
+            <span class="footer-line-label">الخط 2:</span>
+            <a href="https://wa.me/201144151673" target="_blank" class="footer-chip" title="واتساب 01144151673"><i class="fab fa-whatsapp"></i> 01144151673</a>
+            <a href="tel:01144151673" class="footer-chip" title="اتصال 01144151673"><i class="fas fa-phone-alt"></i> اتصال</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fas fa-compass"></i> روابط سريعة</h4>
+        <ul class="footer-links">
+          <li><a href="#hero"><i class="fas fa-angle-left"></i> الرئيسية</a></li>
+          <li><a href="#online-courses"><i class="fas fa-angle-left"></i> الكورسات التدريبية أونلاين 🎓</a></li>
+          <li><a href="#about-teacher"><i class="fas fa-angle-left"></i> السيرة الذاتية لهير خالد</a></li>
+          <li><a href="#books-store"><i class="fas fa-angle-left"></i> متجر كتب المنهج المطبوعة</a></li>
+          <li><a href="#reviews"><i class="fas fa-angle-left"></i> آراء الطلاب وفيديو النجاح</a></li>
+          <li><a href="#branches"><i class="fas fa-angle-left"></i> فروع ومقرات الأكاديمية</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fas fa-certificate"></i> الكورسات والمستويات</h4>
+        <ul class="footer-links">
+          <li><a href="#online-courses"><i class="fas fa-angle-left"></i> كورس التأسيس الشامل A1 Live</a></li>
+          <li><a href="#online-courses"><i class="fas fa-angle-left"></i> كورس المحادثة والقواعد A2</a></li>
+          <li><a href="#online-courses"><i class="fas fa-angle-left"></i> كورس جوته وتيلك B1 الذهبي</a></li>
+          <li><a href="#online-courses"><i class="fas fa-angle-left"></i> كورس الاحتراف والطلاقة B2</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading"><i class="fas fa-shield-alt"></i> الإدارة والدعم</h4>
+        <p class="footer-copyright-p">
+          جميع الحقوق محفوظة © 2026<br>
+          <strong>Deutsche Welt Akademie — Herr Khaled</strong>
+        </p>
+        <button class="footer-admin-card-btn" id="footerAdminBtn" onclick="window.dwApp.openAdminModal()">
+          <div class="admin-card-glow"></div>
+          <div class="admin-card-icon"><i class="fas fa-lock"></i></div>
+          <div class="admin-card-text">
+            <strong>بوابة دخول الأدمن</strong>
+            <span>لوحة تحكم هير خالد المعتمدة</span>
+          </div>
+          <i class="fas fa-key admin-card-arrow"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div class="footer-flag-text">
+        <span>🇩🇪</span> صُمم وطُوّر بأعلى المعايير العالمية لتعليم اللغة الألمانية <span>🇪🇬</span>
+      </div>
+      <div class="footer-sec-badge">
+        <i class="fas fa-user-shield"></i> لوحة التحكم محمية بنظام تشفير DRF Token
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+
+  <!-- 1. Course Enrollment Modal -->
+  <div class="modal-overlay" id="enrollModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="window.dwApp.closeEnrollModal()">&times;</button>
+      <div class="modal-header">
+        <span class="section-tag"><i class="fas fa-graduation-cap"></i> حجز كورس أونلاين وتفعيل المستوى</span>
+        <h3 id="enrollModalCourseTitle">تسجيل في الكورس الأونلاين</h3>
+        <p>يرجى إدخال بياناتك وسيتم إرسالها فوراً للأدمن عبر الواتساب لتأكيد الحجز وتفعيل حسابك وإضافتك لجروب المستوى والمحاضرات المباشرة Live.</p>
+      </div>
+
+      <form id="enrollForm" onsubmit="window.dwApp.handleEnrollSubmit(event)">
+        <input type="hidden" id="enrollCourseId" name="courseId">
+        <input type="hidden" id="enrollCoursePrice" name="coursePrice">
+
+        <div class="form-group">
+          <label class="form-label">المستوى / الكورس المطلوب *</label>
+          <select id="enrollCourseName" name="courseName" class="form-select" required>
+            <option value="كورس المستوى التأسيسي (A1 Online Live)">كورس المستوى التأسيسي (A1 Online Live)</option>
+            <option value="كورس المستوى المتوسط (A2 Online Live)">كورس المستوى المتوسط (A2 Online Live)</option>
+            <option value="كورس المستوى الذهبي وتأهيل جوته (B1 Online Live)">كورس المستوى الذهبي وتأهيل جوته (B1 Online Live)</option>
+            <option value="كورس المستوى الاحترافي والطلاقة (B2 Online Live)">كورس المستوى الاحترافي والطلاقة (B2 Online Live)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">الاسم بالكامل (ثلاثي أو رباعي) *</label>
+          <input type="text" name="studentName" class="form-input" placeholder="مثال: أحمد محمود علي" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">رقم الهاتف (واتساب) *</label>
+            <input type="tel" name="studentPhone" class="form-input" placeholder="01012345678" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">البريد الإلكتروني (اختياري)</label>
+            <input type="email" name="studentEmail" class="form-input" placeholder="name@example.com">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">طريقة الدفع المفضلة لتأكيد الحجز *</label>
+          <select name="paymentMethod" class="form-select" required>
+            <option value="فودافون كاش (Vodafone Cash)">فودافون كاش (Vodafone Cash)</option>
+            <option value="إنستاباي (InstaPay)">إنستاباي (InstaPay)</option>
+            <option value="تحويل بنكي">تحويل بنكي</option>
+            <option value="فيزا / ماستركارد">فيزا / كارت بنكي</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">المستوى الحالي أو ملاحظات إضافية (اختياري)</label>
+          <textarea name="studentNotes" class="form-textarea" rows="2" placeholder="هل درست ألماني قبل كدة؟ أو أي استفسار تحب توضحه لهير خالد؟"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:1.05rem;">
+          <i class="fab fa-whatsapp"></i> تأكيد الحجز وإرسال للواتساب لتفعيل المستوى 🔓
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Book Order Modal -->
+  <div class="modal-overlay" id="bookOrderModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="window.dwApp.closeBookOrderModal()">&times;</button>
+      <div class="modal-header">
+        <span class="section-tag gold"><i class="fas fa-box"></i> طلب كتاب المنهج</span>
+        <h3 id="bookOrderTitle">طلب كتاب دويتشه فيلت</h3>
+        <p>السعر: <strong>500 جنيه</strong> للكتاب مع التوصيل السريع لجميع المحافظات.</p>
+      </div>
+
+      <form id="bookOrderForm" onsubmit="window.dwApp.handleBookOrderSubmit(event)">
+        <input type="hidden" id="bookOrderId" name="bookId">
+        <input type="hidden" id="bookOrderName" name="bookName">
+        <input type="hidden" id="bookOrderPrice" name="bookPrice">
+
+        <div class="form-group">
+          <label class="form-label">اسم المستلم بالكامل *</label>
+          <input type="text" name="buyerName" class="form-input" placeholder="اسمك الكريم" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">رقم الهاتف للتواصل والشحن *</label>
+            <input type="tel" name="buyerPhone" class="form-input" placeholder="01xxxxxxxxx" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">الكمية</label>
+            <input type="number" name="bookQuantity" class="form-input" value="1" min="1" max="10" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">عنوان التوصيل بالتفصيل (المحافظة - المدينة - الشارع) *</label>
+          <textarea name="buyerAddress" class="form-textarea" rows="2" placeholder="اكتب عنوانك بالتفصيل لتسليمه لمندوب الشحن" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-gold" style="width:100%; padding:14px; font-size:1.05rem;">
+          <i class="fas fa-truck"></i> تأكيد طلب الشحن الآن
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Book Sample Preview Modal -->
+  <div class="modal-overlay" id="bookPreviewModal">
+    <div class="modal-box" style="max-width:700px;">
+      <button class="modal-close-btn" onclick="window.dwApp.closeBookPreviewModal()">&times;</button>
+      <div class="modal-header">
+        <h3 id="bookPreviewTitle">معاينة صفحات من الكتاب</h3>
+      </div>
+      <div id="bookPreviewBody"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       ADMIN DASHBOARD FULL PORTAL MODAL
+       ========================================================================== -->
+  <div class="admin-modal-wrap" id="adminPortalModal">
+    
+    <!-- Admin Security Login Pin Overlay -->
+    <div class="admin-auth-overlay" id="adminAuthOverlay">
+      <!-- Ambient Glow Spheres & Background Mesh -->
+      <div class="auth-ambient-sphere sphere-1"></div>
+      <div class="auth-ambient-sphere sphere-2"></div>
+      <div class="auth-cyber-grid"></div>
+
+      <div class="admin-auth-box" id="adminAuthCard">
+        <!-- Top Neon Shimmer Bar -->
+        <div class="auth-card-glow-bar"></div>
+
+        <!-- Animated Security Shield Emblem -->
+        <div class="auth-security-emblem-wrap">
+          <div class="auth-emblem-halo"></div>
+          <div class="auth-emblem-core">
+            <i class="fas fa-shield-alt auth-shield-icon"></i>
+          </div>
+          <span class="auth-status-dot"></span>
+        </div>
+
+        <div class="auth-badge-pill">
+          <i class="fas fa-fingerprint"></i>
+          <span>بوابة الإشراف والتحكم الآمن</span>
+        </div>
+
+        <h3 class="auth-title">لوحة تحكم هير خالد</h3>
+        <p class="auth-subtitle">
+          سجل الدخول بواسطة اسم المستخدم وكلمة المرور المشفرة للوصول إلى لوحة التوجيه وإدارة البيانات
+        </p>
+
+        <!-- Dynamic Auth Alert Banner -->
+        <div id="adminAuthAlert" class="auth-alert-banner" style="display:none;"></div>
+
+        <form onsubmit="window.dwAdmin.login(event)" class="auth-form">
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><i class="fas fa-user-shield"></i></span>
+            <input 
+              type="text" 
+              id="adminUsernameInput" 
+              class="auth-input" 
+              placeholder="اسم المستخدم (Username)..." 
+              autocomplete="username"
+              required
+            >
+          </div>
+
+          <div class="auth-input-wrapper">
+            <span class="auth-input-icon"><i class="fas fa-lock"></i></span>
+            <input 
+              type="password" 
+              id="adminPinInput" 
+              class="auth-input" 
+              placeholder="كلمة المرور..." 
+              autocomplete="current-password"
+              required
+            >
+            <button type="button" class="auth-pwd-toggle" id="authPwdToggle" onclick="window.dwAdmin.togglePinVisibility()" title="إظهار / إخفاء كلمة المرور">
+              <i class="fas fa-eye" id="authPwdToggleIcon"></i>
+            </button>
+          </div>
+
+          <div class="auth-options-row">
+            <label class="auth-remember-label">
+              <input type="checkbox" id="adminRememberMe" checked>
+              <span>تذكرني على هذا الجهاز</span>
+            </label>
+          </div>
+
+          <button type="submit" class="auth-submit-btn" id="adminAuthSubmitBtn">
+            <span class="auth-btn-shine"></span>
+            <i class="fas fa-sign-in-alt" id="authBtnIcon"></i>
+            <span id="authBtnText">دخول لوحة التحكم</span>
+            <i class="fas fa-arrow-left auth-btn-arrow"></i>
+          </button>
+        </form>
+
+        <button class="auth-cancel-btn" onclick="window.dwAdmin.closeAdminPortal()">
+          <i class="fas fa-times-circle"></i>
+          <span>إلغاء والعودة للموقع</span>
+        </button>
+
+        <div class="auth-footer-tag">
+          <i class="fas fa-shield-virus"></i> حماية تشفير 256-Bit SSL • Deutsche Welt Akademie
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Main Dashboard Layout -->
+    <div class="admin-dashboard-container" id="adminDashboardContainer" style="display:none;">
+      <!-- Admin Sidebar -->
+      <aside class="admin-sidebar">
+        <div>
+          <div class="admin-brand">
+            <div class="admin-brand-img">
+              <img src="assets/images/logo.jpg" alt="Admin Logo">
+            </div>
+            <div class="admin-brand-title">
+              <h4>Deutsche Welt</h4>
+              <span>لوحة تحكم المشرف</span>
+            </div>
+          </div>
+
+          <ul class="admin-nav-list">
+            <li>
+              <button class="admin-nav-btn active" data-tab="overview">
+                <i class="fas fa-chart-line"></i> نظرة عامة & الأرباح
+              </button>
+            </li>
+            <li>
+              <button class="admin-nav-btn" data-tab="courses">
+                <i class="fas fa-book-open"></i> إدارة الكورسات
+              </button>
+            </li>
+            <li>
+              <button class="admin-nav-btn" data-tab="registrations">
+                <i class="fas fa-user-graduate"></i> تسجيلات الطلاب
+                <span class="admin-badge-count" id="adminRegsCountBadge">0</span>
+              </button>
+            </li>
+            <li>
+              <button class="admin-nav-btn" data-tab="books">
+                <i class="fas fa-shopping-bag"></i> مبيعات الكتب (500ج)
+                <span class="admin-badge-count" id="adminOrdersCountBadge">0</span>
+              </button>
+            </li>
+            <li>
+              <button class="admin-nav-btn" data-tab="analytics">
+                <i class="fas fa-chart-pie"></i> إحصائيات المستويات
+              </button>
+            </li>
+            <li>
+              <button class="admin-nav-btn" data-tab="branches">
+                <i class="fas fa-map-location-dot"></i> إدارة الفروع
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="admin-sidebar-footer">
+          <button class="admin-close-portal-btn" onclick="window.dwAdmin.closeAdminPortal()">
+            <i class="fas fa-times"></i> إغلاق لوحة التحكم
+          </button>
+          <button class="btn btn-glass btn-sm" onclick="window.dwAdmin.logout()" style="width:100%; margin-top:8px;">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+          </button>
+        </div>
+      </aside>
+
+      <!-- Admin Main Body -->
+      <main class="admin-main-view">
+        <header class="admin-top-header">
+          <div class="admin-header-title">
+            <h2>لوحة الإدارة الشاملة</h2>
+            <p>أهلاً بك يا هير خالد • تحديث لحظي للمسجلين والأرباح</p>
+          </div>
+          <div class="admin-header-actions">
+            <button class="btn btn-primary btn-sm" onclick="window.dwAdmin.openAddCourseModal()">
+              <i class="fas fa-plus"></i> إضافة كورس جديد
+            </button>
+            <button class="btn btn-glass btn-sm" onclick="window.dwAdmin.exportRegistrationsCSV()">
+              <i class="fas fa-file-excel"></i> تصدير الطلاب CSV
+            </button>
+          </div>
+        </header>
+
+        <div class="admin-body-pad">
+          
+          <!-- TAB 1: OVERVIEW & KPIS -->
+          <div class="admin-tab-pane active" id="tab-overview">
+            <div class="admin-kpi-grid">
+              <div class="kpi-card">
+                <div class="kpi-icon-wrap green"><i class="fas fa-wallet"></i></div>
+                <div class="kpi-val" id="kpiTotalRevenue">0 جنيه</div>
+                <div class="kpi-label">إجمالي الأرباح والإيرادات المحققة</div>
+                <span class="kpi-trend">↑ نمو ممتاز هذا الشهر</span>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-icon-wrap gold"><i class="fas fa-users"></i></div>
+                <div class="kpi-val" id="kpiTotalStudents">5,000+</div>
+                <div class="kpi-label">إجمالي الطلاب المسجلين والنشطين</div>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-icon-wrap"><i class="fas fa-graduation-cap"></i></div>
+                <div class="kpi-val" id="kpiNewRegs">0</div>
+                <div class="kpi-label">حجوزات الكورسات المسجلة</div>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-icon-wrap purple"><i class="fas fa-book"></i></div>
+                <div class="kpi-val" id="kpiBookOrders">0</div>
+                <div class="kpi-label">طلبات شحن الكتب (500ج)</div>
+              </div>
+            </div>
+
+            <!-- Recent Submissions Table -->
+            <div class="analytics-box">
+              <div class="analytics-box-header">
+                <h4><i class="fas fa-clock"></i> أحدث حجوزات الطلاب المسجلة في الموقع</h4>
+                <button class="btn btn-glass btn-sm" onclick="window.dwAdmin.switchTab('registrations')">عرض جميع الطلاب</button>
+              </div>
+              <div class="admin-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>اسم الطالب</th>
+                      <th>الكورس المطلوب</th>
+                      <th>الحالة</th>
+                      <th>التاريخ</th>
+                      <th>مراسلة</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminRecentRegsTableBody">
+                    <!-- Injected via admin.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: COURSES MANAGEMENT -->
+          <div class="admin-tab-pane" id="tab-courses">
+            <div class="analytics-box">
+              <div class="analytics-box-header">
+                <h4><i class="fas fa-list"></i> جميع الكورسات والمستويات بالأكاديمية</h4>
+                <button class="btn btn-primary btn-sm" onclick="window.dwAdmin.openAddCourseModal()">
+                  <i class="fas fa-plus"></i> إضافة كورس جديد
+                </button>
+              </div>
+              <div class="admin-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>المستوى</th>
+                      <th>اسم الكورس</th>
+                      <th>الساعات والمحاضرات</th>
+                      <th>السعر</th>
+                      <th>حالة التسجيل</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminCoursesTableBody">
+                    <!-- Injected via admin.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: REGISTRATIONS MANAGEMENT -->
+          <div class="admin-tab-pane" id="tab-registrations">
+            <div class="analytics-box">
+              <div class="analytics-box-header">
+                <h4><i class="fas fa-users-cog"></i> سجلات وبيانات الطلاب المسجلين</h4>
+                <button class="btn btn-glass btn-sm" onclick="window.dwAdmin.exportRegistrationsCSV()">
+                  <i class="fas fa-download"></i> تصدير البيانات Excel / CSV
+                </button>
+              </div>
+              <div class="admin-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>كود الحجز</th>
+                      <th>الاسم</th>
+                      <th>الهاتف</th>
+                      <th>الكورس</th>
+                      <th>طريقة الدفع</th>
+                      <th>الحالة</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminRegistrationsTableBody">
+                    <!-- Injected via admin.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: BOOKS ORDERS -->
+          <div class="admin-tab-pane" id="tab-books">
+            <div class="analytics-box">
+              <div class="analytics-box-header">
+                <h4><i class="fas fa-shipping-fast"></i> إدارة وتتبع طلبات شحن الكتب (500 جنيه)</h4>
+              </div>
+              <div class="admin-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>رقم الطلب</th>
+                      <th>اسم العميل</th>
+                      <th>الهاتف</th>
+                      <th>عنوان التوصيل</th>
+                      <th>الكتاب والكمية</th>
+                      <th>المبلغ</th>
+                      <th>حالة الشحن</th>
+                      <th>واتساب</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminBookOrdersTableBody">
+                    <!-- Injected via admin.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: ANALYTICS CHARTS -->
+          <div class="admin-tab-pane" id="tab-analytics">
+            <div class="analytics-box">
+              <div class="analytics-box-header">
+                <h4><i class="fas fa-chart-bar"></i> توزيع إقبال الطلاب على المستويات المختلفة</h4>
+              </div>
+              <div style="padding:20px; text-align:center;">
+                <canvas id="adminAnalyticsChart" style="max-width:100%;"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 6: BRANCHES MANAGEMENT -->
+          <div class="admin-tab-pane" id="tab-branches">
+            <div class="admin-section-header">
+              <h3><i class="fas fa-map-location-dot"></i> إدارة فروع الأكاديمية</h3>
+              <button class="btn btn-primary btn-sm" onclick="window.dwAdmin.openAddBranchModal()">
+                <i class="fas fa-plus"></i> إضافة فرع جديد
+              </button>
+            </div>
+            <div class="branches-admin-grid" id="adminBranchesGrid">
+              <!-- Rendered by admin.js -->
+            </div>
+          </div>
+
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Admin Add / Edit Branch Modal -->
+  <div class="modal-overlay" id="adminBranchModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="window.dwAdmin.closeBranchModal()">&times;</button>
+      <div class="modal-header">
+        <h3 id="branchModalTitle"><i class="fas fa-map-location-dot"></i> إضافة فرع جديد</h3>
+      </div>
+      <form onsubmit="window.dwAdmin.handleSaveBranch(event)" id="branchForm">
+        <input type="hidden" name="branchId" id="branchFormId">
+        <div class="form-group">
+          <label class="form-label">اسم الفرع</label>
+          <input type="text" name="branchName" class="form-input" placeholder="فرع شبين الكوم" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">المدينة / المحافظة</label>
+            <input type="text" name="branchCity" class="form-input" placeholder="المنوفية" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">النوع</label>
+            <select name="branchType" class="form-select">
+              <option value="physical">فرع فعلي 🏢</option>
+              <option value="online">أونلاين 💻</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">العنوان التفصيلي</label>
+          <textarea name="branchAddress" class="form-input" rows="2" placeholder="برج حجازي - الدور الثاني أمام مستشفى الجامعة" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">رابط الموقع على الخريطة (Google Maps)</label>
+          <input type="url" name="branchMapUrl" class="form-input" placeholder="https://maps.app.goo.gl/...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">شارة الفرع (Emoji + نص)</label>
+          <input type="text" name="branchBadge" class="form-input" placeholder="🏢 فرع رئيسي">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">
+          <i class="fas fa-save"></i> حفظ الفرع
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Add Course Modal -->
+  <div class="modal-overlay" id="adminAddCourseModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="window.dwAdmin.closeAddCourseModal()">&times;</button>
+      <div class="modal-header">
+        <h3>إضافة كورس ألماني جديد</h3>
+      </div>
+      <form onsubmit="window.dwAdmin.handleAddCourse(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">المستوى (مثل: B1+ أو C1)</label>
+            <input type="text" name="courseLevel" class="form-input" placeholder="B1.2" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">التصنيف</label>
+            <select name="courseCategory" class="form-select">
+              <option value="beginner">مبتدئ (A1-A2)</option>
+              <option value="intermediate">متوسط ومتقدم (B1-B2)</option>
+              <option value="career">سوق العمل والشركات</option>
+              <option value="advanced">مستويات عليا</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">عنوان الكورس</label>
+          <input type="text" name="courseTitle" class="form-input" placeholder="كورس المحادثة الألمانية المتقدمة" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">الوصف المختصر</label>
+          <input type="text" name="courseSubtitle" class="form-input" placeholder="تأهيل شامل للمقابلات والمحادثة اليومية" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">عدد الساعات</label>
+            <input type="number" name="courseHours" class="form-input" value="60" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">عدد المحاضرات</label>
+            <input type="number" name="courseLectures" class="form-input" value="24" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">المدة الزمنية</label>
+            <input type="text" name="courseDuration" class="form-input" value="شهران ونصف" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">السعر (جنيه مصري)</label>
+            <input type="number" name="coursePrice" class="form-input" value="1500" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">حالة التسجيل</label>
+            <select name="courseStatus" class="form-select">
+              <option value="open">متاح للتسجيل الفوري</option>
+              <option value="coming_soon">قريباً</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-top:28px;">
+            <input type="checkbox" name="courseFeatured" id="chkFeatured" style="width:20px; height:20px;">
+            <label for="chkFeatured" style="font-size:0.9rem; font-weight:700; cursor:pointer;">تمييز كـ الأكثر طلباً ⭐</label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-top:10px;">
+          <i class="fas fa-save"></i> حفظ ونشر الكورس
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       EXECUTIVE CV DOSSIER MODAL (السيرة الذاتية التفاعلية للمحاضر هير خالد)
+       ========================================================================== -->
+  <div class="modal-overlay cv-modal-overlay" id="herrKhaledCvModal" style="display:none;">
+    <div class="cv-modal-box" id="cvModalPrintArea">
+      <!-- Background Ambient Glow & Watermark -->
+      <div class="cv-modal-ambient"></div>
+      <div class="cv-modal-watermark">DEUTSCHE WELT</div>
+
+      <!-- Modal Close Button -->
+      <button type="button" class="cv-modal-close" onclick="window.dwApp.closeCvModal()" title="إغلاق (Esc)">&times;</button>
+
+      <!-- CV Top Header / Hero Ribbon -->
+      <header class="cv-modal-header">
+        <div class="cv-header-grid">
+          <!-- Portrait Avatar & Status -->
+          <div class="cv-avatar-column">
+            <div class="cv-avatar-ring">
+              <img src="assets/images/herr_khaled_2.jpg" alt="هير خالد الحلواني" class="cv-avatar-photo">
+              <span class="cv-badge-gold-star" title="كبير مدربي اللغة الألمانية"><i class="fas fa-crown"></i></span>
+            </div>
+            <div class="cv-verified-tag">
+              <i class="fas fa-check-circle"></i> محاضر معتمد دولياً
+            </div>
+          </div>
+
+          <!-- Bio Titles & Contacts -->
+          <div class="cv-header-info">
+            <div class="cv-header-top-row">
+              <div>
+                <h2 class="cv-fullname">Herr Khaled El-Halawany</h2>
+                <h3 class="cv-arabic-name">هير خالد الحلواني 🇩🇪</h3>
+              </div>
+              <!-- Action Toolbar -->
+              <div class="cv-toolbar-actions">
+                <button type="button" class="btn-cv-action btn-cv-print" onclick="window.dwApp.printCv()" title="طباعة أو حفظ PDF">
+                  <i class="fas fa-print"></i> <span>طباعة / PDF</span>
+                </button>
+                <button type="button" class="btn-cv-action btn-cv-share" onclick="window.dwApp.copyCvLink()" title="نسخ رابط السيرة الذاتية">
+                  <i class="fas fa-share-nodes"></i> <span>مشاركة</span>
+                </button>
+                <a href="https://wa.me/2010552287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D8%8C%20%D8%A7%D8%B7%D9%84%D8%B9%D8%AA%20%D8%B9%D9%84%D9%89%20%D8%B3%D9%8A%D8%B1%D8%AA%D9%83%20%D8%A7%D9%84%D8%B0%D8%A7%D8%AA%D9%8A%D8%A9%20%D9%88%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D9%83%D9%88%D8%B1%D8%B3%D8%A7%D8%AA" target="_blank" class="btn-cv-action btn-cv-whatsapp">
+                  <i class="fab fa-whatsapp"></i> <span>تواصل واتساب</span>
+                </a>
+              </div>
+            </div>
+
+            <p class="cv-headline-role">
+              Founder & Lead German Language Instructor at <strong>Deutsche Welt Akademie</strong> • Corporate Upskilling Trainer at <strong>Concentrix</strong> • Former Senior Specialist at <strong>Vodafone DE & UK</strong>
+            </p>
+
+            <div class="cv-meta-chips">
+              <span class="cv-meta-chip"><i class="fas fa-graduation-cap"></i> ليسانس الألسن - عين شمس (2015)</span>
+              <span class="cv-meta-chip"><i class="fas fa-language"></i> C2 Native-like German Mastery</span>
+              <span class="cv-meta-chip"><i class="fas fa-briefcase"></i> +10 سنوات خبرة تدريب وسوق عمل</span>
+              <span class="cv-meta-chip"><i class="fas fa-users"></i> +5,000 طالب مؤهل وخريج</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Greeting & Pronunciation Preview Inside CV -->
+        <div class="cv-audio-intro-bar">
+          <button type="button" class="cv-audio-speech-btn" onclick="window.dwApp.speakGerman('Herzlich willkommen! Ich bin Khaled El-Halawany, Gründer der Deutsche Welt Akademie. Ich helfe Ihnen, Deutsch fließend zu sprechen und Ihre Karriere zu starten.')">
+            <i class="fas fa-volume-high"></i> اسمع رسالة ترحيبية بصوت هير خالد بالألمانية 🇩🇪
+          </button>
+          <span class="cv-audio-text-hint">"Guten Tag! Willkommen in der Deutschen Welt Akademie"</span>
+        </div>
+      </header>
+
+      <!-- CV Navigation Tabs -->
+      <nav class="cv-nav-tabs">
+        <button type="button" class="cv-tab-btn active" data-cvtab="overview" onclick="window.dwApp.switchCvTab('overview')">
+          <i class="fas fa-user-tie"></i> <span>النبذة والملف الشخصي</span>
+        </button>
+        <button type="button" class="cv-tab-btn" data-cvtab="experience" onclick="window.dwApp.switchCvTab('experience')">
+          <i class="fas fa-briefcase"></i> <span>الخبرات وسوق العمل</span>
+        </button>
+        <button type="button" class="cv-tab-btn" data-cvtab="certifications" onclick="window.dwApp.switchCvTab('certifications')">
+          <i class="fas fa-award"></i> <span>المؤهلات والشهادات</span>
+        </button>
+        <button type="button" class="cv-tab-btn" data-cvtab="languages" onclick="window.dwApp.switchCvTab('languages')">
+          <i class="fas fa-chart-simple"></i> <span>الكفاءة اللغوية والمهارات</span>
+        </button>
+        <button type="button" class="cv-tab-btn" data-cvtab="achievements" onclick="window.dwApp.switchCvTab('achievements')">
+          <i class="fas fa-trophy"></i> <span>أبرز الإنجازات والأرقام</span>
+        </button>
+      </nav>
+
+      <!-- CV Tab Panes Body -->
+      <main class="cv-modal-body">
+        
+        <!-- TAB 1: OVERVIEW -->
+        <div class="cv-tab-pane active" id="cvTab-overview">
+          <div class="cv-overview-grid">
+            <div class="cv-card-box">
+              <h4 class="cv-box-title"><i class="fas fa-quote-right gold-icon"></i> النبذة المهنية وفلسفة التدريب</h4>
+              <p class="cv-text-paragraph">
+                مدرب وخبير لغة ألمانية معتمد ذو خبرة تمتد لأكثر من <strong>10 سنوات</strong> في التدريس الأكاديمي والتأهيل المهني لسوق العمل الدولي. تخرج من كلية الألسن جامعة عين شمس (قسم اللغة الألمانية) دفعة 2015 بتقدير ممتاز، وصقل خبرته اللغوية والعملية في كبرى الشركات العالمية مثل <strong>Vodafone DE & UK</strong> و <strong>Concentrix</strong>، مما مكنه من نقل بيئة العمل الألمانية الواقعية لطلابه مباشرة.
+              </p>
+              <p class="cv-text-paragraph">
+                مؤسس <strong>أكاديمية دويتشه فيلت (Deutsche Welt Akademie)</strong>، ومؤلف سلسلة كتب المنهج الشامل المعتمد (من A1 حتى B2)، مع التركيز الشديد على النطق الصحيح من اليوم الأول (Phonetik) وتأهيل المتدربين لاجتياز امتحانات معهد جوته (Goethe-Zertifikat) وتيلك (Telc)، والتأهيل للعمل في كبرى شركات الـ Call Center وشركات الاتصالات والمسارات الطبية في ألمانيا.
+              </p>
+            </div>
+
+            <!-- Key Quick Pillars -->
+            <div class="cv-pillars-grid">
+              <div class="cv-pillar-card">
+                <div class="pillar-icon"><i class="fas fa-comments"></i></div>
+                <div class="pillar-info">
+                  <h5>التركيز على التحدث الفوري</h5>
+                  <p>تطبيق عملي ومحادثات حية في كل محاضرة لكسر حاجز الخوف وبناء الطلاقة.</p>
+                </div>
+              </div>
+              <div class="cv-pillar-card">
+                <div class="pillar-icon gold"><i class="fas fa-building-circle-check"></i></div>
+                <div class="pillar-info">
+                  <h5>ربط المنهج بسوق العمل</h5>
+                  <p>محاكاة انترفيوهات كبرى الشركات العالمية مثل كونسنتركس وفودافون برواتب 25,000+ ج.</p>
+                </div>
+              </div>
+              <div class="cv-pillar-card">
+                <div class="pillar-icon green"><i class="fas fa-user-doctor"></i></div>
+                <div class="pillar-info">
+                  <h5>تأهيل الأطباء B2 Medizin</h5>
+                  <p>مصطلحات تخصصية ومسارات معادلة الشهادات للأطباء والصيادلة والتمريض في ألمانيا.</p>
+                </div>
+              </div>
+              <div class="cv-pillar-card">
+                <div class="pillar-icon blue"><i class="fas fa-laptop-code"></i></div>
+                <div class="pillar-info">
+                  <h5>منظومة تفاعلية متكاملة</h5>
+                  <p>فروع مجهزة، منصة إلكترونية، تدريب صوتي يومي، واختبارات دورية مع متابعة مستمرة.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: EXPERIENCE -->
+        <div class="cv-tab-pane" id="cvTab-experience">
+          <div class="cv-timeline">
+            
+            <!-- Item 1 -->
+            <div class="cv-timeline-item">
+              <div class="timeline-dot gold"></div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <div>
+                    <h4 class="timeline-title">مؤسس وكبير مدربي اللغة الألمانية</h4>
+                    <h5 class="timeline-company"><i class="fas fa-building"></i> Deutsche Welt Akademie • أكاديمية دويتشه فيلت</h5>
+                  </div>
+                  <span class="timeline-period">2016 - حتى الآن (10+ سنوات)</span>
+                </div>
+                <ul class="timeline-duties">
+                  <li>تأسيس وإدارة 4 فروع معتمدة للأكاديمية والمنصة الإلكترونية الأونلاين المباشرة.</li>
+                  <li>تدريب وتخريج أكثر من <strong>5,000 طالب وطالبة</strong> في مختلف المستويات (A1, A2, B1, B2).</li>
+                  <li>تأليف ونشر سلسلة كتب المنهج الدراسي الشامل (Deutsche Welt Bücher).</li>
+                  <li>الإشراف على معسكرات التحضير المكثف لامتحانات معهد جوته وتيلك بنسبة نجاح تفوق 98%.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="cv-timeline-item">
+              <div class="timeline-dot blue"></div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <div>
+                    <h4 class="timeline-title">محاضر تدريب وتطوير لغوي (German Upskilling Trainer) & IT Specialist</h4>
+                    <h5 class="timeline-company"><i class="fas fa-globe"></i> Concentrix Egypt • كونسنتركس العالمية</h5>
+                  </div>
+                  <span class="timeline-period">2020 - 2023 (3 سنوات)</span>
+                </div>
+                <ul class="timeline-duties">
+                  <li>تدريب الكوادر وموظفي الشركة على رفع الكفاءة اللغوية ومصطلحات الأعمال الألمانية المتقدمة (Upskilling).</li>
+                  <li>تجهيز المتدربين لاجتياز اختبارات التعيين والانتقال للحسابات الألمانية ذات الأجور المرتفعة.</li>
+                  <li>تقديم الدعم الفني والتقني المتخصص لحساب Microsoft IT باللغتين الألمانية والإنجليزية.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="cv-timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <div>
+                    <h4 class="timeline-title">أخصائي ومسؤول خدمة عملاء باللغة الألمانية وإدارة الجودة</h4>
+                    <h5 class="timeline-company"><i class="fas fa-phone-volume"></i> Vodafone Germany & UK • فودافون ألمانيا</h5>
+                  </div>
+                  <span class="timeline-period">2016 - 2020 (5 سنوات)</span>
+                </div>
+                <ul class="timeline-duties">
+                  <li>التعامل المباشر اليومي مع العملاء الألمان في ألمانيا والنمسا وسويسرا (DACH Region).</li>
+                  <li>إتقان اللهجات الألمانية والتعابير اليومية وثقافة بيئة العمل الألمانية الرسمية.</li>
+                  <li>المشاركة في تدريب الجدد ومراجعة معايير الجودة اللغوية ورضا العملاء.</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB 3: CERTIFICATIONS & EDUCATION -->
+        <div class="cv-tab-pane" id="cvTab-certifications">
+          <div class="cv-certs-grid">
+            
+            <div class="cv-cert-card">
+              <div class="cert-stamp"><i class="fas fa-university"></i></div>
+              <div class="cert-body">
+                <span class="cert-tag">المؤهل الأكاديمي الأساسي</span>
+                <h4>ليسانس الألسن - لغة ألمانية</h4>
+                <p class="cert-issuer">جامعة عين شمس • كلية الألسن (دفعة 2015)</p>
+                <div class="cert-notes">دراسة متعمقة في اللغويات، الترجمة الفورية والتحريرية، والأدب الألماني.</div>
+              </div>
+            </div>
+
+            <div class="cv-cert-card gold-border">
+              <div class="cert-stamp gold"><i class="fas fa-award"></i></div>
+              <div class="cert-body">
+                <span class="cert-tag gold">أعلى شهادة كفاءة لغوية</span>
+                <h4>C2 Mastery • Goethe-Zertifikat C2 / GDS</h4>
+                <p class="cert-issuer">معهد جوته الدولي (Goethe-Institut) • CEFR Framework</p>
+                <div class="cert-notes">إتقان كامل للغة الألمانية على مستوى المتحدثين الأصليين (Native Speaker Proficiency).</div>
+              </div>
+            </div>
+
+            <div class="cv-cert-card">
+              <div class="cert-stamp green"><i class="fas fa-chalkboard-user"></i></div>
+              <div class="cert-body">
+                <span class="cert-tag green">اعتماد الشركات متعددة الجنسيات</span>
+                <h4>Certified Corporate German Instructor (ToT)</h4>
+                <p class="cert-issuer">Concentrix Learning & Development Academy</p>
+                <div class="cert-notes">شهادة تدريب المدربين المعتمدة لإعداد الكوادر لبيئات العمل الدولية والكول سنتر.</div>
+              </div>
+            </div>
+
+            <div class="cv-cert-card">
+              <div class="cert-stamp blue"><i class="fas fa-stethoscope"></i></div>
+              <div class="cert-body">
+                <span class="cert-tag blue">تأهيل طبي وتخصصي</span>
+                <h4>German for Medical Professionals (B2 Medizin)</h4>
+                <p class="cert-issuer">برامج التأهيل المتخصص للأطباء والتمريض لمعادلة الشهادات في ألمانيا</p>
+                <div class="cert-notes">إعداد وتأهيل الأطباء لاختبارات اللغة الطبية Fachsprachprüfung (FSP).</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB 4: LANGUAGES & SKILLS -->
+        <div class="cv-tab-pane" id="cvTab-languages">
+          <div class="cv-skills-layout">
+            
+            <div class="cv-card-box">
+              <h4 class="cv-box-title"><i class="fas fa-language gold-icon"></i> الكفاءة وإتقان اللغات</h4>
+              
+              <div class="cv-skill-item">
+                <div class="skill-head">
+                  <span class="skill-name">اللغة الألمانية (Deutsch)</span>
+                  <span class="skill-badge-level">C2 Mastery • طلاقة تامة (Native-like)</span>
+                </div>
+                <div class="skill-bar-wrap">
+                  <div class="skill-bar-fill gold-fill" style="width: 100%;"></div>
+                </div>
+              </div>
+
+              <div class="cv-skill-item">
+                <div class="skill-head">
+                  <span class="skill-name">اللغة الإنجليزية (English)</span>
+                  <span class="skill-badge-level">C1 Advanced • احترافية كاملة (Business Fluent)</span>
+                </div>
+                <div class="skill-bar-wrap">
+                  <div class="skill-bar-fill blue-fill" style="width: 90%;"></div>
+                </div>
+              </div>
+
+              <div class="cv-skill-item">
+                <div class="skill-head">
+                  <span class="skill-name">اللغة العربية (Arabic)</span>
+                  <span class="skill-badge-level">اللغة الأم (Native Speaker)</span>
+                </div>
+                <div class="skill-bar-wrap">
+                  <div class="skill-bar-fill green-fill" style="width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cv-card-box">
+              <h4 class="cv-box-title"><i class="fas fa-bolt gold-icon"></i> المهارات التدريبية والتخصصية</h4>
+              <div class="cv-tags-cloud">
+                <span class="cv-cloud-tag"><i class="fas fa-check"></i> مخارج الحروف والنطق السليم (Phonetik)</span>
+                <span class="cv-cloud-tag"><i class="fas fa-check"></i> التحضير لامتحانات جوته وتيلك (Goethe & Telc)</span>
+                <span class="cv-cloud-tag"><i class="fas fa-check"></i> محاكاة مقابلات الكول سنتر (Call Center Interviews)</span>
+                <span class="cv-cloud-tag"><i class="fas fa-check"></i> التحدث السريع وكسر حاجز الخوف</span>
+                <span class="cv-cloud-tag"><i class="fas fa-check"></i> الألمانية الطبية للأطباء (Medizin Fachsprache)</span>
+                <span class="cv-cloud-tag"><i class="fas fa-check"></i> كتابة الإيميلات والتقارير الرسمية (B2 Schreiben)</span>
+                <span class="cv-cloud-tag"><i class="fas fa-check"></i> التدريب التفاعلي أونلاين ومباشر</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB 5: ACHIEVEMENTS -->
+        <div class="cv-tab-pane" id="cvTab-achievements">
+          <div class="cv-achievements-stats">
+            
+            <div class="cv-stat-box">
+              <div class="stat-icon-large gold"><i class="fas fa-users-viewfinder"></i></div>
+              <div class="stat-number">+5,000</div>
+              <div class="stat-title">طالب وخريج ناجح</div>
+              <p class="stat-desc">تم تأهيلهم بنجاح واحترافية من الصفر حتى سوق العمل والسفر للدراسة والعمل في ألمانيا.</p>
+            </div>
+
+            <div class="cv-stat-box">
+              <div class="stat-icon-large green"><i class="fas fa-graduation-cap"></i></div>
+              <div class="stat-number">98%</div>
+              <div class="stat-title">نسبة اجتياز امتحانات جوته</div>
+              <p class="stat-desc">نسبة اجتياز قياسية لطلاب الأكاديمية في امتحانات Goethe & Telc في مستويات A1, A2, B1.</p>
+            </div>
+
+            <div class="cv-stat-box">
+              <div class="stat-icon-large blue"><i class="fas fa-briefcase"></i></div>
+              <div class="stat-number">25,000+ ج</div>
+              <div class="stat-title">رواتب خريجي الكول سنتر</div>
+              <p class="stat-desc">مئات الطلاب تم تعيينهم فورياً في كبرى شركات خدمة العملاء الألمانية في مصر.</p>
+            </div>
+
+            <div class="cv-stat-box">
+              <div class="stat-icon-large purple"><i class="fas fa-book-bookmark"></i></div>
+              <div class="stat-number">4 كتب</div>
+              <div class="stat-title">سلسلة المناهج المطبوعة</div>
+              <p class="stat-desc">تأليف وإصدار المنهج الشامل لدويتشه فيلت المعتمد المطبوع مع الصوتيات والتدريبات.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </main>
+
+      <!-- CV Footer Action Bar -->
+      <footer class="cv-modal-footer">
+        <div class="cv-footer-brand">
+          <img src="assets/images/logo.jpg" alt="Logo" class="cv-footer-logo">
+          <div>
+            <strong>Deutsche Welt Akademie</strong>
+            <small>تحت إشراف هير خالد • جميع الحقوق محفوظة 2026</small>
+          </div>
+        </div>
+        <div class="cv-footer-buttons">
+          <button type="button" class="btn btn-glass btn-sm" onclick="window.dwApp.printCv()">
+            <i class="fas fa-print"></i> طباعة / حفظ PDF
+          </button>
+          <a href="https://wa.me/2010552287454" target="_blank" class="btn btn-whatsapp btn-sm">
+            <i class="fab fa-whatsapp"></i> تواصل مع هير خالد
+          </a>
+          <button type="button" class="btn btn-primary btn-sm" onclick="window.dwApp.closeCvModal()">
+            <i class="fas fa-check"></i> إغلاق النافذة
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/app.js?v=16.0"></script>
+  <script src="assets/js/admin.js?v=16.0"></script>
+</body>
+</html>

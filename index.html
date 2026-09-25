@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deutsche Welt Next.js App Redirection</title>
+  <style>
+    body {
+      background-color: #020617;
+      color: #f8fafc;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 40px;
+      border-radius: 24px;
+      max-width: 500px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .badge {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    h1 {
+      font-size: 24px;
+      margin-top: 20px;
+      color: #fff;
+    }
+    p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(to right, #fbbf24, #f59e0b);
+      color: #020617;
+      font-weight: 800;
+      padding: 12px 28px;
+      border-radius: 14px;
+      text-decoration: none;
+      margin-top: 20px;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">🚀 Next.js Clean Architecture Ready</span>
+    <h1>أكاديمية Deutsche Welt</h1>
+    <p>تم تقسيم وتحويل المشروع بالكامل إلى مشروع **Next.js** منظم ومقسم لـ Components مستقلة وطبقات خدمات داخل المجلد <code>frontend/</code>.</p>
+    <a href="http://localhost:3000" class="btn">الانتقال لتطبيق Next.js</a>
+  </div>
+</body>
+</html>

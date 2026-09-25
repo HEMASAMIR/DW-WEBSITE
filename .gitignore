@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+venv/
+backend_django/venv/
+python312/
+node/
+git/
+
+# Next.js Build
+.next/
+frontend/.next/
+
+# Python & Django Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.sqlite3
+
+# Environment & IDE
+.env
+.env.local
+.vscode/
+.idea/
+*.log
