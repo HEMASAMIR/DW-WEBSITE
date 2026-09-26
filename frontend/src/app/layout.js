@@ -34,8 +34,8 @@ export default function RootLayout({ children }) {
           <ThemeProvider>
             <ModalProvider>
               <ParticleCanvas />
-              <AnnouncementBar />
               <Header />
+              <AnnouncementBar />
               <main className="relative z-10">{children}</main>
               <Footer />
 

@@ -2,52 +2,186 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Flame, ArrowLeft } from 'lucide-react';
+import { 
+  Flame, 
+  ArrowLeft, 
+  ChevronRight, 
+  ChevronLeft, 
+  Sparkles, 
+  Award, 
+  BookOpen, 
+  Briefcase 
+} from 'lucide-react';
 
 const AD_ITEMS = [
-  { tag: '🎓 الدفعة الجديدة', text: 'المحاضرات متاحة أونلاين 24/7 من حسابك مع ملفات PDF ومناقشة على كل محاضرة.' },
-  { tag: '🏛️ جوته وتيلك', text: 'تأهيل مكثف لامتحانات Goethe & Telc مع هير خالد.' },
-  { tag: '📚 كتب المنهج', text: 'كتب دويتشه فيلت متاحة للتحميل PDF فور تفعيلها على حسابك.' },
+  {
+    id: 1,
+    tag: '🏛️ جوته وتيلك',
+    icon: Award,
+    title: 'تأهيل مكثف لامتحانات Goethe & Telc B1/B2',
+    desc: 'معسكرات إعداد معتمدة مع هير خالد بنسبة اجتياز قياسية 98.4% لسوق العمل والسفر لألمانيا.',
+    cta: 'استعرض المستويات والأسعار',
+    link: '/#online-courses',
+    badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
+    highlightColor: 'text-amber-300',
+  },
+  {
+    id: 2,
+    tag: '🔥 عرض خاص 25%',
+    icon: Flame,
+    title: 'خصم خاص 25% على باقة المستويات المجمعة',
+    desc: 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية 24/7 وبنك أسئلة ومتابعة شخصية مستمرة.',
+    cta: 'احجز مقعدك بالخصم',
+    link: '/#online-courses',
+    badgeColor: 'from-rose-500/20 to-orange-500/20 text-rose-300 border-rose-400/50',
+    highlightColor: 'text-rose-300',
+  },
+  {
+    id: 3,
+    tag: '📚 كتب المنهج المعتمدة',
+    icon: BookOpen,
+    title: 'كتاب دويتشه فيلت الشامل (مطبوع + PDF + صوتيات QR)',
+    desc: 'المناهج الأصلية الأكثر طلباً مع شروحات وتدريبات وحلول امتحانات وتوصيل لجميع المحافظات.',
+    cta: 'اطلب كتابك الآن',
+    link: '/#books-store',
+    badgeColor: 'from-emerald-500/20 to-teal-500/20 text-emerald-300 border-emerald-400/50',
+    highlightColor: 'text-emerald-300',
+  },
+  {
+    id: 4,
+    tag: '💼 سوق العمل الألماني',
+    icon: Briefcase,
+    title: 'تأهيل احترافي لكبرى شركات الـ Call Center الألمانية',
+    desc: 'رواتب مجزية تبدأ من 25,000 ج شهرياً مع تدريب عملي مكثف على طلاقة التحدث والمقابلات.',
+    cta: 'تواصل للاستفسار',
+    link: '/#contact',
+    badgeColor: 'from-cyan-500/20 to-blue-500/20 text-cyan-300 border-cyan-400/50',
+    highlightColor: 'text-cyan-300',
+  },
 ];
 
 export default function AnnouncementBar() {
   const [index, setIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    const timer = setInterval(() => setIndex((i) => (i + 1) % AD_ITEMS.length), 6000);
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      setIndex((i) => (i + 1) % AD_ITEMS.length);
+    }, 5500);
     return () => clearInterval(timer);
-  }, []);
+  }, [isPaused]);
 
-  const item = AD_ITEMS[index];
+  if (!isVisible) return null;
+
+  const current = AD_ITEMS[index];
+  const IconComponent = current.icon;
+
+  const handlePrev = (e) => {
+    e.preventDefault();
+    setIndex((i) => (i === 0 ? AD_ITEMS.length - 1 : i - 1));
+  };
+
+  const handleNext = (e) => {
+    e.preventDefault();
+    setIndex((i) => (i + 1) % AD_ITEMS.length);
+  };
 
   return (
-    <div className="bg-gradient-to-r from-teal-800 via-teal-900 to-emerald-900 text-white text-xs py-2 px-4 shadow-md border-b border-teal-500/30 relative z-30 overflow-hidden">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+    <div 
+      className="relative z-30 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white shadow-lg border-b border-amber-500/25 select-none"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      role="region"
+      aria-label="شريط الإعلانات والعروض الترويجية"
+    >
+      {/* Radiant Top Luminous Accent Line */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-90 animate-pulse" />
 
-        <div className="flex items-center gap-2 font-medium shrink-0">
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-500/30 text-amber-300 border border-teal-400/40">
-            <Flame className="w-3.5 h-3.5 text-amber-400" />
-          </span>
-          <span className="font-extrabold text-amber-300">جديد:</span>
-        </div>
-
-        <div className="w-full overflow-hidden text-center md:text-right px-2">
-          <div key={index} className="inline-flex items-center gap-4 animate-fadeIn">
-            <span className="glass-pill px-2.5 py-0.5 text-[11px] font-bold text-amber-300 border border-amber-500/30">
-              {item.tag}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-4">
+        
+        {/* Right Side: Lead Tag & Live Pulse Indicator */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
             </span>
-            <span className="text-xs text-slate-200">{item.text}</span>
+            <span className="tracking-wide">جديد وحصري</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
+          </div>
+
+          {/* Navigation Arrows for fast browsing */}
+          <div className="flex items-center gap-0.5 bg-slate-800/80 rounded-full p-0.5 border border-slate-700">
+            <button 
+              onClick={handleNext}
+              className="p-1 rounded-full hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              title="الإعلان التالي"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+            <button 
+              onClick={handlePrev}
+              className="p-1 rounded-full hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              title="الإعلان السابق"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 
-        <Link
-          href="/#online-courses"
-          className="glass-pill-active inline-flex items-center gap-1 px-3.5 py-1 text-xs shrink-0 transition-transform transform hover:scale-105"
-        >
-          <span>استعرض المستويات والأسعار</span>
-          <ArrowLeft className="w-3 h-3" />
-        </Link>
+        {/* Center: Animated Announcement Message with Ultra-Clear Typography */}
+        <div className="w-full overflow-hidden text-center md:text-right flex items-center justify-center md:justify-start gap-2 sm:gap-3 min-h-[32px]">
+          <div 
+            key={current.id} 
+            className="flex flex-wrap items-center justify-center md:justify-start gap-2 animate-fadeIn transition-all duration-300"
+          >
+            {/* Tag Badge */}
+            <span className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-extrabold bg-gradient-to-r ${current.badgeColor} border shadow-sm`}>
+              <IconComponent className="w-3.5 h-3.5" />
+              <span>{current.tag}</span>
+            </span>
 
+            {/* Title & Description with Maximum Contrast */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm font-medium">
+              <span className="text-white font-extrabold tracking-wide drop-shadow-sm">
+                {current.title}:
+              </span>
+              <span className="text-slate-200 font-normal leading-relaxed">
+                {current.desc}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Left Side: Glowing High-Contrast VIP Action Button */}
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            href={current.link}
+            className="group relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_15px_rgba(245,158,11,0.35)] hover:shadow-[0_0_25px_rgba(245,158,11,0.65)] hover:scale-105 active:scale-95 transition-all"
+          >
+            <span>{current.cta}</span>
+            <ArrowLeft className="w-3.5 h-3.5 text-slate-950 group-hover:-translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+      </div>
+
+      {/* Progress Dots Bar */}
+      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-1 pb-0.5">
+        {AD_ITEMS.map((item, i) => (
+          <button
+            key={item.id}
+            onClick={() => setIndex(i)}
+            className={`h-1 rounded-full transition-all duration-300 ${
+              i === index 
+                ? 'w-6 bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]' 
+                : 'w-1.5 bg-slate-700 hover:bg-slate-500'
+            }`}
+            title={item.tag}
+          />
+        ))}
       </div>
     </div>
   );
