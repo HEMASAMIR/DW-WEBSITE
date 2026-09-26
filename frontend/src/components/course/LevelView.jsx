@@ -13,8 +13,10 @@ import { PlayCircle, Eye, Video, FileText, Loader2, AlertCircle, RefreshCw, Lock
  * `level` is the normalized level from coursesService.getLevels().
  */
 export default function LevelView({ level }) {
+  const { isAdmin } = useAuth();
   const [reloadKey, setReloadKey] = useState(0);
-  if (!level.hasAccess) return <LockedLevel level={level} />;
+  const hasAccess = level.hasAccess || isAdmin;
+  if (!hasAccess) return <LockedLevel level={level} />;
   return <LevelLessons key={`${level.id}-${reloadKey}`} levelId={level.id} onRetry={() => setReloadKey((k) => k + 1)} />;
 }
 

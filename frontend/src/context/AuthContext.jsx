@@ -99,9 +99,16 @@ export function AuthProvider({ children }) {
     user,
     loading,
     isAuthenticated,
-    // Admin = member of the backend "Admin" group (backend decision: groups, not is_staff/superuser).
-    // tempAdmin covers the known admin accounts until the backend returns `groups` in the user object.
-    isAdmin: isAuthenticated && (hasGroup(user, ADMIN_GROUP) || tempAdmin),
+    // Admin = staff, superuser, is_admin flag, 'admin' role/username, or Admin group member.
+    isAdmin: isAuthenticated && (
+      !!user?.is_staff ||
+      !!user?.is_superuser ||
+      !!user?.is_admin ||
+      user?.role === 'admin' ||
+      user?.username === 'admin' ||
+      hasGroup(user, ADMIN_GROUP) ||
+      tempAdmin
+    ),
     login,
     loginWithGoogle,
     register,

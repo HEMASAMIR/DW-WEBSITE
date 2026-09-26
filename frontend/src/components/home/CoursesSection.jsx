@@ -76,7 +76,7 @@ export default function CoursesSection() {
   const { courses, allCourses, loading, error, requiresLogin, reload, activeTab, setActiveTab } = useCourses();
   const { openEnrollModal, openAuthModal, openLoginPromptModal } = useModal();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
 
   const tabs = [
     { key: 'ALL', label: 'جميع المستويات' },
@@ -94,7 +94,7 @@ export default function CoursesSection() {
       });
       return;
     }
-    if (course.hasAccess) {
+    if (course.hasAccess || isAdmin) {
       router.push(`/courses/${course.id}`);
       return;
     }
@@ -208,6 +208,7 @@ export default function CoursesSection() {
               const discount = oldPrice ? Math.round((1 - course.price / course.oldPrice) * 100) : 0;
               const theme = LEVEL_THEMES[course.code] || LEVEL_THEMES.A1;
               const perks = theme.perks || course.features || [];
+              const hasAccess = course.hasAccess || isAdmin;
 
               return (
                 <div
@@ -222,10 +223,10 @@ export default function CoursesSection() {
                         {course.code}
                       </span>
 
-                      {course.hasAccess ? (
+                      {hasAccess ? (
                         <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 shadow-xs">
                           <Unlock className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>مفعّل بحسابك ✅</span>
+                          <span>{isAdmin ? 'متاح بالكامل (أدمن) 👑' : 'مفعّل بحسابك ✅'}</span>
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-amber-50 text-amber-900 border border-amber-300/80 shadow-xs">
@@ -294,19 +295,19 @@ export default function CoursesSection() {
                         className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-black text-xs flex items-center justify-center gap-2 transition-all border border-slate-700/80 shadow-xs"
                       >
                         <PlayCircle className="w-4 h-4 text-amber-400" />
-                        <span>{course.hasAccess ? 'ادخل للمحاضرات' : 'تفاصيل المستوى والمحاضرات'}</span>
+                        <span>{hasAccess ? 'ادخل للمحاضرات' : 'تفاصيل المستوى والمحاضرات'}</span>
                       </Link>
 
                       <button
                         type="button"
                         onClick={() => handleAction(course)}
                         className={`w-full relative group/btn py-3 px-5 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-95 shadow-md overflow-hidden cursor-pointer ${
-                          course.hasAccess
+                          hasAccess
                             ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-emerald-500/25'
                             : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-amber-500/25'
                         }`}
                       >
-                        {!course.hasAccess && (
+                        {!hasAccess && (
                           <span className="absolute inset-0 w-1/2 h-full bg-white/30 skew-x-12 -translate-x-full group-hover/btn:translate-x-[300%] transition-transform duration-1000 ease-in-out" />
                         )}
 
@@ -315,10 +316,10 @@ export default function CoursesSection() {
                             <Lock className="w-3.5 h-3.5" />
                             <span>اشترك في كورس {course.code}</span>
                           </>
-                        ) : course.hasAccess ? (
+                        ) : hasAccess ? (
                           <>
                             <Unlock className="w-3.5 h-3.5" />
-                            <span>الكورس مفعّل لك — ابدأ المشاهدة</span>
+                            <span>{isAdmin ? 'دخول كامل للمحاضرات (أدمن) 👑' : 'الكورس مفعّل لك — ابدأ المشاهدة'}</span>
                           </>
                         ) : (
                           <>

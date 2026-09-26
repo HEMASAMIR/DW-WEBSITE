@@ -63,7 +63,7 @@ const LEVEL_BOOK_THEMES = {
 export default function BooksSection() {
   const { books, loading, error, requiresLogin, reload } = useBooks();
   const { openBookOrderModal, openAuthModal, openLoginPromptModal, openFileViewer } = useModal();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
 
   const handleView = (book) =>
     openFileViewer({ title: book.name, load: (onProgress) => booksService.viewBook(book, onProgress) });
@@ -164,7 +164,7 @@ export default function BooksSection() {
             {books.map((book) => {
               const price = formatPrice(book.price) || '500';
               const theme = LEVEL_BOOK_THEMES[book.level] || LEVEL_BOOK_THEMES.A1;
-              const hasAccess = book.hasAccess;
+              const hasAccess = book.hasAccess || isAdmin;
 
               return (
                 <div
@@ -182,7 +182,7 @@ export default function BooksSection() {
                       {hasAccess ? (
                         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          <span>مفعّل بحسابك ✅</span>
+                          <span>{isAdmin ? 'متاح بالكامل أونلاين (أدمن) 👑' : 'مفعّل بحسابك ✅'}</span>
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">

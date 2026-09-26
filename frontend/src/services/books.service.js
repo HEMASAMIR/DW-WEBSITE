@@ -1,17 +1,26 @@
-import apiClient from './api';
+import apiClient, { tokenStorage } from './api';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
 import { fetchFile } from './courses.service';
 
 const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 function normalizeBook(book) {
+  const user = tokenStorage.getUser();
+  const isAdmin = user && (
+    !!user.is_staff || 
+    !!user.is_superuser || 
+    !!user.is_admin || 
+    user.role === 'admin' || 
+    user.username === 'admin' || 
+    (Array.isArray(user.groups) && user.groups.some(g => (typeof g === 'string' ? g : g?.name) === 'Admin'))
+  );
   return {
     id: book.id,
     name: book.name,
     level: book.level,
     price: book.price === null || book.price === undefined ? null : Number(book.price),
     isActive: book.is_active !== false,
-    hasAccess: !!book.has_access,
+    hasAccess: isAdmin ? true : !!book.has_access,
   };
 }
 

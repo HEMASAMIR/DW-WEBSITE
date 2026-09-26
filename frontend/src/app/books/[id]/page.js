@@ -15,10 +15,11 @@ import {
 export default function BookPage() {
   const { id } = useParams();
   const { books, loading, error, requiresLogin, reload } = useBooks();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const { openAuthModal, openBookOrderModal, openFileViewer, openLoginPromptModal } = useModal();
 
   const book = books.find((b) => String(b.id) === String(id));
+  const hasAccess = book ? (book.hasAccess || isAdmin) : false;
   const price = book ? formatPrice(book.price) : null;
   const otherBooks = books.filter((b) => b.id !== book?.id);
 
@@ -64,7 +65,7 @@ export default function BookPage() {
               {/* Details */}
               <div className="md:col-span-3 p-6 sm:p-8 space-y-5">
                 <div className="space-y-1">
-                  {book.hasAccess && (
+                  {hasAccess && (
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300">
                       <CheckCircle2 className="w-3.5 h-3.5" /> متاح لك
                     </span>
@@ -83,7 +84,7 @@ export default function BookPage() {
                     </div>
                   )}
 
-                  {book.hasAccess ? (
+                  {hasAccess ? (
                     <button
                       onClick={viewBook}
                       className="w-full glass-pill-active py-3.5 rounded-2xl text-sm font-black flex items-center justify-center gap-2"
@@ -104,7 +105,7 @@ export default function BookPage() {
                       {isAuthenticated ? 'اطلب الكتاب عبر واتساب' : 'اطلب الكتاب'}
                     </button>
                   )}
-                  {!book.hasAccess && isAuthenticated && (
+                  {!hasAccess && isAuthenticated && (
                     <p className="text-[11px] text-slate-500 text-center">بعد تأكيد الدفع يتفعّل الكتاب على حسابك ويظهر زرار العرض هنا.</p>
                   )}
                 </div>

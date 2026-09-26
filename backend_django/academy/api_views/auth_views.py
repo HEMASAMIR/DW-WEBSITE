@@ -53,14 +53,23 @@ def _user_data(user):
     profile_photo = None
     if hasattr(user, 'profile') and user.profile.profile_photo:
         profile_photo = user.profile.profile_photo.url
+    is_admin = bool(user.is_staff or user.is_superuser or user.username == 'admin')
+    groups = list(user.groups.values_list('name', flat=True)) if hasattr(user, 'groups') else []
+    if is_admin and 'Admin' not in groups:
+        groups.append('Admin')
     return {
         'id': user.id,
         'email': user.email or user.username,
+        'username': user.username,
         'first_name': user.first_name,
         'last_name': user.last_name,
         'phone_number': getattr(user, 'phone_number', None),
         'is_active': user.is_active,
-        'is_staff': user.is_staff or user.is_superuser,
+        'is_staff': is_admin,
+        'is_superuser': bool(user.is_superuser),
+        'is_admin': is_admin,
+        'role': 'admin' if is_admin else 'student',
+        'groups': groups,
         'profile_photo': profile_photo,
     }
 
