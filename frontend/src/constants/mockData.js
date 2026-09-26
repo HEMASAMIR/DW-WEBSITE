@@ -200,8 +200,8 @@ export const STUDENT_REVIEWS_DATA = [
     level: 'طالب B1 - حجز سفارة ألمانيا',
     comment: 'بفضل الله ثم شرح الأستاذ خالد القوي جداً في B1، قدرت أجتاز امتحان جوته من أول مرة بتقدير Sehr Gut!',
     rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80',
-    imageReview: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop&q=80'
+    avatar: '/assets/reviews/review_1.jpg',
+    imageReview: '/assets/reviews/review_1.jpg'
   },
   {
     id: 2,
@@ -209,8 +209,8 @@ export const STUDENT_REVIEWS_DATA = [
     level: 'طالبة ثانوي عام',
     comment: 'الألماني كان عقدتي في الثانوية، بس مع طريقة الأستاذ خالد وتبسيط القواعد جبت 40 من 40 الحمد لله!',
     rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80',
-    imageReview: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=600&auto=format&fit=crop&q=80'
+    avatar: '/assets/reviews/review_2.jpg',
+    imageReview: '/assets/reviews/review_2.jpg'
   },
   {
     id: 3,
@@ -218,8 +218,8 @@ export const STUDENT_REVIEWS_DATA = [
     level: 'طبيب - تعديل شهادة B2',
     comment: 'التأهيل لمحادثات الأطباء والمصطلحات الطبية كان رائع، المنصة سهلة وسريعة والمحاضرات فائقة الجودة.',
     rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120&auto=format&fit=crop&q=80',
-    imageReview: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=600&auto=format&fit=crop&q=80'
+    avatar: '/assets/reviews/review_3.jpg',
+    imageReview: '/assets/reviews/review_3.jpg'
   }
 ];
 

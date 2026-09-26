@@ -1,35 +1,38 @@
 import apiClient from './api';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
-import { BOOKS_STORE_DATA } from '@/constants/mockData';
+import { fetchFile } from './courses.service';
+
+const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+function normalizeBook(book) {
+  return {
+    id: book.id,
+    name: book.name,
+    level: book.level,
+    price: book.price === null || book.price === undefined ? null : Number(book.price),
+    isActive: book.is_active !== false,
+    hasAccess: !!book.has_access,
+  };
+}
 
 export const booksService = {
+  /** The API groups books by level ({ "A1": [...], "A2": [...] }); we flatten + sort. */
   getBooks: async () => {
-    try {
-      const response = await apiClient.get(API_ENDPOINTS.BOOKS);
-      return response.data?.results || response.data || BOOKS_STORE_DATA;
-    } catch (error) {
-      console.warn('Backend API offline, using books fallback data');
-      return BOOKS_STORE_DATA;
-    }
-  },
-
-  placeBookOrder: async (orderData) => {
-    try {
-      const response = await apiClient.post(API_ENDPOINTS.BOOK_ORDER, orderData);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { detail: 'تعذر إرسال طلب الكتاب' };
-    }
-  },
-
-  downloadBook: async (bookId) => {
-    try {
-      const response = await apiClient.get(API_ENDPOINTS.BOOK_DOWNLOAD(bookId), {
-        responseType: 'blob'
+    const { data } = await apiClient.get(API_ENDPOINTS.BOOKS);
+    const flat = Array.isArray(data)
+      ? data
+      : data && typeof data === 'object'
+      ? Object.values(data).flat()
+      : [];
+    return flat
+      .map(normalizeBook)
+      .filter((b) => b.isActive)
+      .sort((a, b) => {
+        const ai = LEVEL_ORDER.indexOf(a.level);
+        const bi = LEVEL_ORDER.indexOf(b.level);
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi) || a.id - b.id;
       });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { detail: 'تعذر تحميل الكتاب' };
-    }
-  }
+  },
+
+  viewBook: (book, onProgress) => fetchFile(API_ENDPOINTS.BOOK_VIEW(book.id), `${book.name || 'book'}.pdf`, onProgress),
 };

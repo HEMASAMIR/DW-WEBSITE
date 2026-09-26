@@ -3,3 +3,19 @@ djangorestframework>=3.14.0
 django-cors-headers>=4.3.0
 gunicorn>=21.2.0
 pillow>=10.2.0
+
+# JWT Authentication
+djangorestframework-simplejwt>=5.3.0
+
+# Google Sign-In
+google-auth>=2.29.0
+
+# Apple Sign-In (JWT verification)
+PyJWT>=2.8.0
+cryptography>=42.0.0
+
+# HTTP requests (for Bunny Stream API & Apple public keys)
+requests>=2.31.0
+
+# Email sending
+django-environ>=0.11.2

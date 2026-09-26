@@ -1,72 +1,51 @@
 import apiClient from './api';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
 
+const list = (data) => (Array.isArray(data) ? data : data?.results || []);
+
 export const adminService = {
-  getAnalyticsSummary: async () => {
-    try {
-      const response = await apiClient.get(API_ENDPOINTS.ANALYTICS_SUMMARY);
-      return response.data;
-    } catch (error) {
-      return {
-        total_students: 15420,
-        active_registrations: 4280,
-        total_book_orders: 890,
-        total_revenue_egp: 3450000
-      };
-    }
-  },
+  // ---- Levels ----
+  getLevels: async () => list((await apiClient.get(API_ENDPOINTS.ADMIN_LEVELS)).data),
 
-  getCourseRequests: async () => {
-    try {
-      const response = await apiClient.get(API_ENDPOINTS.ADMIN_COURSE_REQUESTS);
-      return response.data?.results || response.data || [];
-    } catch (error) {
-      return [];
-    }
-  },
+  getLevelUsers: async (levelId) => list((await apiClient.get(API_ENDPOINTS.ADMIN_LEVEL_USERS(levelId))).data),
 
-  getBookRequests: async () => {
-    try {
-      const response = await apiClient.get(API_ENDPOINTS.ADMIN_BOOK_REQUESTS);
-      return response.data?.results || response.data || [];
-    } catch (error) {
-      return [];
-    }
-  },
+  grantLevelAccess: async (levelId, userId, notes = '') =>
+    (await apiClient.post(API_ENDPOINTS.ADMIN_GRANT_LEVEL(levelId), { user_id: Number(userId), notes })).data,
 
-  grantLevelAccess: async (levelId, userId) => {
-    try {
-      const response = await apiClient.post(API_ENDPOINTS.ADMIN_GRANT_LEVEL(levelId), { user_id: userId });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { detail: 'فشل تفعيل المستوى للطالب' };
-    }
-  },
+  revokeLevelAccess: async (levelId, userId) =>
+    (await apiClient.post(API_ENDPOINTS.ADMIN_REVOKE_LEVEL(levelId), { user_id: Number(userId) })).data,
 
-  revokeLevelAccess: async (levelId, userId) => {
-    try {
-      const response = await apiClient.post(API_ENDPOINTS.ADMIN_REVOKE_LEVEL(levelId), { user_id: userId });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { detail: 'فشل إلغاء تفعيل المستوى' };
-    }
-  },
+  refreshVideoCache: async (levelId) => (await apiClient.post(API_ENDPOINTS.ADMIN_REFRESH_CACHE(levelId))).data,
 
-  grantBookAccess: async (bookId, userId) => {
-    try {
-      const response = await apiClient.post(API_ENDPOINTS.ADMIN_GRANT_BOOK(bookId), { user_id: userId });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { detail: 'فشل تفعيل الكتاب للطالب' };
-    }
-  },
+  // ---- Books ----
+  getBooks: async () => list((await apiClient.get(API_ENDPOINTS.ADMIN_BOOKS)).data),
 
-  refreshVideoCache: async (levelId) => {
-    try {
-      const response = await apiClient.post(API_ENDPOINTS.ADMIN_REFRESH_CACHE(levelId));
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { detail: 'تعذر تحديث الكاش' };
-    }
-  }
+  /** fields: { name, level, price, is_active, file? } — sent as multipart/form-data. */
+  createBook: async (fields) => (await apiClient.post(API_ENDPOINTS.ADMIN_BOOKS, toFormData(fields))).data,
+
+  updateBook: async (bookId, fields) =>
+    (await apiClient.patch(API_ENDPOINTS.ADMIN_BOOK_DETAIL(bookId), toFormData(fields))).data,
+
+  deleteBook: async (bookId) => (await apiClient.delete(API_ENDPOINTS.ADMIN_BOOK_DETAIL(bookId))).data,
+
+  getBookUsers: async (bookId) => list((await apiClient.get(API_ENDPOINTS.ADMIN_BOOK_USERS(bookId))).data),
+
+  grantBookAccess: async (bookId, userId) =>
+    (await apiClient.post(API_ENDPOINTS.ADMIN_GRANT_BOOK(bookId), { user_id: Number(userId) })).data,
+
+  revokeBookAccess: async (bookId, userId) =>
+    (await apiClient.post(API_ENDPOINTS.ADMIN_REVOKE_BOOK(bookId), { user_id: Number(userId) })).data,
+
+  // ---- Roles ----
+  setUserGroups: async (userId, groups) =>
+    (await apiClient.post(API_ENDPOINTS.USER_GROUPS(userId), { groups })).data,
 };
+
+function toFormData(fields) {
+  const fd = new FormData();
+  Object.entries(fields).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    fd.append(key, typeof value === 'boolean' ? String(value) : value);
+  });
+  return fd;
+}

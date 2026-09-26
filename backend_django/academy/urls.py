@@ -32,8 +32,8 @@ router.register(r'level-requests', LevelEnrollmentRequestViewSet)
 router.register(r'branches', BranchViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
     path('api/analytics/summary/', AnalyticsSummaryView.as_view(), name='analytics-summary'),
+
     
     # Legacy Auth Endpoints
     path('api/auth/login/', LegacyLoginAPIView.as_view(), name='auth-login'),
@@ -49,6 +49,7 @@ urlpatterns = [
     path('api/users/login/', api.LoginAPIView.as_view(), name='api-login'),
     path('api/users/login/refresh/', api.TokenRefreshAPIView.as_view(), name='api-refresh'),
     path('api/users/auth/google/', api.GoogleSignInAPIView.as_view(), name='api-google-signin'),
+    path('api/users/auth/apple/', api.AppleSignInAPIView.as_view(), name='api-apple-signin'),
     path('api/users/logout/', api.LogoutAPIView.as_view(), name='api-logout'),
     path('api/users/password/forgot/', api.ForgotPasswordAPIView.as_view(), name='api-password-forgot'),
     path('api/users/password/reset/', api.ResetPasswordAPIView.as_view(), name='api-password-reset'),
@@ -90,4 +91,8 @@ urlpatterns = [
 
     # 8. Admin Book Access Requests
     path('api/books/admin/requests/', AdminBookRequestsAPIView.as_view(), name='api-admin-book-requests'),
+
+    # Default Router URLs
+    path('api/', include(router.urls)),
 ]
+

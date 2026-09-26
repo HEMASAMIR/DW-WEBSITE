@@ -4683,7 +4683,7 @@ body.dark-theme .swiper-btn:hover {
 .admin-auth-overlay {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at 50% 18%, #1f0b12 0%, #12060b 45%, #08080a 100%) !important;
+  background: radial-gradient(circle at 50% 18%, #0f172a 0%, #0b0f19 50%, #020617 100%) !important;
   z-index: 100005;
   display: flex;
   align-items: center;
@@ -4703,7 +4703,7 @@ body.dark-theme .swiper-btn:hover {
   right: 15%;
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, rgba(225, 29, 72, 0.28) 0%, rgba(225, 29, 72, 0) 70%) !important;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.22) 0%, rgba(217, 119, 6, 0) 70%) !important;
   filter: blur(65px);
   animation: authSphereFloat1 7s ease-in-out infinite alternate;
 }
@@ -4712,7 +4712,7 @@ body.dark-theme .swiper-btn:hover {
   left: 15%;
   width: 420px;
   height: 420px;
-  background: radial-gradient(circle, rgba(244, 63, 94, 0.2) 0%, rgba(244, 63, 94, 0) 70%) !important;
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.18) 0%, rgba(2, 132, 199, 0) 70%) !important;
   filter: blur(70px);
   animation: authSphereFloat2 8s ease-in-out 1s infinite alternate;
 }
@@ -4729,22 +4729,22 @@ body.dark-theme .swiper-btn:hover {
   100% { transform: translate(-25px, 35px) scale(0.88); }
 }
 
-/* Subtle Crimson Ruby Mesh Grid */
+/* Subtle Prussian Navy & Gold Mesh Grid */
 .auth-cyber-grid {
   position: absolute;
   inset: 0;
   background-image: 
-    radial-gradient(rgba(244, 63, 94, 0.08) 1px, transparent 1px);
+    radial-gradient(rgba(217, 119, 6, 0.12) 1px, transparent 1px);
   background-size: 28px 28px;
   pointer-events: none;
   opacity: 0.8;
 }
 
-/* Auth Card Box - Obsidian Glassmorphic Box */
+/* Auth Card Box - Obsidian Glassmorphic Box matching Deutsche Welt Palette */
 .admin-auth-box {
   position: relative;
-  background: linear-gradient(165deg, rgba(28, 14, 18, 0.92) 0%, rgba(18, 10, 14, 0.96) 50%, rgba(10, 8, 10, 0.99) 100%) !important;
-  border: 1.5px solid rgba(244, 63, 94, 0.45) !important;
+  background: linear-gradient(165deg, rgba(15, 23, 42, 0.96) 0%, rgba(11, 15, 25, 0.98) 50%, rgba(6, 9, 18, 0.99) 100%) !important;
+  border: 1.5px solid rgba(217, 119, 6, 0.45) !important;
   border-radius: 26px !important;
   max-width: 440px;
   width: 100%;
@@ -4752,8 +4752,15 @@ body.dark-theme .swiper-btn:hover {
   text-align: center;
   box-shadow: 
     0 35px 85px -10px rgba(0, 0, 0, 0.95),
-    0 0 50px rgba(225, 29, 72, 0.22),
-    inset 0 1px 2px rgba(253, 164, 175, 0.25) !important;
+    0 0 50px rgba(217, 119, 6, 0.18),
+    inset 0 1px 2px rgba(251, 191, 36, 0.25) !important;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  z-index: 2;
+  overflow: hidden;
+  animation: authCardPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  color: #ffffff !important;
+}
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   z-index: 2;

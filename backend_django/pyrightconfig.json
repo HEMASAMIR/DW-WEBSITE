@@ -1,0 +1,8 @@
+{
+  "venvPath": ".",
+  "venv": "venv",
+  "extraPaths": [
+    ".",
+    "C:\\Users\\viking\\python312\\Lib\\site-packages"
+  ]
+}

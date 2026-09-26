@@ -3,6 +3,7 @@ from .auth_views import (
     LoginAPIView,
     TokenRefreshAPIView,
     GoogleSignInAPIView,
+    AppleSignInAPIView,
     LogoutAPIView,
     ForgotPasswordAPIView,
     ResetPasswordAPIView,

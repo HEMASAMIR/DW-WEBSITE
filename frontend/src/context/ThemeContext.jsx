@@ -5,11 +5,11 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('dark'); // Default dark mode premium theme
+  const [theme, setTheme] = useState('light'); // Default light mode theme matching Fayrouza Store
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('dw_theme') || 'dark';
+      const savedTheme = localStorage.getItem('dw_theme') || 'light';
       setTheme(savedTheme);
       document.documentElement.classList.toggle('dark', savedTheme === 'dark');
     }

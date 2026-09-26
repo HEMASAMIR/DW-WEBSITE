@@ -2,51 +2,59 @@
 
 import React, { useState } from 'react';
 import { useModal } from '@/context/ModalContext';
-import { coursesService } from '@/services/courses.service';
-import { X, BookOpen, CheckCircle2, AlertCircle, Send } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { formatPrice } from '@/services/courses.service';
+import { whatsappLink } from '@/constants/siteContent';
+import { X, BookOpen, CheckCircle2, MessageCircle } from 'lucide-react';
+
+const PAYMENT_METHODS = [
+  { value: 'فودافون كاش', label: 'فودافون كاش (Vodafone Cash)' },
+  { value: 'إنستا باي', label: 'إنستا باي (InstaPay)' },
+  { value: 'دفع نقدي بالفرع', label: 'دفع نقدي بأحد الفروع' },
+];
 
 export default function CourseEnrollModal() {
   const { activeModal, modalData, closeModal } = useModal();
-  const course = modalData?.course || { name: 'المستوى الأساسي A1', price: 1200, code: 'A1' };
+  if (activeModal !== 'enroll' || !modalData?.course) return null;
+  return <EnrollForm course={modalData.course} onClose={closeModal} />;
+}
 
-  const [studentName, setStudentName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [governorate, setGovernorate] = useState('القاهرة');
-  const [paymentMethod, setPaymentMethod] = useState('vodafone');
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+function EnrollForm({ course, onClose }) {
+  const { user } = useAuth();
+  const fullName = [user?.first_name, user?.last_name].filter(Boolean).join(' ');
 
-  if (activeModal !== 'enroll') return null;
+  const [studentName, setStudentName] = useState(fullName);
+  const [phone, setPhone] = useState(user?.phone_number || '');
+  const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS[0].value);
+  const [sent, setSent] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const price = formatPrice(course.price);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setErrorMsg('');
-    try {
-      await coursesService.requestLevelEnrollment({
-        course_name: course.name,
-        course_code: course.code,
-        student_name: studentName,
-        phone_number: phone,
-        governorate,
-        payment_method: paymentMethod
-      });
-      setSubmitted(true);
-    } catch (err) {
-      setErrorMsg(err.detail || 'تعذر إرسال الطلب عبر السيرفر. تم تسجيل طلبك محلياً!');
-      setSubmitted(true);
-    } finally {
-      setLoading(false);
-    }
+    const lines = [
+      'مرحباً هير خالد (أكاديمية دويتشه فيلت) 👋',
+      'أود الاشتراك وتفعيل المستوى على حسابي في الموقع:',
+      '',
+      `📌 المستوى: ${course.code} - ${course.title}`,
+      price ? `💰 السعر: ${price} ج.م` : null,
+      `👤 الاسم: ${studentName}`,
+      `📱 الهاتف: ${phone}`,
+      user?.email ? `📧 البريد المسجل: ${user.email}` : null,
+      user?.id ? `🆔 رقم الحساب: ${user.id}` : null,
+      `💳 طريقة الدفع: ${paymentMethod}`,
+    ].filter((l) => l !== null);
+
+    window.open(whatsappLink(lines.join('\n')), '_blank', 'noopener,noreferrer');
+    setSent(true);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
-        
+      <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl max-h-[92vh] overflow-y-auto">
+
         <button
-          onClick={closeModal}
+          onClick={onClose}
           className="absolute top-5 left-5 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
         >
           <X className="w-5 h-5" />
@@ -57,35 +65,28 @@ export default function CourseEnrollModal() {
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">حجز واشتراك في الكورس</h3>
-            <p className="text-xs text-amber-300 font-medium">{course.name} ({course.price} ج.م)</p>
+            <h3 className="text-lg font-bold text-white">الاشتراك في المستوى {course.code}</h3>
+            <p className="text-xs text-amber-300 font-medium">
+              {course.title}{price ? ` • ${price} ج.م` : ''}
+            </p>
           </div>
         </div>
 
-        {submitted ? (
-          <div className="text-center py-8 space-y-4">
-            <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto animate-bounce" />
-            <h4 className="text-xl font-bold text-white">تم استلام طلب اشتراكك بنجاح!</h4>
+        {sent ? (
+          <div className="text-center py-6 space-y-4">
+            <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto" />
+            <h4 className="text-xl font-bold text-white">تم تجهيز طلبك على واتساب</h4>
             <p className="text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
-              تم تسجيل بياناتك. سيتواصل معك مسئول التسجيل على رقم الواتساب <strong className="text-amber-300 dir-ltr">{phone}</strong> لإرسال تفاصيل تحويل كود المحاضرات.
+              أرسل الرسالة في واتساب وأكمل الدفع. بعد التأكيد سيتم تفعيل المستوى على حسابك وسيظهر لك زر
+              <strong className="text-amber-300"> &quot;ادخل للمحاضرات&quot; </strong>
+              مباشرة.
             </p>
-            <button
-              onClick={closeModal}
-              className="mt-4 bg-amber-400 text-slate-950 font-bold text-xs px-6 py-2.5 rounded-xl"
-            >
-              تم، حسناً
+            <button onClick={onClose} className="mt-2 bg-amber-400 text-slate-950 font-bold text-xs px-6 py-2.5 rounded-xl">
+              تم
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {errorMsg && (
-              <div className="p-3 rounded-xl bg-red-950/80 border border-red-800/60 text-red-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
             <div>
               <label className="block text-xs text-slate-300 mb-1">اسم الطالب بالكامل</label>
               <input
@@ -93,73 +94,52 @@ export default function CourseEnrollModal() {
                 required
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
-                placeholder="أدخل اسمك الكريم"
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">رقم الواتساب للتفعيل</label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="010xxxxxxxxx"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 dir-ltr text-right"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">المحافظة</label>
-                <select
-                  value={governorate}
-                  onChange={(e) => setGovernorate(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
-                >
-                  <option value="القاهرة">القاهرة</option>
-                  <option value="الجيزة">الجيزة</option>
-                  <option value="الإسكندرية">الإسكندرية</option>
-                  <option value="الشرقية">الشرقية</option>
-                  <option value="الدقهلية">الدقهلية</option>
-                  <option value="محافظة أخرى">محافظة أخرى</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-xs text-slate-300 mb-1">رقم الواتساب</label>
+              <input
+                type="tel"
+                required
+                inputMode="numeric"
+                pattern="[0-9]{11}"
+                title="رقم الهاتف يجب أن يكون 11 رقماً"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
+                placeholder="010xxxxxxxx"
+                dir="ltr"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 text-right"
+              />
             </div>
 
             <div>
-              <label className="block text-xs text-slate-300 mb-1">طريقة الدفع الفوري</label>
+              <label className="block text-xs text-slate-300 mb-1">طريقة الدفع</label>
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
               >
-                <option value="vodafone">فودافون كاش (Vodafone Cash)</option>
-                <option value="instapay">إنستا باي (InstaPay)</option>
-                <option value="fawry">فوري (Fawry Pay)</option>
-                <option value="branch">دفع نقدي بفرع الدقي / مدينة نصر</option>
+                {PAYMENT_METHODS.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
               </select>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 space-y-1">
-              <div className="flex justify-between">
-                <span>المبلغ الكلي:</span>
-                <span className="text-amber-400 font-bold">{course.price} ج.م</span>
+            {price && (
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 flex justify-between">
+                <span>المبلغ المطلوب:</span>
+                <span className="text-amber-400 font-bold">{price} ج.م</span>
               </div>
-              <div className="flex justify-between">
-                <span>الخصم الحالي:</span>
-                <span className="text-emerald-400 font-bold">25% (مطبق تلقائياً)</span>
-              </div>
-            </div>
+            )}
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-extrabold text-sm py-3.5 rounded-xl shadow-lg hover:from-amber-300 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-extrabold text-sm py-3.5 rounded-xl shadow-lg hover:from-emerald-400 transition-all"
             >
-              <Send className="w-4 h-4" />
-              <span>{loading ? 'جاري الإرسال...' : 'تأكيد حجز المقعد'}</span>
+              <MessageCircle className="w-4 h-4" />
+              <span>إرسال طلب الاشتراك عبر واتساب</span>
             </button>
           </form>
         )}

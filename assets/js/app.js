@@ -667,12 +667,12 @@ class DeutscheWeltApp {
         this.showToast(isDark ? 'تم تفعيل الوضع الليلي الأنيق 🌙' : 'تم تفعيل الوضع النهاري الأبيض الصافي ☀️', 'info', 'تغيير المظهر');
       });
 
-      if (localStorage.getItem('dw_theme') === 'dark') {
-        document.body.classList.add('dark-theme');
-        themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
-      } else {
+      if (localStorage.getItem('dw_theme') === 'light') {
         document.body.classList.remove('dark-theme');
         themeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+      } else {
+        document.body.classList.add('dark-theme');
+        themeBtn.innerHTML = '<i class="fas fa-sun"></i>';
       }
     }
 

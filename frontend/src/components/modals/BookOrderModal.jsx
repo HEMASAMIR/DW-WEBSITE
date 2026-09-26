@@ -2,48 +2,49 @@
 
 import React, { useState } from 'react';
 import { useModal } from '@/context/ModalContext';
-import { booksService } from '@/services/books.service';
-import { X, ShoppingCart, CheckCircle2, Truck, Send } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { formatPrice } from '@/services/courses.service';
+import { whatsappLink } from '@/constants/siteContent';
+import { X, ShoppingCart, CheckCircle2, MessageCircle } from 'lucide-react';
 
 export default function BookOrderModal() {
   const { activeModal, modalData, closeModal } = useModal();
-  const book = modalData?.book || { title: 'سلسلة Deutsche Welt A1', price: 250, id: 101 };
+  if (activeModal !== 'bookOrder' || !modalData?.book) return null;
+  return <BookOrderForm book={modalData.book} onClose={closeModal} />;
+}
 
-  const [studentName, setStudentName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [governorate, setGovernorate] = useState('القاهرة');
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+function BookOrderForm({ book, onClose }) {
+  const { user } = useAuth();
+  const [name, setName] = useState([user?.first_name, user?.last_name].filter(Boolean).join(' '));
+  const [phone, setPhone] = useState(user?.phone_number || '');
+  const [sent, setSent] = useState(false);
 
-  if (activeModal !== 'bookOrder') return null;
+  const price = formatPrice(book.price);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await booksService.placeBookOrder({
-        book_id: book.id,
-        book_title: book.title,
-        customer_name: studentName,
-        phone_number: phone,
-        address,
-        governorate
-      });
-      setSubmitted(true);
-    } catch (err) {
-      setSubmitted(true);
-    } finally {
-      setLoading(false);
-    }
+    const lines = [
+      'مرحباً إدارة دويتشه فيلت 👋',
+      'أريد شراء الكتاب وتفعيله على حسابي في الموقع:',
+      '',
+      `📚 الكتاب: ${book.name} (مستوى ${book.level})`,
+      price ? `💰 السعر: ${price} ج.م` : null,
+      `👤 الاسم: ${name}`,
+      `📱 الهاتف: ${phone}`,
+      user?.email ? `📧 البريد المسجل: ${user.email}` : null,
+      user?.id ? `🆔 رقم الحساب: ${user.id}` : null,
+    ].filter((l) => l !== null);
+
+    window.open(whatsappLink(lines.join('\n')), '_blank', 'noopener,noreferrer');
+    setSent(true);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
-        
+      <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl max-h-[92vh] overflow-y-auto">
+
         <button
-          onClick={closeModal}
+          onClick={onClose}
           className="absolute top-5 left-5 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
         >
           <X className="w-5 h-5" />
@@ -54,92 +55,64 @@ export default function BookOrderModal() {
             <ShoppingCart className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">طلب نسخة مطبوعة</h3>
-            <p className="text-xs text-amber-300 font-medium">{book.title} ({book.price} ج.م)</p>
+            <h3 className="text-lg font-bold text-white">طلب شراء كتاب</h3>
+            <p className="text-xs text-amber-300 font-medium">{book.name}{price ? ` • ${price} ج.م` : ''}</p>
           </div>
         </div>
 
-        {submitted ? (
-          <div className="text-center py-8 space-y-4">
-            <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto animate-bounce" />
-            <h4 className="text-xl font-bold text-white">تم ثبت طلبك للشحن بنجاح!</h4>
+        {sent ? (
+          <div className="text-center py-6 space-y-4">
+            <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto" />
+            <h4 className="text-xl font-bold text-white">تم تجهيز طلبك على واتساب</h4>
             <p className="text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
-              سيقوم مندوب الشحن بالتواصل معك على الهاتف <strong className="text-amber-300 dir-ltr">{phone}</strong> قبل التسليم في عنوانك خلال 48 ساعة.
+              أرسل الرسالة وأكمل الدفع، وبعد التأكيد سيظهر لك زر <strong className="text-amber-300">&quot;تحميل الكتاب PDF&quot;</strong> في متجر الكتب.
             </p>
-            <button
-              onClick={closeModal}
-              className="mt-4 bg-amber-400 text-slate-950 font-bold text-xs px-6 py-2.5 rounded-xl"
-            >
-              موافق
+            <button onClick={onClose} className="mt-2 bg-amber-400 text-slate-950 font-bold text-xs px-6 py-2.5 rounded-xl">
+              تم
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs text-slate-300 mb-1">الاسم الكامل للمستلم</label>
+              <label className="block text-xs text-slate-300 mb-1">الاسم بالكامل</label>
               <input
                 type="text"
                 required
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
-                placeholder="اسمك الكامل"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">رقم الهاتف</label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="010xxxxxxxxx"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 dir-ltr text-right"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs text-slate-300 mb-1">المحافظة</label>
-                <input
-                  type="text"
-                  required
-                  value={governorate}
-                  onChange={(e) => setGovernorate(e.target.value)}
-                  placeholder="اسم المحافظة"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
-                />
-              </div>
-            </div>
-
             <div>
-              <label className="block text-xs text-slate-300 mb-1">العنوان التفصيلي للتوصيل</label>
-              <textarea
-                rows={2}
+              <label className="block text-xs text-slate-300 mb-1">رقم الواتساب</label>
+              <input
+                type="tel"
                 required
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="الشارع - رقم المبنى - الشقة"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 resize-none"
-              ></textarea>
+                inputMode="numeric"
+                pattern="[0-9]{11}"
+                title="رقم الهاتف يجب أن يكون 11 رقماً"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
+                placeholder="010xxxxxxxx"
+                dir="ltr"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 text-right"
+              />
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <Truck className="w-4 h-4 text-emerald-400" />
-                <span>إجمالي الشحن والتسليم:</span>
-              </span>
-              <span className="text-amber-400 font-bold text-sm">{book.price} ج.م (الدفع عند الاستلام)</span>
-            </div>
+            {price && (
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 flex items-center justify-between">
+                <span>المبلغ المطلوب:</span>
+                <span className="text-amber-400 font-bold text-sm">{price} ج.م</span>
+              </div>
+            )}
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 text-white font-extrabold text-sm py-3.5 rounded-xl shadow-lg transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 text-white font-extrabold text-sm py-3.5 rounded-xl shadow-lg transition-all"
             >
-              <Send className="w-4 h-4" />
-              <span>{loading ? 'جاري إرسال الطلب...' : 'تأكيد طلب الكتاب'}</span>
+              <MessageCircle className="w-4 h-4" />
+              <span>إرسال الطلب عبر واتساب</span>
             </button>
           </form>
         )}

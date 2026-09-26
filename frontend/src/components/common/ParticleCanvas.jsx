@@ -1,11 +1,17 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function ParticleCanvas() {
   const canvasRef = useRef(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -22,17 +28,24 @@ export default function ParticleCanvas() {
 
     window.addEventListener('resize', handleResize);
 
-    const particlesCount = Math.min(Math.floor(width / 25), 45);
+    const particlesCount = Math.min(Math.floor(width / 22), 50);
     const particles = [];
+
+    const colors = [
+      'rgba(45, 212, 191, 0.35)',
+      'rgba(20, 184, 166, 0.30)',
+      'rgba(251, 191, 36, 0.30)',
+      'rgba(6, 182, 212, 0.25)',
+    ];
 
     for (let i = 0; i < particlesCount; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: Math.random() * 2 + 1,
-        color: i % 2 === 0 ? 'rgba(239, 68, 68, 0.25)' : 'rgba(234, 179, 8, 0.25)', // German Flag accents
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
+        radius: Math.random() * 2.5 + 0.8,
+        color: colors[i % colors.length],
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
       });
     }
 
@@ -51,6 +64,8 @@ export default function ParticleCanvas() {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
         ctx.fill();
       });
 
@@ -63,12 +78,14 @@ export default function ParticleCanvas() {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [mounted]);
+
+  if (!mounted) return null;
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0 opacity-40"
+      className="fixed inset-0 pointer-events-none z-0 opacity-60"
     />
   );
 }

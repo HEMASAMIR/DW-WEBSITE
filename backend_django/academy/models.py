@@ -1,8 +1,276 @@
+"""
+Deutsche Welt Academy — Database Models
+========================================
+Full production models for:
+- Course Levels (managed via Admin)
+- Videos (synced from Bunny Stream)
+- Level Access (per-user access control)
+- Course Files (PDF attachments per level)
+- Digital Books (PDF purchases)
+- Book Access (per-user book access)
+- OTP Tokens (Forgot Password)
+- Social Auth Profiles (Google / Apple)
+"""
+
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import timedelta
 import uuid
+import random
+import string
 
 User = get_user_model()
+
+
+# ---------------------------------------------------------------------------
+# Course Level & Access
+# ---------------------------------------------------------------------------
+
+class CourseLevel(models.Model):
+    """
+    Represents a German proficiency level (A1, A2, B1, B2).
+    Managed via Django Admin or Admin API.
+    """
+    LEVEL_CHOICES = [
+        ('A1', 'A1 - للمبتدئين من الصفر'),
+        ('A2', 'A2 - المحادثة والتأسيس الثاني'),
+        ('B1', 'B1 - مؤهل السفر والكول سنتر'),
+        ('B2', 'B2 - الطلاقة والكفاءة التخصصية'),
+    ]
+
+    name = models.CharField(max_length=10, choices=LEVEL_CHOICES, unique=True, verbose_name="رمز المستوى")
+    title = models.CharField(max_length=300, verbose_name="العنوان الكامل")
+    description = models.TextField(verbose_name="الوصف")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="السعر")
+    old_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="السعر القديم (للخصم)")
+    order = models.PositiveSmallIntegerField(default=1, verbose_name="ترتيب العرض")
+    is_active = models.BooleanField(default=True, verbose_name="مفعّل")
+
+    # Bunny Stream Collection
+    bunny_collection_id = models.CharField(max_length=255, blank=True, default='', verbose_name="معرف Collection في Bunny Stream")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "مستوى دراسي"
+        verbose_name_plural = "المستويات الدراسية"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.name} — {self.title}"
+
+
+class LevelAccess(models.Model):
+    """
+    Grants a specific user access to a specific level.
+    Created by admin after payment confirmation.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='level_accesses', verbose_name="الطالب")
+    level = models.ForeignKey(CourseLevel, on_delete=models.CASCADE, related_name='user_accesses', verbose_name="المستوى")
+    granted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='granted_accesses', verbose_name="منحه الوصول")
+    granted_at = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ المنح")
+    is_active = models.BooleanField(default=True, verbose_name="نشط")
+    notes = models.TextField(blank=True, default='', verbose_name="ملاحظات (طريقة الدفع، إلخ)")
+
+    class Meta:
+        unique_together = ('user', 'level')
+        verbose_name = "صلاحية مستوى"
+        verbose_name_plural = "صلاحيات الوصول للمستويات"
+        ordering = ['-granted_at']
+
+    def __str__(self):
+        return f"{self.user.email} → {self.level.name}"
+
+
+# ---------------------------------------------------------------------------
+# Videos (Bunny Stream)
+# ---------------------------------------------------------------------------
+
+class Video(models.Model):
+    """
+    A video lesson stored in Bunny Stream.
+    Synced via Admin API or manually via Django Admin.
+    """
+    level = models.ForeignKey(CourseLevel, on_delete=models.CASCADE, related_name='videos', verbose_name="المستوى")
+    title = models.CharField(max_length=500, verbose_name="عنوان المحاضرة")
+    bunny_video_id = models.CharField(max_length=255, unique=True, verbose_name="معرف الفيديو في Bunny Stream")
+    length = models.PositiveIntegerField(default=0, verbose_name="المدة بالثواني")
+    order = models.PositiveSmallIntegerField(default=1, verbose_name="ترتيب العرض")
+    is_active = models.BooleanField(default=True, verbose_name="مفعّل")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "محاضرة فيديو"
+        verbose_name_plural = "محاضرات الفيديو"
+        ordering = ['level', 'order']
+        unique_together = ('level', 'order')
+
+    def __str__(self):
+        return f"[{self.level.name}] {self.title}"
+
+
+# ---------------------------------------------------------------------------
+# Course Files (PDF attachments per level)
+# ---------------------------------------------------------------------------
+
+class CourseFile(models.Model):
+    """
+    A PDF file attached to a course level (e.g., notes, workbook, exam sample).
+    Accessible only to users who have level access.
+    """
+    level = models.ForeignKey(CourseLevel, on_delete=models.CASCADE, related_name='files', verbose_name="المستوى")
+    name = models.CharField(max_length=300, verbose_name="اسم الملف")
+    file = models.FileField(upload_to='course_files/', verbose_name="ملف PDF")
+    is_active = models.BooleanField(default=True, verbose_name="مفعّل")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "ملف المستوى"
+        verbose_name_plural = "ملفات المستويات"
+        ordering = ['level', 'created_at']
+
+    def __str__(self):
+        return f"[{self.level.name}] {self.name}"
+
+
+# ---------------------------------------------------------------------------
+# Digital Books
+# ---------------------------------------------------------------------------
+
+class DigitalBook(models.Model):
+    """
+    A purchasable PDF book (digital version, not physical shipping).
+    """
+    LEVEL_CHOICES = [('A1', 'A1'), ('A2', 'A2'), ('B1', 'B1'), ('B2', 'B2'), ('General', 'عام')]
+
+    name = models.CharField(max_length=300, verbose_name="اسم الكتاب")
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES, verbose_name="المستوى")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="السعر")
+    file = models.FileField(upload_to='digital_books/', verbose_name="ملف PDF")
+    is_active = models.BooleanField(default=True, verbose_name="متاح")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "كتاب رقمي"
+        verbose_name_plural = "الكتب الرقمية"
+        ordering = ['level', 'name']
+
+    def __str__(self):
+        return f"{self.name} ({self.level})"
+
+
+class BookAccess(models.Model):
+    """
+    Grants a user access to download a specific digital book.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='book_accesses', verbose_name="الطالب")
+    book = models.ForeignKey(DigitalBook, on_delete=models.CASCADE, related_name='user_accesses', verbose_name="الكتاب")
+    granted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='granted_book_accesses', verbose_name="منحه الوصول")
+    granted_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('user', 'book')
+        verbose_name = "صلاحية كتاب"
+        verbose_name_plural = "صلاحيات الكتب"
+
+    def __str__(self):
+        return f"{self.user.email} → {self.book.name}"
+
+
+# ---------------------------------------------------------------------------
+# OTP — Forgot Password
+# ---------------------------------------------------------------------------
+
+class PasswordResetOTP(models.Model):
+    """
+    A 6-digit OTP for the Forgot Password flow.
+    Expires after 10 minutes.
+    """
+    email = models.EmailField(verbose_name="البريد الإلكتروني")
+    otp = models.CharField(max_length=6, verbose_name="رمز التحقق")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "رمز إعادة تعيين كلمة المرور"
+        verbose_name_plural = "رموز إعادة تعيين كلمة المرور"
+        ordering = ['-created_at']
+
+    def is_valid(self):
+        """Returns True if OTP is unused and not older than 10 minutes."""
+        expiry = self.created_at + timedelta(minutes=10)
+        return not self.is_used and timezone.now() < expiry
+
+    @staticmethod
+    def generate_otp():
+        return ''.join(random.choices(string.digits, k=6))
+
+    def __str__(self):
+        return f"{self.email} — {self.otp} ({'used' if self.is_used else 'valid'})"
+
+
+# ---------------------------------------------------------------------------
+# Social Auth Profile
+# ---------------------------------------------------------------------------
+
+class SocialAuthProfile(models.Model):
+    """
+    Links a Django User to a third-party auth provider (Google / Apple).
+    """
+    PROVIDER_CHOICES = [('google', 'Google'), ('apple', 'Apple')]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='social_profiles')
+    provider = models.CharField(max_length=20, choices=PROVIDER_CHOICES)
+    provider_user_id = models.CharField(max_length=255)  # Google sub / Apple sub
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('provider', 'provider_user_id')
+        verbose_name = "حساب اجتماعي مرتبط"
+        verbose_name_plural = "الحسابات الاجتماعية المرتبطة"
+
+    def __str__(self):
+        return f"{self.user.email} — {self.provider}"
+
+
+# ---------------------------------------------------------------------------
+# Video Comments & Replies
+# ---------------------------------------------------------------------------
+
+class VideoComment(models.Model):
+    """
+    A comment (or reply) on a specific video lesson.
+    Replies have a non-null `parent` FK pointing to the top-level comment.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='video_comments')
+    level_id = models.IntegerField(db_index=True, verbose_name="معرف المستوى")
+    video_id = models.CharField(max_length=255, db_index=True, verbose_name="معرف الفيديو (Bunny)")
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True,
+        related_name='replies', verbose_name="تعليق أصلي (للردود)"
+    )
+    content = models.TextField(max_length=2000, verbose_name="محتوى التعليق")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "تعليق فيديو"
+        verbose_name_plural = "تعليقات الفيديوهات"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['level_id', 'video_id']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.email}: {self.content[:40]}"
+
+
+# ---------------------------------------------------------------------------
+# Legacy models (kept for backward compatibility with existing admin panels)
+# ---------------------------------------------------------------------------
 
 class Course(models.Model):
     LEVEL_CHOICES = [
@@ -15,14 +283,12 @@ class Course(models.Model):
         ('Upskilling', 'Upskilling & Call Center'),
         ('Medizin', 'Medizinisches Deutsch (للأطباء)'),
     ]
-
     CATEGORY_CHOICES = [
         ('beginner', 'مبتدئ'),
         ('intermediate', 'متوسط ومتقدم'),
         ('career', 'سوق العمل والشركات'),
         ('advanced', 'مستويات عليا'),
     ]
-
     STATUS_CHOICES = [
         ('open', 'متاح للتسجيل'),
         ('coming_soon', 'قريباً'),
@@ -60,7 +326,6 @@ class StudentRegistration(models.Model):
         ('paid', 'تم الدفع 💰'),
         ('cancelled', 'ملغي ❌'),
     ]
-
     PAYMENT_CHOICES = [
         ('vodafone_cash', 'فودافون كاش'),
         ('instapay', 'إنستاباي'),
@@ -160,7 +425,6 @@ class AcademyStudent(models.Model):
         ('active', 'نشط ومفعل ✅'),
         ('suspended', 'موقوف مؤقتاً ⏸️'),
     ]
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='academy_profile')
     name = models.CharField(max_length=255, verbose_name="اسم الطالب")
     email = models.EmailField(blank=True, null=True, verbose_name="البريد الإلكتروني")
@@ -185,7 +449,6 @@ class LessonComment(models.Model):
         ('approved', 'معتمد ومنشور ✅'),
         ('rejected', 'مرفوض ❌'),
     ]
-
     student_name = models.CharField(max_length=255, verbose_name="اسم الطالب")
     student_phone = models.CharField(max_length=20, blank=True, default='', verbose_name="هاتف الطالب")
     level = models.CharField(max_length=10, default='A1', verbose_name="المستوى")
@@ -209,7 +472,6 @@ class LevelEnrollmentRequest(models.Model):
         ('approved', 'مقبول ومفعل ✅'),
         ('rejected', 'مرفوض ❌'),
     ]
-
     student_name = models.CharField(max_length=255, verbose_name="اسم الطالب")
     phone = models.CharField(max_length=20, verbose_name="رقم الهاتف")
     email = models.EmailField(blank=True, null=True, verbose_name="البريد الإلكتروني")
@@ -230,7 +492,6 @@ class Branch(models.Model):
         ('physical', 'فرع رئيسي / فرعي'),
         ('online', 'أونلاين (Live)'),
     ]
-
     name = models.CharField(max_length=255, verbose_name="اسم الفرع")
     city = models.CharField(max_length=100, verbose_name="المدينة / المحافظة")
     branch_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='physical', verbose_name="نوع الفرع")

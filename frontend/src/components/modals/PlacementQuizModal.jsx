@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { useModal } from '@/context/ModalContext';
-import { PLACEMENT_QUIZ_QUESTIONS } from '@/constants/mockData';
+import { PLACEMENT_QUIZ_QUESTIONS } from '@/constants/siteContent';
 import { X, Award, CheckCircle, ArrowLeft, RefreshCw } from 'lucide-react';
 
 export default function PlacementQuizModal() {
-  const { activeModal, openEnrollModal, closeModal } = useModal();
+  const { activeModal, closeModal } = useModal();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -38,9 +38,16 @@ export default function PlacementQuizModal() {
   };
 
   const getRecommendedLevel = () => {
-    if (score <= 2) return { level: 'A1', name: 'المستوى الأساسي (A1)', price: 1200 };
-    if (score <= 4) return { level: 'A2', name: 'المستوى فوق الأساسي (A2)', price: 1400 };
-    return { level: 'B1', name: 'المستوى المتوسط (B1)', price: 1800 };
+    if (score <= 2) return { level: 'A1', name: 'المستوى الأساسي (A1)' };
+    if (score <= 4) return { level: 'A2', name: 'المستوى فوق الأساسي (A2)' };
+    return { level: 'B1', name: 'المستوى المتوسط (B1)' };
+  };
+
+  // Prices/access live on the course cards (from the API), so send the user there filtered to the level.
+  const goToRecommendedLevel = () => {
+    closeModal();
+    window.dispatchEvent(new CustomEvent('dw:select-level', { detail: getRecommendedLevel().level }));
+    document.getElementById('online-courses')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const restartQuiz = () => {
@@ -143,7 +150,7 @@ export default function PlacementQuizModal() {
                 المستوى التوصية
               </span>
               <h3 className="text-2xl font-black text-white">{getRecommendedLevel().name}</h3>
-              <p className="text-xs text-slate-400">سجل الآن وابدأ التعلم مع الدفعة القادمة بنفس السعر المخفض.</p>
+              <p className="text-xs text-slate-400">اشترك في المستوى وابدأ التعلم فوراً من حسابك.</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -156,10 +163,10 @@ export default function PlacementQuizModal() {
               </button>
 
               <button
-                onClick={() => openEnrollModal(getRecommendedLevel())}
+                onClick={goToRecommendedLevel}
                 className="flex-1 flex items-center justify-center gap-2 bg-amber-400 text-slate-950 font-extrabold text-xs py-3 px-4 rounded-xl shadow-md hover:bg-amber-300"
               >
-                <span>احجز في مستوى {getRecommendedLevel().level} الآن</span>
+                <span>اعرض مستوى {getRecommendedLevel().level} وسعره</span>
                 <ArrowLeft className="w-4 h-4" />
               </button>
             </div>

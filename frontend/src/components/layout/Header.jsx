@@ -15,113 +15,147 @@ import {
   X, 
   GraduationCap, 
   Award,
-  PlayCircle
+  PlayCircle,
+  Sparkles,
+  LayoutDashboard
 } from 'lucide-react';
 
 export default function Header() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { openAuthModal, openQuizModal, openStudentDashboard, openAdminDashboard } = useModal();
+  const { openAuthModal, openQuizModal, openStudentDashboard, openProfileModal, openAdminDashboard } = useModal();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState('/#hero');
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navLinks = [
-    { label: 'الرئيسية', href: '#hero' },
-    { label: 'الكورسات الأونلاين', href: '#online-courses' },
-    { label: 'متجر الكتب', href: '#books-store' },
-    { label: 'الفروع', href: '#branches' },
-    { label: 'عن الأستاذ خالد', href: '#about-teacher' },
-    { label: 'آراء الطلاب', href: '#reviews' },
-    { label: 'تواصل معنا', href: '#contact' },
+    { label: 'الرئيسية', href: '/#hero' },
+    { label: 'الكورسات المميزة', href: '/courses', highlighted: true },
+    { label: 'متجر الكتب', href: '/books' },
+    { label: 'الفروع', href: '/#branches' },
+    { label: 'عن الأستاذ خالد', href: '/#about-teacher' },
+    { label: 'آراء الطلاب', href: '/#reviews' },
+    { label: 'تواصل معنا', href: '/#contact' },
   ];
 
+  if (!mounted) {
+    return (
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-200/80 h-20" />
+    );
+  }
+
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-slate-900/80 dark:bg-slate-950/85 border-b border-slate-800 transition-colors">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-200/80 transition-colors shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
-        {/* Brand Logo */}
+        {/* Brand Logo with Real Academy Logo Image & Fayrouza Shining Text */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 via-red-600 to-slate-900 flex items-center justify-center text-white shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-            <GraduationCap className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-white border-2 border-teal-500/30 shadow-md shadow-teal-500/10 group-hover:scale-105 transition-transform flex items-center justify-center p-1">
+            <img src="/assets/images/logo.png" alt="Deutsche Welt Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col">
-            <span className="font-extrabold text-lg sm:text-xl text-slate-100 leading-tight group-hover:text-amber-400 transition-colors">
+            <span className="fayrouza-logo-text font-extrabold text-xl sm:text-2xl tracking-tight leading-tight">
               Deutsche Welt
             </span>
-            <span className="text-xs text-amber-400 font-semibold tracking-wide">
-              الأستاذ خالد • ألماني
+            <span className="text-[11px] text-teal-700 font-bold tracking-wide flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shadow-sm shadow-teal-400"></span>
+              الأستاذ خالد • أكاديمية الألمانية
             </span>
           </div>
         </Link>
 
-        {/* Desktop Navigation Menu */}
-        <nav className="hidden lg:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-slate-300 hover:text-amber-400 transition-colors py-1"
-            >
-              {link.label}
-            </a>
-          ))}
+        {/* Desktop Navigation Capsule Pills (Fayrouza Store Design) */}
+        <nav className="hidden lg:flex items-center gap-1.5 bg-slate-100/90 p-1.5 rounded-full border border-slate-200 shadow-inner">
+          {navLinks.map((link) => {
+            const isActive = activeNav === link.href;
+            if (link.highlighted) {
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setActiveNav(link.href)}
+                  className="glass-pill-gold px-4 py-2 text-xs rounded-full flex items-center gap-1.5 transition-all transform hover:scale-105"
+                >
+                  <Sparkles className="w-3.5 h-3.5 fill-current" />
+                  <span>{link.label}</span>
+                </a>
+              );
+            }
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setActiveNav(link.href)}
+                className={`px-3.5 py-1.5 text-xs font-bold rounded-full transition-all ${
+                  isActive 
+                    ? 'bg-teal-600 text-white shadow-sm' 
+                    : 'text-slate-700 hover:text-teal-700 hover:bg-slate-200/60'
+                }`}
+              >
+                {link.label}
+              </a>
+            );
+          })}
         </nav>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        {/* Right Action Buttons */}
+        <div className="flex items-center gap-2.5">
           
           {/* Level Quiz Button */}
           <button
             onClick={openQuizModal}
-            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-300 px-3 py-2 rounded-xl transition-all shadow-sm transform hover:-translate-y-0.5"
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-black text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 px-4 py-2.5 rounded-full shadow-md shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 border border-amber-300"
           >
             <Award className="w-4 h-4" />
-            <span>اختبار تحديد المستوى</span>
+            <span>اختبار المستوى</span>
           </button>
 
-          {/* Student Dashboard Portal Button */}
-          {isAuthenticated ? (
-            <button
-              onClick={() => openStudentDashboard(1)}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 px-3 py-2 rounded-xl transition-all"
-            >
-              <PlayCircle className="w-4 h-4 text-amber-400" />
-              <span className="hidden md:inline">منصة دروسي</span>
-            </button>
-          ) : null}
-
-          {/* Admin Quick Button */}
+          {/* Admin Dashboard */}
           {isAdmin && (
             <button
               onClick={openAdminDashboard}
-              className="p-2 rounded-xl bg-purple-900/30 border border-purple-500/30 text-purple-300 hover:bg-purple-900/50 transition-all"
+              className="p-2.5 rounded-full glass-pill hover:text-amber-600 transition-all"
               title="لوحة تحكم الإدارة"
             >
-              <ShieldCheck className="w-5 h-5 text-purple-400" />
+              <LayoutDashboard className="w-4 h-4 text-emerald-600" />
             </button>
           )}
 
-          {/* Theme Toggle Button */}
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-amber-400 hover:bg-slate-700 transition-all border border-slate-700"
+            className="p-2.5 rounded-full glass-pill transition-all"
             title="تبديل الوضع"
           >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-teal-700" />}
           </button>
 
           {/* User Auth Button */}
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => openStudentDashboard(1)}
-                className="flex items-center gap-2 text-xs text-slate-200 bg-slate-800 px-3 py-2 rounded-xl border border-slate-700"
+                onClick={() => openStudentDashboard()}
+                className="flex items-center gap-2 text-xs text-teal-800 glass-pill px-3.5 py-2"
+                title="محاضراتي"
               >
-                <User className="w-4 h-4 text-amber-400" />
-                <span className="font-semibold max-w-[100px] truncate">{user?.first_name || user?.username || 'حسابي'}</span>
+                <PlayCircle className="w-4 h-4 text-emerald-600" />
+                <span className="font-semibold hidden sm:inline">محاضراتي</span>
+              </button>
+              <button
+                onClick={openProfileModal}
+                className="flex items-center gap-2 text-xs text-teal-800 glass-pill px-3.5 py-2"
+                title="حسابي"
+              >
+                <User className="w-4 h-4 text-teal-600" />
+                <span className="font-semibold max-w-[90px] truncate hidden sm:inline">{user?.first_name || 'حسابي'}</span>
               </button>
               <button
                 onClick={logout}
-                className="text-xs text-red-400 hover:text-red-300 px-2 py-1"
+                className="text-xs text-rose-600 hover:text-rose-700 px-2 py-1 font-semibold"
               >
                 خروج
               </button>
@@ -129,42 +163,42 @@ export default function Header() {
           ) : (
             <button
               onClick={() => openAuthModal('login')}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-500 px-4 py-2 rounded-xl transition-all shadow-md shadow-red-950/50"
+              className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-gradient-to-r from-teal-600 via-teal-700 to-emerald-700 hover:from-teal-500 hover:to-emerald-600 px-4 py-2.5 rounded-full transition-all shadow-md shadow-teal-600/25 border border-teal-500/30"
             >
               <User className="w-4 h-4" />
               <span>دخول / حساب جديد</span>
             </button>
           )}
 
-          {/* Mobile Menu Toggle Button */}
+          {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white border border-slate-700"
+            className="lg:hidden p-2.5 rounded-full glass-pill"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-5 h-5 text-teal-700" /> : <Menu className="w-5 h-5 text-teal-700" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Nav Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-slate-900 border-b border-slate-800 px-4 pt-3 pb-6 space-y-3">
+        <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-3 shadow-xl">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-slate-300 hover:text-amber-400 py-2 border-b border-slate-800/60"
+              className="block text-sm font-bold text-slate-800 hover:text-teal-700 py-2 border-b border-slate-100"
             >
               {link.label}
             </a>
           ))}
-          <div className="pt-2 flex flex-col gap-2">
+          <div className="pt-2">
             <button
               onClick={() => { setMobileMenuOpen(false); openQuizModal(); }}
-              className="w-full text-center text-xs font-bold text-slate-900 bg-amber-400 py-2.5 rounded-xl"
+              className="w-full text-center text-xs font-black text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3 rounded-full shadow-md border border-amber-300"
             >
-              اختبار تحديد المستوى المجاني
+              اختبار تحديد المستوى المجاني 🏆
             </button>
           </div>
         </div>

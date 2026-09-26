@@ -1,0 +1,8 @@
+{
+  "venvPath": "backend_django",
+  "venv": "venv",
+  "extraPaths": [
+    "backend_django",
+    "C:\\Users\\viking\\python312\\Lib\\site-packages"
+  ]
+}

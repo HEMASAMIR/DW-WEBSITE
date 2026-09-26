@@ -1,83 +1,92 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '@/services/auth.service';
+import { tokenStorage, AUTH_LOGOUT_EVENT } from '@/services/api';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [user, setUserState] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Sync stored user token on app mount
-    if (typeof window !== 'undefined') {
-      const storedToken = localStorage.getItem('dw_token');
-      const storedUser = localStorage.getItem('dw_user');
-      if (storedToken) {
-        setToken(storedToken);
-      }
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch (e) {}
-      }
-      
-      // Fetch fresh profile from Django backend if token exists
-      if (storedToken) {
-        authService.getProfile()
-          .then((profileData) => {
-            setUser(profileData);
-            localStorage.setItem('dw_user', JSON.stringify(profileData));
-          })
-          .catch(() => {
-            // Token might be expired
-          })
-          .finally(() => setLoading(false));
-      } else {
-        setLoading(false);
-      }
-    }
+  const setUser = useCallback((next) => {
+    setUserState((prev) => {
+      const value = typeof next === 'function' ? next(prev) : next;
+      if (value) tokenStorage.setUser(value);
+      return value;
+    });
   }, []);
 
-  const login = async (username, password) => {
-    const data = await authService.login(username, password);
-    const jwtToken = data.access || data.token;
-    setToken(jwtToken);
-    if (data.user) {
-      setUser(data.user);
-    } else {
-      const profile = await authService.getProfile();
-      setUser(profile);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('dw_user', JSON.stringify(profile));
-      }
+  const clearSession = useCallback(() => {
+    tokenStorage.clear();
+    setUserState(null);
+    setIsAuthenticated(false);
+  }, []);
+
+  // localStorage is client-only, so the stored session is read after hydration.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const hasToken = !!tokenStorage.getAccess();
+    if (!hasToken) {
+      tokenStorage.clear();
+      setLoading(false);
+      return;
     }
+    setUserState(tokenStorage.getUser());
+    setIsAuthenticated(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+
+    // Validates the session (refreshes the access token if needed) and syncs the latest profile.
+    // The profile endpoint does not return id/email/is_staff, so merge instead of replacing.
+    authService.getProfile()
+      .then((profile) => setUser((prev) => ({ ...(prev || {}), ...profile })))
+      .catch((err) => {
+        if (err.response?.status === 401) clearSession();
+      })
+      .finally(() => setLoading(false));
+  }, [setUser, clearSession]);
+
+  useEffect(() => {
+    window.addEventListener(AUTH_LOGOUT_EVENT, clearSession);
+    return () => window.removeEventListener(AUTH_LOGOUT_EVENT, clearSession);
+  }, [clearSession]);
+
+  const applySession = (data) => {
+    setUser(data.user);
+    setIsAuthenticated(true);
     return data;
   };
 
-  const register = async (userData) => {
-    const data = await authService.register(userData);
-    return data;
-  };
+  const login = async (email, password) => applySession(await authService.login(email, password));
+
+  const loginWithGoogle = async (idToken) => applySession(await authService.googleSignIn(idToken));
+
+  const register = (userData) => authService.register(userData);
 
   const logout = async () => {
     await authService.logout();
-    setToken(null);
-    setUser(null);
+    clearSession();
+  };
+
+  const updateProfile = async (fields) => {
+    const profile = await authService.updateProfile(fields);
+    setUser((prev) => ({ ...(prev || {}), ...profile }));
+    return profile;
   };
 
   const value = {
     user,
-    token,
     loading,
-    isAuthenticated: !!token || !!user,
-    isAdmin: user?.is_staff || user?.role === 'admin' || user?.is_superuser,
+    isAuthenticated,
+    isAdmin: !!user?.is_staff,
     login,
+    loginWithGoogle,
     register,
     logout,
-    setUser
+    updateProfile,
+    setUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

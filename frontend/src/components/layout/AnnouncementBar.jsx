@@ -1,52 +1,53 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useModal } from '@/context/ModalContext';
-import { Flame, Clock, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { Flame, ArrowLeft } from 'lucide-react';
+
+const AD_ITEMS = [
+  { tag: '🎓 الدفعة الجديدة', text: 'المحاضرات متاحة أونلاين 24/7 من حسابك مع ملفات PDF ومناقشة على كل محاضرة.' },
+  { tag: '🏛️ جوته وتيلك', text: 'تأهيل مكثف لامتحانات Goethe & Telc مع هير خالد.' },
+  { tag: '📚 كتب المنهج', text: 'كتب دويتشه فيلت متاحة للتحميل PDF فور تفعيلها على حسابك.' },
+];
 
 export default function AnnouncementBar() {
-  const { openEnrollModal } = useModal();
-  const [timeLeft, setTimeLeft] = useState({ hours: 47, minutes: 59, seconds: 59 });
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
-        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
+    const timer = setInterval(() => setIndex((i) => (i + 1) % AD_ITEMS.length), 6000);
     return () => clearInterval(timer);
   }, []);
 
-  const formatNumber = (num) => String(num).padStart(2, '0');
+  const item = AD_ITEMS[index];
 
   return (
-    <div className="bg-gradient-to-r from-red-950 via-red-900 to-amber-950 text-white text-xs sm:text-sm py-2 px-4 shadow-md border-b border-red-800/40 relative z-30">
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-right">
-        <div className="flex items-center gap-2 font-medium">
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-red-600/60 text-amber-300 animate-pulse">
-            <Flame className="w-3.5 h-3.5" />
+    <div className="bg-gradient-to-r from-teal-800 via-teal-900 to-emerald-900 text-white text-xs py-2 px-4 shadow-md border-b border-teal-500/30 relative z-30 overflow-hidden">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+
+        <div className="flex items-center gap-2 font-medium shrink-0">
+          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-teal-500/30 text-amber-300 border border-teal-400/40">
+            <Flame className="w-3.5 h-3.5 text-amber-400" />
           </span>
-          <span>
-            خصم حصري <strong className="text-amber-300 font-bold">25%</strong> بمناسبة افتتاح الدفعة الجديدة للمستويات A1 & B1
-          </span>
+          <span className="font-extrabold text-amber-300">جديد:</span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 dir-ltr text-amber-200 font-mono text-xs bg-black/40 px-2.5 py-1 rounded-full border border-amber-500/30">
-            <Clock className="w-3.5 h-3.5 text-amber-400 mr-1" />
-            <span>{formatNumber(timeLeft.hours)}:{formatNumber(timeLeft.minutes)}:{formatNumber(timeLeft.seconds)}</span>
+        <div className="w-full overflow-hidden text-center md:text-right px-2">
+          <div key={index} className="inline-flex items-center gap-4 animate-fadeIn">
+            <span className="glass-pill px-2.5 py-0.5 text-[11px] font-bold text-amber-300 border border-amber-500/30">
+              {item.tag}
+            </span>
+            <span className="text-xs text-slate-200">{item.text}</span>
           </div>
-          <button
-            onClick={() => openEnrollModal({ name: 'المستوى الأساسي A1', code: 'A1', price: 1200 })}
-            className="inline-flex items-center gap-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1 rounded-full text-xs transition-all shadow-sm transform hover:scale-105"
-          >
-            <span>احجز خصمك الآن</span>
-            <ArrowLeft className="w-3 h-3" />
-          </button>
         </div>
+
+        <Link
+          href="/#online-courses"
+          className="glass-pill-active inline-flex items-center gap-1 px-3.5 py-1 text-xs shrink-0 transition-transform transform hover:scale-105"
+        >
+          <span>استعرض المستويات والأسعار</span>
+          <ArrowLeft className="w-3 h-3" />
+        </Link>
+
       </div>
     </div>
   );

@@ -5,12 +5,17 @@ import React, { createContext, useContext, useState } from 'react';
 const ModalContext = createContext();
 
 export function ModalProvider({ children }) {
-  const [activeModal, setActiveModal] = useState(null); // 'auth' | 'enroll' | 'bookOrder' | 'bookPreview' | 'quiz' | 'studentDashboard' | 'adminDashboard' | 'lightbox'
+  const [activeModal, setActiveModal] = useState(null); // 'auth' | 'enroll' | 'bookOrder' | 'quiz' | 'studentDashboard' | 'profile' | 'adminDashboard' | 'lightbox' | 'cv' | 'loginPrompt'
   const [modalData, setModalData] = useState(null);
 
   const openAuthModal = (mode = 'login') => {
     setModalData({ mode });
     setActiveModal('auth');
+  };
+
+  const openLoginPromptModal = (itemData = {}) => {
+    setModalData(itemData); // { title, name, price, type: 'book' | 'course', item: object }
+    setActiveModal('loginPrompt');
   };
 
   const openEnrollModal = (course) => {
@@ -23,9 +28,9 @@ export function ModalProvider({ children }) {
     setActiveModal('bookOrder');
   };
 
-  const openBookPreviewModal = (book) => {
+  const openBookDetailsModal = (book) => {
     setModalData({ book });
-    setActiveModal('bookPreview');
+    setActiveModal('bookDetails');
   };
 
   const openQuizModal = () => {
@@ -33,9 +38,15 @@ export function ModalProvider({ children }) {
     setActiveModal('quiz');
   };
 
-  const openStudentDashboard = (levelId = 1) => {
+  // levelId is optional — the dashboard picks the first level the user has access to.
+  const openStudentDashboard = (levelId = null) => {
     setModalData({ levelId });
     setActiveModal('studentDashboard');
+  };
+
+  const openProfileModal = () => {
+    setModalData(null);
+    setActiveModal('profile');
   };
 
   const openAdminDashboard = () => {
@@ -48,6 +59,17 @@ export function ModalProvider({ children }) {
     setActiveModal('lightbox');
   };
 
+  const openCvModal = (tab = 'overview') => {
+    setModalData({ tab });
+    setActiveModal('cv');
+  };
+
+  // load: (onProgress) => Promise<{ blob, filename, type }>
+  const openFileViewer = ({ title, load }) => {
+    setModalData({ title, load });
+    setActiveModal('fileViewer');
+  };
+
   const closeModal = () => {
     setActiveModal(null);
     setModalData(null);
@@ -57,13 +79,17 @@ export function ModalProvider({ children }) {
     activeModal,
     modalData,
     openAuthModal,
+    openLoginPromptModal,
     openEnrollModal,
     openBookOrderModal,
-    openBookPreviewModal,
+    openBookDetailsModal,
     openQuizModal,
     openStudentDashboard,
+    openProfileModal,
     openAdminDashboard,
     openLightboxModal,
+    openCvModal,
+    openFileViewer,
     closeModal
   };
 
