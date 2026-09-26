@@ -60,6 +60,7 @@ urlpatterns = [
     # 2. Courses, Levels & Video Streaming
     path('api/courses/levels/', api.CourseLevelsAPIView.as_view(), name='api-levels-list'),
     path('api/courses/levels/<int:level_id>/videos/', api.LevelVideosAPIView.as_view(), name='api-level-videos'),
+    path('api/courses/levels/<int:level_id>/files/<int:file_id>/view/', api.CourseFileViewAPIView.as_view(), name='api-course-file-view'),
     path('api/courses/levels/<int:level_id>/files/<int:file_id>/download/', api.CourseFileDownloadAPIView.as_view(), name='api-course-file-download'),
 
     # 3. Comments & Discussion Forum
@@ -76,6 +77,8 @@ urlpatterns = [
 
     # 5. Books Store (Student & Admin)
     path('api/books/', api.BooksListAPIView.as_view(), name='api-books-list'),
+    path('api/books/<int:book_id>/', api.BookDetailAPIView.as_view(), name='api-book-detail'),
+    path('api/books/<int:book_id>/view/', api.BookViewAPIView.as_view(), name='api-book-view'),
     path('api/books/<int:book_id>/download/', api.BookDownloadAPIView.as_view(), name='api-book-download'),
     path('api/books/admin/', api.AdminBooksAPIView.as_view(), name='api-admin-books'),
     path('api/books/admin/<int:book_id>/', api.AdminBookDetailAPIView.as_view(), name='api-admin-book-detail'),

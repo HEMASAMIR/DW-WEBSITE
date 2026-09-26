@@ -23,6 +23,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from academy.models import CourseLevel, LevelAccess, Video, CourseFile
+from academy.storage import protected_file_response
 
 
 # ---------------------------------------------------------------------------
@@ -222,7 +223,9 @@ class LevelVideosAPIView(APIView):
 # ---------------------------------------------------------------------------
 
 class CourseFileDownloadAPIView(APIView):
+    """GET .../files/<id>/view/ (inline) and /download/ (attachment). Requires level access."""
     permission_classes = [IsAuthenticated]
+    inline = False
 
     def get(self, request, level_id, file_id):
         try:
@@ -238,12 +241,12 @@ class CourseFileDownloadAPIView(APIView):
         except CourseFile.DoesNotExist:
             return Response({'detail': 'الملف غير موجود.'}, status=status.HTTP_404_NOT_FOUND)
 
-        try:
-            return FileResponse(
-                course_file.file.open('rb'),
-                content_type='application/pdf',
-                as_attachment=True,
-                filename=f"{course_file.name}.pdf",
-            )
-        except Exception:
-            return Response({'detail': 'تعذّر فتح الملف. تواصل مع الدعم.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        if not course_file.file or not course_file.file.storage.exists(course_file.file.name):
+            return Response({'detail': 'الملف غير متوفر حالياً. تواصل مع الدعم.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Real content type from the stored extension (files may be .docx, not only PDF).
+        return protected_file_response(course_file.file, course_file.name, inline=self.inline)
+
+
+class CourseFileViewAPIView(CourseFileDownloadAPIView):
+    inline = True

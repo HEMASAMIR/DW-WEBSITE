@@ -581,6 +581,9 @@ class ChangePasswordAPIView(APIView):
 # Admin: User Groups
 # ---------------------------------------------------------------------------
 
+ALLOWED_ROLE_GROUPS = ('Admin', 'Moderator', 'Student')
+
+
 class AdminUserGroupsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -595,10 +598,15 @@ class AdminUserGroupsAPIView(APIView):
             return Response({'detail': 'المستخدم غير موجود.'}, status=status.HTTP_404_NOT_FOUND)
 
         group_names = request.data.get('groups', [])
-        groups = []
-        for name in group_names:
-            group, _ = Group.objects.get_or_create(name=name)
-            groups.append(group)
+        if not isinstance(group_names, list) or not group_names:
+            return Response({'groups': ['أرسل قائمة أدوار واحدة على الأقل.']}, status=status.HTTP_400_BAD_REQUEST)
+        invalid = [n for n in group_names if n not in ALLOWED_ROLE_GROUPS]
+        if invalid:
+            return Response(
+                {'groups': [f'أدوار غير مسموحة: {", ".join(map(str, invalid))}. المسموح: {", ".join(ALLOWED_ROLE_GROUPS)}.']},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        groups = [Group.objects.get_or_create(name=name)[0] for name in group_names]
 
         target_user.groups.set(groups)
         return Response({

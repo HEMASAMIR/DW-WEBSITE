@@ -20,6 +20,8 @@ import uuid
 import random
 import string
 
+from academy.storage import get_protected_storage
+
 User = get_user_model()
 
 
@@ -122,7 +124,7 @@ class CourseFile(models.Model):
     """
     level = models.ForeignKey(CourseLevel, on_delete=models.CASCADE, related_name='files', verbose_name="المستوى")
     name = models.CharField(max_length=300, verbose_name="اسم الملف")
-    file = models.FileField(upload_to='course_files/', verbose_name="ملف PDF")
+    file = models.FileField(upload_to='course_files/', storage=get_protected_storage, verbose_name="الملف")
     is_active = models.BooleanField(default=True, verbose_name="مفعّل")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -148,7 +150,7 @@ class DigitalBook(models.Model):
     name = models.CharField(max_length=300, verbose_name="اسم الكتاب")
     level = models.CharField(max_length=10, choices=LEVEL_CHOICES, verbose_name="المستوى")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="السعر")
-    file = models.FileField(upload_to='digital_books/', verbose_name="ملف PDF")
+    file = models.FileField(upload_to='digital_books/', storage=get_protected_storage, verbose_name="ملف PDF")
     is_active = models.BooleanField(default=True, verbose_name="متاح")
     created_at = models.DateTimeField(auto_now_add=True)
 

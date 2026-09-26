@@ -16,6 +16,7 @@ from .courses_views import (
     CourseLevelsAPIView,
     LevelVideosAPIView,
     CourseFileDownloadAPIView,
+    CourseFileViewAPIView,
 )
 
 from .comments_views import (
@@ -26,6 +27,8 @@ from .comments_views import (
 
 from .books_views import (
     BooksListAPIView,
+    BookDetailAPIView,
+    BookViewAPIView,
     BookDownloadAPIView,
 )
 

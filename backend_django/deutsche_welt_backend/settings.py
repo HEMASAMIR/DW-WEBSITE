@@ -173,6 +173,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Paid content (books, course files) — never inside MEDIA_ROOT, never publicly served.
+# See academy/storage.py for the nginx `internal` location used in production.
+PROTECTED_MEDIA_ROOT = os.environ.get('PROTECTED_MEDIA_ROOT', os.path.join(BASE_DIR, 'protected_media'))
+PROTECTED_MEDIA_USE_X_ACCEL = os.environ.get('PROTECTED_MEDIA_USE_X_ACCEL', 'False') == 'True'
+PROTECTED_MEDIA_X_ACCEL_PREFIX = os.environ.get('PROTECTED_MEDIA_X_ACCEL_PREFIX', '/_protected/')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ---------------------------------------------------------------------------

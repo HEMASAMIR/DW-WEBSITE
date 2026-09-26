@@ -19,6 +19,10 @@ __pycache__/
 .pytest_cache/
 *.sqlite3
 
+# Uploaded files (paid books/course files must never be committed)
+backend_django/media/
+backend_django/protected_media/
+
 # Environment & IDE
 .env
 .env.local

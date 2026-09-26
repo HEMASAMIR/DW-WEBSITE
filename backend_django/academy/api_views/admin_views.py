@@ -20,7 +20,7 @@ import requests as http_requests
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import BasePermission, IsAuthenticated
 
 from academy.models import (
     CourseLevel,
@@ -34,19 +34,30 @@ from academy.models import (
 User = get_user_model()
 
 
+def _to_bool(value, default=True):
+    """multipart/form-data sends booleans as strings ("false" would otherwise be truthy)."""
+    if value is None or value == '':
+        return default
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in ('1', 'true', 'yes', 'on')
+
+
 def _is_admin(user):
     return user and user.is_authenticated and (user.is_staff or user.is_superuser)
 
 
-class AdminRequiredMixin:
-    """Mixin that returns 403 for non-admin requests."""
-    permission_classes = [IsAuthenticated]
+class IsStaffUser(BasePermission):
+    """Staff/superuser only. Runs after DRF authentication, so JWT users are recognised."""
+    message = 'هذا الإجراء يتطلب صلاحيات المسؤول.'
 
-    def dispatch(self, request, *args, **kwargs):
-        if not _is_admin(request.user):
-            from rest_framework.response import Response
-            return Response({'detail': 'هذا الإجراء يتطلب صلاحيات المسؤول.'}, status=status.HTTP_403_FORBIDDEN)
-        return super().dispatch(request, *args, **kwargs)
+    def has_permission(self, request, view):
+        return _is_admin(request.user)
+
+
+class AdminRequiredMixin:
+    """Every admin endpoint: authenticated AND staff, else 401/403 (checked for every HTTP method)."""
+    permission_classes = [IsAuthenticated, IsStaffUser]
 
 
 # ---------------------------------------------------------------------------
@@ -210,12 +221,15 @@ class AdminRefreshVideoCacheAPIView(AdminRequiredMixin, APIView):
 class AdminBooksAPIView(AdminRequiredMixin, APIView):
     def get(self, request):
         books = DigitalBook.objects.all().order_by('level', 'name')
+        # No file URLs — even for admins. Files are only served by the access-checked /view/ endpoint.
         data = [{
             'id': b.id,
             'name': b.name,
             'level': b.level,
             'price': str(b.price),
             'is_active': b.is_active,
+            'has_file': bool(b.file),
+            'file_name': b.file.name.rsplit('/', 1)[-1] if b.file else None,
             'created_at': b.created_at.isoformat(),
         } for b in books]
         return Response(data)
@@ -224,7 +238,7 @@ class AdminBooksAPIView(AdminRequiredMixin, APIView):
         name = request.data.get('name', '').strip()
         level = request.data.get('level', '').strip()
         price = request.data.get('price', '0')
-        is_active = request.data.get('is_active', True)
+        is_active = _to_bool(request.data.get('is_active'), default=True)
         file_obj = request.FILES.get('file')
 
         if not name or not level or not file_obj:
@@ -264,7 +278,7 @@ class AdminBookDetailAPIView(AdminRequiredMixin, APIView):
             book.price = request.data['price']
             update_fields.append('price')
         if 'is_active' in request.data:
-            book.is_active = request.data['is_active']
+            book.is_active = _to_bool(request.data['is_active'])
             update_fields.append('is_active')
         if 'file' in request.FILES:
             book.file = request.FILES['file']
@@ -294,8 +308,11 @@ class AdminBookUsersAPIView(AdminRequiredMixin, APIView):
         accesses = BookAccess.objects.filter(book=book).select_related('user')
         data = [{
             'id': a.id,
+            'user': a.user.id,
             'user_id': a.user.id,
             'user_email': a.user.email,
+            'user_first_name': a.user.first_name,
+            'user_last_name': a.user.last_name,
             'user_name': f"{a.user.first_name} {a.user.last_name}".strip(),
             'granted_at': a.granted_at.isoformat(),
             'is_active': a.is_active,
