@@ -1457,7 +1457,7 @@
           جميع الحقوق محفوظة © 2026<br>
           <strong>Deutsche Welt Akademie — Herr Khaled</strong>
         </p>
-        <button class="footer-admin-card-btn" id="footerAdminBtn" onclick="window.dwApp.openAdminModal()">
+        <button class="footer-admin-card-btn" id="footerAdminBtn" onclick="if(window.dwAdmin && typeof window.dwAdmin.openAdminPortal === 'function'){ window.dwAdmin.openAdminPortal(); } else if(window.dwApp && typeof window.dwApp.openAdminModal === 'function'){ window.dwApp.openAdminModal(); }">
           <div class="admin-card-glow"></div>
           <div class="admin-card-icon"><i class="fas fa-lock"></i></div>
           <div class="admin-card-text">
@@ -2431,6 +2431,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="assets/js/api.js?v=20.0"></script>
   <script src="assets/js/app.js?v=20.0"></script>
   <script src="assets/js/admin.js?v=20.0"></script>
 </body>

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useModal } from '@/context/ModalContext';
 import { adminService } from '@/services/admin.service';
 import { getErrorMessage } from '@/services/api';
-import { formatPrice } from '@/services/courses.service';
+import { formatPrice, coursesService } from '@/services/courses.service';
 import {
   X,
   ShieldCheck,
@@ -38,7 +38,9 @@ function AdminDashboard({ onClose }) {
   const [levels, setLevels] = useState([]);
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [levelsError, setLevelsError] = useState(null); // { status, message }
+  const [booksError, setBooksError] = useState(null);
+  const [levelNames, setLevelNames] = useState([]);
   const [toast, setToast] = useState({ type: '', text: '' });
 
   const notify = useCallback((type, text) => setToast({ type, text }), []);
@@ -50,16 +52,33 @@ function AdminDashboard({ onClose }) {
     setReloadKey((k) => k + 1);
   }, []);
 
+  // Levels and books are loaded independently: an account may be allowed to manage books but not
+  // levels (backend returns 403), and one failing section must not hide the other.
   useEffect(() => {
     let cancelled = false;
-    Promise.all([adminService.getLevels(), adminService.getBooks()])
-      .then(([lv, bk]) => {
+    const asError = (err, fallback) => ({ status: err.response?.status, message: getErrorMessage(err, fallback) });
+    Promise.allSettled([adminService.getLevels(), adminService.getBooks(), coursesService.getLevels()])
+      .then(([lv, bk, studentLevels]) => {
         if (cancelled) return;
-        setLevels([...lv].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
-        setBooks(bk);
-        setError('');
+        // Level names for the book form: admin list if allowed, otherwise the regular levels list.
+        const names = (lv.status === 'fulfilled' ? lv.value.map((l) => l.name)
+          : studentLevels.status === 'fulfilled' ? studentLevels.value.map((l) => l.code) : []);
+        setLevelNames(names);
+        if (lv.status === 'fulfilled') {
+          setLevels([...lv.value].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
+          setLevelsError(null);
+        } else {
+          setLevels([]);
+          setLevelsError(asError(lv.reason, 'تعذر تحميل المستويات.'));
+        }
+        if (bk.status === 'fulfilled') {
+          setBooks(bk.value);
+          setBooksError(null);
+        } else {
+          setBooks([]);
+          setBooksError(asError(bk.reason, 'تعذر تحميل الكتب.'));
+        }
       })
-      .catch((err) => !cancelled && setError(getErrorMessage(err, 'تعذر تحميل بيانات لوحة التحكم.')))
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;
@@ -93,10 +112,10 @@ function AdminDashboard({ onClose }) {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Stat icon={Layers} label="المستويات" value={levels.length} color="text-amber-400" />
-          <Stat icon={Users} label="اشتراكات المستويات المفعلة" value={totalSubscriptions} color="text-emerald-400" />
-          <Stat icon={BookOpen} label="الكتب" value={books.length} color="text-sky-400" />
-          <Stat icon={BookOpen} label="الكتب المنشورة" value={books.filter((b) => b.is_active).length} color="text-purple-400" />
+          <Stat icon={Layers} label="المستويات" value={levelsError ? '—' : levels.length} color="text-amber-400" />
+          <Stat icon={Users} label="اشتراكات المستويات المفعلة" value={levelsError ? '—' : totalSubscriptions} color="text-emerald-400" />
+          <Stat icon={BookOpen} label="الكتب" value={booksError ? '—' : books.length} color="text-sky-400" />
+          <Stat icon={BookOpen} label="الكتب المنشورة" value={booksError ? '—' : books.filter((b) => b.is_active).length} color="text-purple-400" />
         </div>
 
         <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
@@ -128,13 +147,12 @@ function AdminDashboard({ onClose }) {
           </div>
         )}
 
-        {loading && levels.length === 0 ? (
+        {loading && levels.length === 0 && books.length === 0 ? (
           <div className="flex justify-center py-12"><Loader2 className="w-7 h-7 text-purple-400 animate-spin" /></div>
-        ) : error ? (
-          <div className="text-center py-10 space-y-3">
-            <AlertCircle className="w-10 h-10 text-rose-400 mx-auto" />
-            <p className="text-sm text-rose-300">{error}</p>
-          </div>
+        ) : tab === 'levels' && levelsError ? (
+          <SectionError error={levelsError} what="المستويات وتفعيلها للطلاب" />
+        ) : tab === 'books' && booksError ? (
+          <SectionError error={booksError} what="الكتب" />
         ) : tab === 'levels' ? (
           <div className="space-y-3">
             {levels.map((level) => (
@@ -143,11 +161,31 @@ function AdminDashboard({ onClose }) {
             {levels.length === 0 && <p className="text-xs text-slate-500 text-center py-6">لا توجد مستويات.</p>}
           </div>
         ) : tab === 'books' ? (
-          <BooksAdmin books={books} notify={notify} onChanged={loadAll} />
+          <BooksAdmin books={books} levelNames={levelNames} notify={notify} onChanged={loadAll} />
         ) : (
           <RolesAdmin notify={notify} />
         )}
       </div>
+    </div>
+  );
+}
+
+function SectionError({ error, what }) {
+  const forbidden = error.status === 403;
+  return (
+    <div className="text-center py-10 space-y-3 max-w-lg mx-auto">
+      <AlertCircle className={`w-10 h-10 mx-auto ${forbidden ? 'text-amber-400' : 'text-rose-400'}`} />
+      {forbidden ? (
+        <>
+          <p className="text-sm text-amber-200 font-bold">حسابك مش عنده صلاحية إدارة {what} على السيرفر.</p>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            السيرفر رجّع 403 لحسابك في القسم ده. المطلوب من مطوّر الباك إند يخلّي صلاحيات القسم ده
+            تتحدد بجروب &quot;Admin&quot; زي قسم الكتب، وبعدها القسم ده هيشتغل تلقائياً.
+          </p>
+        </>
+      ) : (
+        <p className="text-sm text-rose-300">{error.message}</p>
+      )}
     </div>
   );
 }
@@ -267,7 +305,7 @@ function LevelRow({ level, notify, onChanged }) {
             </div>
             <div className="flex-1 min-w-[180px]">
               <label className="block text-[11px] text-slate-400 mb-1">ملاحظات (طريقة الدفع / التاريخ)</label>
-              <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="مثال: دفع 500 ج فودافون كاش" className={`${inputClass} w-full`} />
+              <input value={notes} onChange={(e) => setNotes(e.target.value)} className={`${inputClass} w-full`} />
             </div>
             <button type="submit" disabled={busy === 'grant'} className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1 disabled:opacity-50">
               {busy === 'grant' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserPlus className="w-3.5 h-3.5" />}
@@ -335,15 +373,18 @@ function AccessTable({ rows, busy, onRevoke }) {
 
 /* ----------------------------- Books ----------------------------- */
 
-const EMPTY_BOOK = { name: '', level: 'A1', price: '', is_active: true, file: null };
-
-function BooksAdmin({ books, notify, onChanged }) {
+// Level choices come from the backend's level list (admin levels endpoint), never a hard-coded list.
+function BooksAdmin({ books, levelNames, notify, onChanged }) {
+  const emptyBook = () => ({ name: '', level: levelNames[0] || '', price: '', is_active: true, file: null });
   const [editing, setEditing] = useState(null); // null | 'new' | book
-  const [form, setForm] = useState(EMPTY_BOOK);
+  const [form, setForm] = useState(emptyBook);
   const [saving, setSaving] = useState(false);
 
+  // Keep a book's current level selectable even if it is not in the levels list.
+  const levelOptions = form.level && !levelNames.includes(form.level) ? [...levelNames, form.level] : levelNames;
+
   const startNew = () => {
-    setForm(EMPTY_BOOK);
+    setForm(emptyBook());
     setEditing('new');
   };
 
@@ -391,8 +432,8 @@ function BooksAdmin({ books, notify, onChanged }) {
             </div>
             <div>
               <label className="block text-[11px] text-slate-400 mb-1">المستوى</label>
-              <select value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })} className={`${inputClass} w-full`}>
-                {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((l) => <option key={l} value={l}>{l}</option>)}
+              <select required value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })} className={`${inputClass} w-full`}>
+                {levelOptions.map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
             </div>
             <div>
@@ -545,6 +586,8 @@ function BookRow({ book, onEdit, onDelete, notify }) {
 
 /* ----------------------------- Roles ----------------------------- */
 
+// The only role names the backend accepts on POST /api/users/<id>/groups/ (per the API guide);
+// the API has no endpoint that lists them.
 const ROLES = [
   { value: 'Admin', label: 'مدير (Admin)' },
   { value: 'Moderator', label: 'مشرف (Moderator)' },
@@ -553,7 +596,7 @@ const ROLES = [
 
 function RolesAdmin({ notify }) {
   const [userId, setUserId] = useState('');
-  const [groups, setGroups] = useState(['Student']);
+  const [groups, setGroups] = useState([]);
   const [busy, setBusy] = useState(false);
 
   const toggleGroup = (g) => setGroups((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));

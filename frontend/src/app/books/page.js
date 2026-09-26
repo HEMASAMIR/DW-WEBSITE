@@ -3,20 +3,20 @@
 import React from 'react';
 import { useBooks } from '@/hooks/useBooks';
 import { formatPrice } from '@/services/courses.service';
-import { BOOK_EXTRAS } from '@/constants/siteContent';
 import AccessGroups, { AccessCard } from '@/components/common/AccessGroups';
 
 export default function BooksPage() {
-  const { books, loading, error, requiresLogin, reload } = useBooks();
+  const { books, loading, error, requiresLogin, isGuest, reload } = useBooks();
 
   return (
     <AccessGroups
       title="الكتب"
-      subtitle="الكتب المفعّلة لك تقدر تعرضها أونلاين على طول، والباقي متاح للشراء."
+      subtitle={isGuest ? 'كل كتب الأكاديمية وأسعارها.' : 'الكتب المفعّلة لك تقدر تعرضها أونلاين على طول، والباقي متاح للشراء.'}
       items={books}
       loading={loading}
       error={error}
       requiresLogin={requiresLogin}
+      isGuest={isGuest}
       reload={reload}
       emptyText="لا توجد كتب متاحة حالياً."
       renderCard={(b) => (
@@ -24,10 +24,11 @@ export default function BooksPage() {
           href={`/books/${b.id}`}
           code={b.level}
           title={b.name}
-          subtitle={BOOK_EXTRAS[b.level?.toUpperCase()]?.subName}
+          subtitle={`مستوى ${b.level}`}
           price={formatPrice(b.price)}
           hasAccess={b.hasAccess}
-          actionLabel={b.hasAccess ? 'عرض الكتاب' : 'اطلب الكتاب'}
+          guest={isGuest}
+          actionLabel={b.hasAccess ? 'عرض الكتاب' : isGuest ? 'التفاصيل' : 'اطلب الكتاب'}
         />
       )}
     />

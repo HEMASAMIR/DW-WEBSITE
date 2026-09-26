@@ -15,24 +15,24 @@ function normalizeBook(book) {
   };
 }
 
+/** The API groups books by level ({ "A1": [...], "A2": [...] }); we flatten + sort. */
+function toBookList(data) {
+  const flat = Array.isArray(data) ? data : data && typeof data === 'object' ? Object.values(data).flat() : [];
+  return flat
+    .map(normalizeBook)
+    .filter((b) => b.isActive)
+    .sort((a, b) => {
+      const ai = LEVEL_ORDER.indexOf(a.level);
+      const bi = LEVEL_ORDER.indexOf(b.level);
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi) || a.id - b.id;
+    });
+}
+
 export const booksService = {
-  /** The API groups books by level ({ "A1": [...], "A2": [...] }); we flatten + sort. */
-  getBooks: async () => {
-    const { data } = await apiClient.get(API_ENDPOINTS.BOOKS);
-    const flat = Array.isArray(data)
-      ? data
-      : data && typeof data === 'object'
-      ? Object.values(data).flat()
-      : [];
-    return flat
-      .map(normalizeBook)
-      .filter((b) => b.isActive)
-      .sort((a, b) => {
-        const ai = LEVEL_ORDER.indexOf(a.level);
-        const bi = LEVEL_ORDER.indexOf(b.level);
-        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi) || a.id - b.id;
-      });
-  },
+  getBooks: async () => toBookList((await apiClient.get(API_ENDPOINTS.BOOKS)).data),
+
+  /** Real catalog for visitors who are not logged in (served by the site, see lib/publicCatalog). */
+  getPublicBooks: async () => toBookList((await apiClient.get('/public-data/books')).data),
 
   viewBook: (book, onProgress) => fetchFile(API_ENDPOINTS.BOOK_VIEW(book.id), `${book.name || 'book'}.pdf`, onProgress),
 };

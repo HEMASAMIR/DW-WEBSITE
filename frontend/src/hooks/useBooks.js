@@ -1,47 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { booksService } from '@/services/books.service';
+import { getErrorMessage } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 
-const DEFAULT_BOOKS = [
-  {
-    id: 1,
-    name: 'سلسلة مذكرات A1 الشاملة (Deutsche Welt A1)',
-    level: 'A1',
-    price: 500,
-    isActive: true,
-    hasAccess: false,
-  },
-  {
-    id: 2,
-    name: 'كتاب القواعد والجرامر المكثف A2',
-    level: 'A2',
-    price: 550,
-    isActive: true,
-    hasAccess: false,
-  },
-  {
-    id: 3,
-    name: 'دليل التحضير لامتحان معهد جوته Goethe B1',
-    level: 'B1',
-    price: 600,
-    isActive: true,
-    hasAccess: false,
-  },
-  {
-    id: 4,
-    name: 'كتاب الكفاءة والتأهيل لسوق العمل B2',
-    level: 'B2',
-    price: 650,
-    isActive: true,
-    hasAccess: false,
-  },
-];
-
+// Real data only: names, prices and access always come from the backend.
+// Never add hard-coded fallback books here — they show wrong names/prices to the client.
 export function useBooks() {
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const [books, setBooks] = useState(DEFAULT_BOOKS);
-  const [loading, setLoading] = useState(false);
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [requiresLogin, setRequiresLogin] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
   const reload = useCallback(() => {
@@ -50,24 +19,31 @@ export function useBooks() {
     setReloadKey((k) => k + 1);
   }, []);
 
+  // has_access depends on the logged-in user, so refetch whenever auth state settles/changes.
   useEffect(() => {
     if (authLoading) return;
     let cancelled = false;
-    booksService
-      .getBooks()
+    // Logged in → the student's own list (with has_access). Visitor → the site's public catalog.
+    const load = isAuthenticated
+      ? booksService.getBooks().catch((err) => {
+          if (err.response?.status === 401) return booksService.getPublicBooks();
+          throw err;
+        })
+      : booksService.getPublicBooks();
+    load
       .then((data) => {
         if (cancelled) return;
-        if (Array.isArray(data) && data.length > 0) {
-          setBooks(data);
-        } else {
-          setBooks(DEFAULT_BOOKS);
-        }
+        setBooks(data);
         setError('');
+        setRequiresLogin(false);
       })
-      .catch(() => {
+      .catch((err) => {
         if (cancelled) return;
-        setBooks(DEFAULT_BOOKS);
-        setError('');
+        // Public catalog unavailable (not configured) → fall back to asking the visitor to log in.
+        const needsLogin = !isAuthenticated || err.response?.status === 401;
+        setRequiresLogin(needsLogin);
+        setBooks([]);
+        setError(needsLogin ? '' : getErrorMessage(err, 'تعذر تحميل الكتب حالياً.'));
       })
       .finally(() => !cancelled && setLoading(false));
     return () => {
@@ -75,5 +51,5 @@ export function useBooks() {
     };
   }, [authLoading, isAuthenticated, reloadKey]);
 
-  return { books, loading, error: '', requiresLogin: false, reload };
+  return { books, loading, error, requiresLogin, isGuest: !isAuthenticated, reload };
 }

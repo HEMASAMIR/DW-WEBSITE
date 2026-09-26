@@ -9,7 +9,7 @@ import { Lock, Unlock, Loader2, AlertCircle, RefreshCw, LogIn } from 'lucide-rea
  * Shared list screen: splits items into "unlocked for you" and "locked" groups (app-style).
  * renderCard(item) renders one card; each item needs `id` and `hasAccess`.
  */
-export default function AccessGroups({ title, subtitle, items, loading, error, requiresLogin, reload, renderCard, emptyText }) {
+export default function AccessGroups({ title, subtitle, items, loading, error, requiresLogin, isGuest, reload, renderCard, emptyText }) {
   const { openAuthModal } = useModal();
   const unlocked = items.filter((i) => i.hasAccess);
   const locked = items.filter((i) => !i.hasAccess);
@@ -40,6 +40,20 @@ export default function AccessGroups({ title, subtitle, items, loading, error, r
           </Box>
         ) : items.length === 0 ? (
           <p className="text-center text-sm text-slate-500">{emptyText}</p>
+        ) : isGuest ? (
+          // Visitors see the full real catalog; access status needs an account.
+          <section className="space-y-5">
+            <div className="flex flex-wrap items-center justify-center gap-3 bg-teal-50 border border-teal-200 rounded-2xl p-4 text-sm text-teal-900 font-semibold">
+              <Lock className="w-4 h-4" />
+              <span>سجّل الدخول عشان تعرف المفعّل لك وتشترك.</span>
+              <button onClick={() => openAuthModal('login')} className="inline-flex items-center gap-1.5 glass-pill-gold px-4 py-1.5 rounded-full text-xs font-black">
+                <LogIn className="w-3.5 h-3.5" /> تسجيل الدخول
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {items.map((i) => <React.Fragment key={i.id}>{renderCard(i)}</React.Fragment>)}
+            </div>
+          </section>
         ) : (
           <>
             <Group icon={Unlock} tone="emerald" label="مفعّلة لك" count={unlocked.length} empty="لسه مفيش حاجة متفعّلة على حسابك.">
@@ -86,7 +100,7 @@ function Box({ icon: Icon, text, children }) {
 }
 
 /** Card used by both lists. */
-export function AccessCard({ href, code, title, subtitle, price, hasAccess, actionLabel }) {
+export function AccessCard({ href, code, title, subtitle, price, hasAccess, guest, actionLabel }) {
   return (
     <Link
       href={href}
@@ -98,7 +112,7 @@ export function AccessCard({ href, code, title, subtitle, price, hasAccess, acti
         <span className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white font-black text-lg flex items-center justify-center">
           {code}
         </span>
-        {hasAccess ? (
+        {guest ? null : hasAccess ? (
           <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 flex items-center gap-1">
             <Unlock className="w-3.5 h-3.5" /> مفعّل
           </span>

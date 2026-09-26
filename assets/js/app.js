@@ -737,6 +737,15 @@ class DeutscheWeltApp {
     }, 1000);
   }
 
+  openAdminModal() {
+    if (window.dwAdmin && typeof window.dwAdmin.openAdminPortal === 'function') {
+      window.dwAdmin.openAdminPortal();
+    } else {
+      const modal = document.getElementById('adminPortalModal');
+      if (modal) modal.classList.add('active');
+    }
+  }
+
   // Enrollment Modal
   openEnrollModal(courseId, courseTitle, coursePrice) {
     const modal = document.getElementById('enrollModal');
@@ -2390,9 +2399,35 @@ class DeutscheWeltApp {
     try {
       const booksData = await window.DW_API.books.getBooks();
       this.backendBooks = booksData;
+      this.applyBackendBooksToDOM(booksData);
     } catch (err) {
       console.warn('Could not fetch books catalog from backend:', err.message);
     }
+  }
+
+  applyBackendBooksToDOM(booksGrouped) {
+    if (!booksGrouped || typeof booksGrouped !== 'object') return;
+    const isAdmin = window.DW_API && window.DW_API.client.isAdmin();
+
+    Object.keys(booksGrouped).forEach(level => {
+      const books = booksGrouped[level];
+      if (!Array.isArray(books) || !books.length) return;
+      const book = books[0];
+      const hasAccess = book.has_access || isAdmin;
+
+      const coverEl = document.querySelector(`.book-cover-${level.toLowerCase()}`);
+      const bookCard = coverEl ? coverEl.closest('.book-card') : null;
+      if (bookCard && hasAccess) {
+        const orderBtn = bookCard.querySelector('.btn-order-book, [onclick*="openBookOrderModal"]');
+        if (orderBtn) {
+          orderBtn.outerHTML = `
+            <button type="button" class="btn btn-primary btn-sm" onclick="window.dwApp.downloadBookPdf(${book.id}, '${book.name.replace(/'/g, "\\'")}')" style="background:#10b981; border-color:#10b981; color:#fff; font-weight:bold;">
+              <i class="fas fa-file-pdf"></i> تحميل كتاب ${level} (PDF مفعّل) ✅
+            </button>
+          `;
+        }
+      }
+    });
   }
 
   async downloadBookPdf(bookId, bookName) {

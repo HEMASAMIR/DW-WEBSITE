@@ -120,7 +120,7 @@ export default function HeroSection() {
             </div>
             <div className="glass-pill px-4 py-2 rounded-full flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-teal-600" />
-              <span>كتب ومناهج مطبوعة</span>
+              <span>كتب ومناهج أونلاين</span>
             </div>
             <div className="glass-pill px-4 py-2 rounded-full flex items-center gap-2">
               <Zap className="w-4 h-4 text-teal-600" />

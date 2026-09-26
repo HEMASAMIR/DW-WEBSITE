@@ -20,7 +20,7 @@ from django.http import FileResponse, HttpResponse
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from academy.models import CourseLevel, LevelAccess, Video, CourseFile
 from academy.storage import protected_file_response
@@ -154,13 +154,14 @@ def _user_has_level_access(user, level: CourseLevel) -> bool:
 # ---------------------------------------------------------------------------
 
 class CourseLevelsAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         levels = CourseLevel.objects.filter(is_active=True).order_by('order')
         data = []
+        user = request.user if (request.user and request.user.is_authenticated) else None
         for lvl in levels:
-            has_access = _user_has_level_access(request.user, lvl)
+            has_access = _user_has_level_access(user, lvl) if user else False
             entry = {
                 'id': lvl.id,
                 'name': lvl.name,

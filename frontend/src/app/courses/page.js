@@ -6,16 +6,17 @@ import { formatPrice } from '@/services/courses.service';
 import AccessGroups, { AccessCard } from '@/components/common/AccessGroups';
 
 export default function CoursesPage() {
-  const { allCourses, loading, error, requiresLogin, reload } = useCourses();
+  const { allCourses, loading, error, requiresLogin, isGuest, reload } = useCourses();
 
   return (
     <AccessGroups
       title="المستويات"
-      subtitle="المستويات المفعّلة لك تقدر تدخل تشوف محاضراتها على طول، والباقي متاح للاشتراك."
+      subtitle={isGuest ? 'كل مستويات الأكاديمية وأسعارها.' : 'المستويات المفعّلة لك تقدر تدخل تشوف محاضراتها على طول، والباقي متاح للاشتراك.'}
       items={allCourses}
       loading={loading}
       error={error}
       requiresLogin={requiresLogin}
+      isGuest={isGuest}
       reload={reload}
       emptyText="لا توجد مستويات متاحة حالياً."
       renderCard={(c) => (
@@ -26,7 +27,8 @@ export default function CoursesPage() {
           subtitle={c.subName}
           price={formatPrice(c.price)}
           hasAccess={c.hasAccess}
-          actionLabel={c.hasAccess ? 'ادخل للمحاضرات' : 'اشترك'}
+          guest={isGuest}
+          actionLabel={c.hasAccess ? 'ادخل للمحاضرات' : isGuest ? 'التفاصيل' : 'اشترك'}
         />
       )}
     />

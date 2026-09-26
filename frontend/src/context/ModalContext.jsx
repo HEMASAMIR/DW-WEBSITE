@@ -28,11 +28,6 @@ export function ModalProvider({ children }) {
     setActiveModal('bookOrder');
   };
 
-  const openBookDetailsModal = (book) => {
-    setModalData({ book });
-    setActiveModal('bookDetails');
-  };
-
   const openQuizModal = () => {
     setModalData(null);
     setActiveModal('quiz');
@@ -82,7 +77,6 @@ export function ModalProvider({ children }) {
     openLoginPromptModal,
     openEnrollModal,
     openBookOrderModal,
-    openBookDetailsModal,
     openQuizModal,
     openStudentDashboard,
     openProfileModal,

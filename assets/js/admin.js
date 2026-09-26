@@ -35,7 +35,7 @@ class DeutscheWeltAdmin {
       return window.DW_API.client.request(endpoint, options);
     }
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    const baseUrl = isLocal ? 'http://localhost:8000' : 'https://deutschwelt.pythonanywhere.com';
+    const baseUrl = isLocal ? (window.location.origin || 'http://127.0.0.1:8000') : 'https://py.deutschewelt.academy';
     options.headers = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ class DeutscheWeltAdmin {
       if (!loginSuccess) {
         try {
           const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-          const baseUrl = isLocal ? 'http://localhost:8000' : 'https://deutschwelt.pythonanywhere.com';
+          const baseUrl = isLocal ? (window.location.origin || 'http://127.0.0.1:8000') : 'https://py.deutschewelt.academy';
           const res = await fetch(`${baseUrl}/api/users/login/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

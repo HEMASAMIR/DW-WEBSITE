@@ -11,7 +11,7 @@
 
   // Configurable Base URL (automatically detects local environment or production)
   const isLocalHost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  const DEFAULT_BASE_URL = isLocalHost ? 'http://localhost:8000' : 'https://deutschwelt.pythonanywhere.com';
+  const DEFAULT_BASE_URL = isLocalHost ? (window.location.origin || 'http://127.0.0.1:8000') : 'https://py.deutschewelt.academy';
   const STORAGE_KEYS = {
     ACCESS_TOKEN: 'dw_access_token',
     REFRESH_TOKEN: 'dw_refresh_token',

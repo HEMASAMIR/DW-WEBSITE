@@ -11,7 +11,7 @@ import { ArrowRight, CheckCircle2, Unlock, Lock, Loader2, AlertCircle, RefreshCw
 
 export default function CoursePage() {
   const { id } = useParams();
-  const { allCourses, loading, error, requiresLogin, reload } = useCourses();
+  const { allCourses, loading, error, requiresLogin, isGuest, reload } = useCourses();
   const { openAuthModal } = useModal();
 
   const level = allCourses.find((c) => String(c.id) === String(id));
@@ -59,7 +59,7 @@ export default function CoursePage() {
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center gap-1">
                       <Unlock className="w-3.5 h-3.5" /> مفعّل لك
                     </span>
-                  ) : (
+                  ) : isGuest ? null : (
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-300 flex items-center gap-1">
                       <Lock className="w-3.5 h-3.5" /> غير مشترك
                     </span>

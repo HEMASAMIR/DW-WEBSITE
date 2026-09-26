@@ -19,6 +19,7 @@ import struct
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.core.mail import send_mail
 from django.utils import timezone
 
@@ -183,21 +184,20 @@ class LoginAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get('email', '').strip().lower()
+        identifier = (request.data.get('email') or request.data.get('username') or '').strip()
         password = request.data.get('password', '').strip()
 
-        if not email or not password:
+        if not identifier or not password:
             return Response(
-                {'detail': 'يرجى إدخال البريد الإلكتروني وكلمة المرور.'},
+                {'detail': 'يرجى إدخال اسم المستخدم أو البريد الإلكتروني وكلمة المرور.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Find user by email
-        try:
-            user_obj = User.objects.get(email__iexact=email)
-        except User.DoesNotExist:
+        # Find user by email or username
+        user_obj = User.objects.filter(Q(email__iexact=identifier) | Q(username__iexact=identifier)).first()
+        if not user_obj:
             return Response(
-                {'detail': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'},
+                {'detail': 'بيانات الدخول غير صحيحة.'},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 

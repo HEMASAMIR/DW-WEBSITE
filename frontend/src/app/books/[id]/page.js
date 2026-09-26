@@ -8,7 +8,6 @@ import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
 import { booksService } from '@/services/books.service';
 import { formatPrice } from '@/services/courses.service';
-import { BOOK_EXTRAS } from '@/constants/siteContent';
 import {
   ArrowRight, BookOpen, CheckCircle2, Eye, ShoppingCart, Lock, LogIn, Loader2, AlertCircle, RefreshCw, FileText,
 } from 'lucide-react';
@@ -17,10 +16,9 @@ export default function BookPage() {
   const { id } = useParams();
   const { books, loading, error, requiresLogin, reload } = useBooks();
   const { isAuthenticated } = useAuth();
-  const { openAuthModal, openBookOrderModal, openFileViewer } = useModal();
+  const { openAuthModal, openBookOrderModal, openFileViewer, openLoginPromptModal } = useModal();
 
   const book = books.find((b) => String(b.id) === String(id));
-  const extras = book ? BOOK_EXTRAS[book.level?.toUpperCase()] : null;
   const price = book ? formatPrice(book.price) : null;
   const otherBooks = books.filter((b) => b.id !== book?.id);
 
@@ -72,26 +70,15 @@ export default function BookPage() {
                     </span>
                   )}
                   <h1 className="text-2xl sm:text-3xl font-black text-[#0f172a]">{book.name}</h1>
-                  {extras?.subName && <p className="text-sm text-amber-700 font-semibold">{extras.subName}</p>}
+                  <p className="text-sm text-slate-500 font-semibold">مستوى {book.level}</p>
                 </div>
-
-                {extras?.features?.length > 0 && (
-                  <ul className="space-y-2.5">
-                    {extras.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-slate-700">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                )}
 
                 <div className="pt-4 border-t border-slate-100 space-y-3">
                   {price && (
                     <div className="flex items-center justify-between">
                       <span className="text-3xl font-black text-gradient-gold">{price} ج.م</span>
                       <span className="text-xs text-teal-700 font-bold bg-teal-50 border border-teal-200 px-3 py-1 rounded-full flex items-center gap-1">
-                        <FileText className="w-3.5 h-3.5" /> نسخة PDF
+                        <FileText className="w-3.5 h-3.5" /> عرض أونلاين
                       </span>
                     </div>
                   )}
@@ -106,11 +93,15 @@ export default function BookPage() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => (isAuthenticated ? openBookOrderModal(book) : openAuthModal('login'))}
+                      onClick={() =>
+                        isAuthenticated
+                          ? openBookOrderModal(book)
+                          : openLoginPromptModal({ type: 'book', name: book.name, price, item: book })
+                      }
                       className="w-full glass-pill-gold py-3.5 rounded-2xl text-sm font-black flex items-center justify-center gap-2"
                     >
-                      {isAuthenticated ? <ShoppingCart className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-                      {isAuthenticated ? 'اطلب الكتاب عبر واتساب' : 'سجّل الدخول لشراء الكتاب'}
+                      <ShoppingCart className="w-4 h-4" />
+                      {isAuthenticated ? 'اطلب الكتاب عبر واتساب' : 'اطلب الكتاب'}
                     </button>
                   )}
                   {!book.hasAccess && isAuthenticated && (

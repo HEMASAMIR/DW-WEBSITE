@@ -20,7 +20,7 @@ export default function LevelView({ level }) {
 
 function LockedLevel({ level }) {
   const { isAuthenticated } = useAuth();
-  const { openEnrollModal, openAuthModal } = useModal();
+  const { openEnrollModal, openLoginPromptModal } = useModal();
   const price = formatPrice(level.price);
 
   return (
@@ -28,9 +28,13 @@ function LockedLevel({ level }) {
       <div className="w-16 h-16 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center mx-auto">
         <Lock className="w-8 h-8 text-amber-400" />
       </div>
-      <h3 className="text-xl font-black text-white">محاضرات المستوى {level.code} مقفولة</h3>
+      <h3 className="text-xl font-black text-white">
+        {isAuthenticated ? `محاضرات المستوى ${level.code} مقفولة` : `محاضرات المستوى ${level.code} متاحة للمشتركين`}
+      </h3>
       <p className="text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
-        اشترك في المستوى وبعد تأكيد الدفع هيتفعّل على حسابك فوراً وتقدر تشوف كل المحاضرات وتحمّل الملفات وتشارك في المناقشة.
+        {isAuthenticated
+          ? 'اشترك في المستوى وبعد تأكيد الدفع هيتفعّل على حسابك فوراً وتقدر تشوف كل المحاضرات والملفات وتشارك في المناقشة.'
+          : 'للاشتراك لازم تسجّل الدخول أو تعمل حساب جديد الأول، وبعد تأكيد الدفع هيتفعّل المستوى على حسابك.'}
       </p>
       {price && <p className="text-3xl font-black text-amber-400">{price} ج.م</p>}
       {isAuthenticated ? (
@@ -43,11 +47,11 @@ function LockedLevel({ level }) {
         </button>
       ) : (
         <button
-          onClick={() => openAuthModal('login')}
+          onClick={() => openLoginPromptModal({ type: 'course', title: level.title, price, item: level })}
           className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-sm px-7 py-3.5 rounded-2xl shadow-lg"
         >
           <LogIn className="w-4 h-4" />
-          سجّل الدخول للاشتراك
+          اشترك الآن
         </button>
       )}
     </div>

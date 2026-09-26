@@ -1,12 +1,9 @@
 import apiClient, { saveBlob, filenameFromResponse } from './api';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
-import { LEVEL_EXTRAS } from '@/constants/siteContent';
-
 const toNumber = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
 
-/** Normalizes an API level and attaches presentation-only extras. */
+/** Normalizes an API level. Only backend data — no hard-coded text. */
 export function normalizeLevel(level) {
-  const extras = LEVEL_EXTRAS[level.name] || {};
   return {
     id: level.id,
     code: level.name,
@@ -16,9 +13,9 @@ export function normalizeLevel(level) {
     oldPrice: toNumber(level.old_price),
     order: level.order ?? 0,
     hasAccess: !!level.has_access,
-    subName: extras.subName,
-    badge: extras.badge,
-    features: extras.features || [],
+    subName: null,
+    badge: null,
+    features: [],
   };
 }
 
@@ -66,6 +63,12 @@ export const coursesService = {
     const { data } = await apiClient.get(API_ENDPOINTS.COURSE_LEVELS);
     const list = Array.isArray(data) ? data : data?.results || data?.value || [];
     return list.map(normalizeLevel).sort((a, b) => a.order - b.order);
+  },
+
+  /** Real catalog for visitors who are not logged in (served by the site, see lib/publicCatalog). */
+  getPublicLevels: async () => {
+    const { data } = await apiClient.get('/public-data/levels');
+    return (Array.isArray(data) ? data : []).map(normalizeLevel).sort((a, b) => a.order - b.order);
   },
 
   /** Returns { level, videos, files }. Throws 403 if the user has no access. */

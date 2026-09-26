@@ -220,7 +220,7 @@ export default function CoursesSection() {
                         {!isAuthenticated ? (
                           <>
                             <Lock className="w-3.5 h-3.5" />
-                            <span>سجّل الدخول للاشتراك</span>
+                            <span>اشترك الآن</span>
                           </>
                         ) : course.hasAccess ? (
                           <>

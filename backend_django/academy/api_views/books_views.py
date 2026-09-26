@@ -8,7 +8,7 @@ Book files are in protected storage and only reachable through these access-chec
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from academy.models import DigitalBook, BookAccess
 from academy.storage import protected_file_response
@@ -36,25 +36,27 @@ def _serialize_book(book, user):
 
 
 class BooksListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         books = DigitalBook.objects.filter(is_active=True).order_by('level', 'name')
+        user = request.user if (request.user and request.user.is_authenticated) else None
         grouped = {}
         for book in books:
-            grouped.setdefault(book.level, []).append(_serialize_book(book, request.user))
+            grouped.setdefault(book.level, []).append(_serialize_book(book, user))
         return Response(grouped, status=status.HTTP_200_OK)
 
 
 class BookDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, book_id):
         try:
             book = DigitalBook.objects.get(pk=book_id, is_active=True)
         except DigitalBook.DoesNotExist:
             return Response({'detail': 'الكتاب غير موجود.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response(_serialize_book(book, request.user))
+        user = request.user if (request.user and request.user.is_authenticated) else None
+        return Response(_serialize_book(book, user))
 
 
 class BookFileAPIView(APIView):
