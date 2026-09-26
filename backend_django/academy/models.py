@@ -39,6 +39,7 @@ class CourseLevel(models.Model):
         ('A2', 'A2 - المحادثة والتأسيس الثاني'),
         ('B1', 'B1 - مؤهل السفر والكول سنتر'),
         ('B2', 'B2 - الطلاقة والكفاءة التخصصية'),
+        ('C1', 'C1 - قمة الطلاقة اللغوية والأكاديمية (قريباً)'),
     ]
 
     name = models.CharField(max_length=10, choices=LEVEL_CHOICES, unique=True, verbose_name="رمز المستوى")
@@ -510,3 +511,25 @@ class Branch(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.city}"
+
+
+class SiteAnnouncement(models.Model):
+    """
+    Global promotional announcement banner managed by the admin.
+    """
+    is_active = models.BooleanField(default=True, verbose_name="تفعيل الإعلان (إظهار / إخفاء)")
+    tag = models.CharField(max_length=100, default='🔥 عرض خاص', verbose_name="شارة الإعلان (الوسم)")
+    title = models.CharField(max_length=255, default='خصم خاص 25% على باقة المستويات المجمعة', verbose_name="عنوان الإعلان الرئيسي")
+    desc = models.TextField(default='التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية مستمرة.', verbose_name="نص الإعلان")
+    has_discount = models.BooleanField(default=True, verbose_name="تفعيل شارة الخصم")
+    discount_percent = models.CharField(max_length=50, blank=True, default='25%', verbose_name="نسبة الخصم")
+    cta_text = models.CharField(max_length=100, default='احجز مقعدك بالخصم', verbose_name="نص زر التفاعل")
+    cta_link = models.CharField(max_length=255, default='/#online-courses', verbose_name="رابط الزر")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "إعلان الموقع الترويجي"
+        verbose_name_plural = "إعلانات الموقع"
+
+    def __str__(self):
+        return f"{self.title} ({'مفعل' if self.is_active else 'معطل'})"

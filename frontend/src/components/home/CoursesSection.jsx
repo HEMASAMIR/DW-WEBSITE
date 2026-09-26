@@ -56,6 +56,19 @@ const LEVEL_THEMES = {
     seats: 5,
     germanTag: 'Oberstufe (B2) • الطلاقة والألماني الطبي',
     perks: ['مصطلحات Fachsprache Medizin للأطباء والتمريض', 'التفاوض واللغة الألمانية الرفيعة للشركات', 'اجتياز امتحانات B2 والطلاقة التامة بيئة العمل']
+  },
+  C1: {
+    gradient: 'from-amber-500/15 via-rose-500/10 to-white',
+    badgeBg: 'bg-gradient-to-tr from-amber-500 via-rose-600 to-amber-600 text-white shadow-amber-500/30',
+    borderHover: 'hover:border-amber-400',
+    seats: null,
+    isComingSoon: true,
+    germanTag: 'Fachstufe (C1) • قمة الاحتراف والطلاقة الأكاديمية',
+    perks: [
+      'الطلاقة التلقائية والتعبير كمتحدث ألماني أصلي (Native Speaker)',
+      'المصطلحات التخصصية للأطباء، المهندسين والباحثين وسوق العمل بألمانيا',
+      'تأهيل لامتحانات Goethe C1 & Telc C1 Hochschule للأبحاث والجامعات'
+    ]
   }
 };
 
@@ -68,6 +81,7 @@ export default function CoursesSection() {
   const tabs = [
     { key: 'ALL', label: 'جميع المستويات' },
     ...allCourses.map((c) => ({ key: c.code, label: `المستوى ${c.code}` })),
+    ...(!allCourses.some((c) => c.code === 'C1') ? [{ key: 'C1', label: 'المستوى C1 (قريباً 🚀)' }] : []),
   ];
 
   const handleAction = (course) => {
@@ -106,7 +120,7 @@ export default function CoursesSection() {
           <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
             الكورسات الأونلاين{' '}
             <span className="bg-gradient-to-r from-teal-600 via-sky-600 to-amber-600 bg-clip-text text-transparent">
-              (A1 - B2)
+              (A1 - C1)
             </span>
           </h2>
 
@@ -321,6 +335,77 @@ export default function CoursesSection() {
                 </div>
               );
             })}
+
+            {/* C1 Upcoming Flagship Level Card */}
+            {(activeTab === 'ALL' || activeTab === 'C1') && (
+              <div className="group relative rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 backdrop-blur-xl border-2 border-dashed border-amber-400/60 p-6 sm:p-7 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between overflow-hidden">
+                {/* Luminous Glow Ambient Light */}
+                <div className="absolute top-0 right-0 w-36 h-36 bg-amber-400/15 rounded-full blur-3xl pointer-events-none -z-10 group-hover:bg-amber-400/25 transition-all" />
+
+                <div>
+                  {/* Top Row: Level Code Emblem + Coming Soon Badge */}
+                  <div className="flex items-center justify-between mb-5 gap-2">
+                    <span className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 via-rose-600 to-amber-600 text-white font-black text-2xl flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shrink-0">
+                      C1
+                    </span>
+
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-[0_0_12px_rgba(251,191,36,0.25)]">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                      <span>🚀 قريباً جداً • Demnächst</span>
+                    </span>
+                  </div>
+
+                  {/* Title & German Subtitle */}
+                  <div className="space-y-1 mb-4">
+                    <h3 className="text-xl font-black text-white group-hover:text-amber-300 transition-colors leading-snug">
+                      كورس اللغة الألمانية - المستوى المتقدم C1
+                    </h3>
+                    <p className="text-xs text-amber-300 font-extrabold flex items-center gap-1 font-mono">
+                      <span>Fachstufe (C1) • قمة الطلاقة والألماني المتقدم</span>
+                    </p>
+                  </div>
+
+                  {/* Slick Captivating Slogan (جملة رايقة أوي) */}
+                  <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-amber-400/30 mb-5 text-xs text-amber-100 font-medium leading-relaxed shadow-inner">
+                    « سقف الطلاقة وقمة الاحتراف اللغوي 🇩🇪 — قريباً رحلتك لاجتياز أعقد النقاشات، الأبحاث والمناصب القيادية وسوق العمل المتقدم في ألمانيا بطلاقة المتحدث الأصلي! »
+                  </div>
+
+                  {/* Perks List */}
+                  <div className="space-y-2 mb-6 pt-1">
+                    {[
+                      'الطلاقة التلقائية والتعبير كمتحدث ألماني أصلي (Native Speaker)',
+                      'المصطلحات التخصصية للأطباء، المهندسين والباحثين وسوق العمل بألمانيا',
+                      'تأهيل لامتحانات Goethe C1 & Telc C1 Hochschule للأبحاث والجامعات',
+                      'أسبقية الحجز وتخفيض حصري للملتحقين بأول دفعة'
+                    ].map((feat, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs font-bold text-slate-200">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                        <span className="leading-tight">{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom Action: Waitlist Button */}
+                <div className="pt-4 border-t border-slate-800 space-y-3 mt-auto">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-amber-300">يتم التجهيز والتصوير حالياً ⏳</span>
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">VIP الدفعة الأولى</span>
+                  </div>
+
+                  <a
+                    href={`https://wa.me/2010552287454?text=${encodeURIComponent('مرحباً هير خالد، أود تسجيل اسمي في قائمة الانتظار لكورس C1 وحجز الأولوية في أول دفعة فور انطلاقها.')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full relative group/btn py-3 px-5 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-slate-950 hover:shadow-[0_0_20px_rgba(251,191,36,0.5)] cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4 text-slate-950" />
+                    <span>انضم لقائمة الانتظار وحجز الأولوية 🔔</span>
+                  </a>
+                </div>
+
+              </div>
+            )}
           </div>
         )}
 

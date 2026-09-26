@@ -47,3 +47,7 @@ from .admin_views import (
     AdminCourseRequestsAPIView,
     AdminBookRequestsAPIView,
 )
+
+from .announcement_views import (
+    AnnouncementAPIView,
+)

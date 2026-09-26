@@ -39,6 +39,10 @@ export const adminService = {
   // ---- Roles ----
   setUserGroups: async (userId, groups) =>
     (await apiClient.post(API_ENDPOINTS.USER_GROUPS(userId), { groups })).data,
+
+  // ---- Announcement Banner ----
+  getAnnouncement: async () => (await apiClient.get(API_ENDPOINTS.ANNOUNCEMENT)).data,
+  updateAnnouncement: async (data) => (await apiClient.post(API_ENDPOINTS.ANNOUNCEMENT, data)).data,
 };
 
 function toFormData(fields) {

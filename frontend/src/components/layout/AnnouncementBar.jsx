@@ -8,47 +8,41 @@ import {
   ChevronRight, 
   ChevronLeft, 
   Sparkles, 
-  Award, 
   BookOpen, 
-  Briefcase 
+  Briefcase,
+  Percent
 } from 'lucide-react';
+import { adminService } from '@/services/admin.service';
 
-const AD_ITEMS = [
+const DEFAULT_ITEMS = [
   {
     id: 1,
-    tag: '🏛️ جوته وتيلك',
-    icon: Award,
-    title: 'تأهيل مكثف لامتحانات Goethe & Telc B1/B2',
-    desc: 'معسكرات إعداد معتمدة مع هير خالد بنسبة اجتياز قياسية 98.4% لسوق العمل والسفر لألمانيا.',
-    cta: 'استعرض المستويات والأسعار',
-    link: '/#online-courses',
-    badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
-    highlightColor: 'text-amber-300',
-  },
-  {
-    id: 2,
-    tag: '🔥 عرض خاص 25%',
+    tag: '🔥 عرض خاص',
     icon: Flame,
     title: 'خصم خاص 25% على باقة المستويات المجمعة',
     desc: 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية 24/7 وبنك أسئلة ومتابعة شخصية مستمرة.',
     cta: 'احجز مقعدك بالخصم',
     link: '/#online-courses',
-    badgeColor: 'from-rose-500/20 to-orange-500/20 text-rose-300 border-rose-400/50',
-    highlightColor: 'text-rose-300',
+    badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
+    highlightColor: 'text-amber-300',
+    hasDiscount: true,
+    discountPercent: '25%',
   },
   {
-    id: 3,
+    id: 2,
     tag: '📚 كتب المنهج المعتمدة',
     icon: BookOpen,
     title: 'كتاب دويتشه فيلت الشامل (مطبوع + PDF + صوتيات QR)',
-    desc: 'المناهج الأصلية الأكثر طلباً مع شروحات وتدريبات وحلول امتحانات وتوصيل لجميع المحافظات.',
+    desc: 'المناهج الأصلية الأكثر طلباً مع شروحات وتدريبات وحلول وتوصيل سريع لجميع المحافظات.',
     cta: 'اطلب كتابك الآن',
     link: '/#books-store',
     badgeColor: 'from-emerald-500/20 to-teal-500/20 text-emerald-300 border-emerald-400/50',
     highlightColor: 'text-emerald-300',
+    hasDiscount: false,
+    discountPercent: '',
   },
   {
-    id: 4,
+    id: 3,
     tag: '💼 سوق العمل الألماني',
     icon: Briefcase,
     title: 'تأهيل احترافي لكبرى شركات الـ Call Center الألمانية',
@@ -57,35 +51,115 @@ const AD_ITEMS = [
     link: '/#contact',
     badgeColor: 'from-cyan-500/20 to-blue-500/20 text-cyan-300 border-cyan-400/50',
     highlightColor: 'text-cyan-300',
+    hasDiscount: false,
+    discountPercent: '',
   },
 ];
 
 export default function AnnouncementBar() {
+  const [items, setItems] = useState(DEFAULT_ITEMS);
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
+  // Load Admin Announcement configuration from API and localStorage
+  const loadAnnouncementConfig = async () => {
+    try {
+      let config = null;
+      try {
+        config = await adminService.getAnnouncement();
+      } catch {
+        const local = localStorage.getItem('dw_site_announcement');
+        if (local) config = JSON.parse(local);
+      }
+
+      if (config) {
+        if (config.is_active === false) {
+          setIsVisible(false);
+          return;
+        }
+        setIsVisible(true);
+
+        const customAdminItem = {
+          id: 'admin-custom',
+          tag: config.tag || '🔥 عرض خاص',
+          icon: config.has_discount ? Flame : Sparkles,
+          title: config.title || 'خصم خاص على باقة المستويات الألمانية',
+          desc: config.desc || 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية.',
+          cta: config.cta_text || 'احجز مقعدك بالخصم',
+          link: config.cta_link || '/#online-courses',
+          badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
+          highlightColor: 'text-amber-300',
+          hasDiscount: !!config.has_discount,
+          discountPercent: config.discount_percent || '',
+        };
+
+        // Put custom announcement first
+        setItems([
+          customAdminItem,
+          DEFAULT_ITEMS[1], // Books
+          DEFAULT_ITEMS[2], // Call Center
+        ]);
+      }
+    } catch {
+      setIsVisible(true);
+    }
+  };
+
   useEffect(() => {
-    if (isPaused) return;
+    loadAnnouncementConfig();
+
+    const handleUpdate = (e) => {
+      const config = e.detail;
+      if (config) {
+        if (config.is_active === false) {
+          setIsVisible(false);
+          return;
+        }
+        setIsVisible(true);
+        const customItem = {
+          id: 'admin-custom',
+          tag: config.tag || '🔥 عرض خاص',
+          icon: config.has_discount ? Flame : Sparkles,
+          title: config.title || 'خصم خاص على باقة المستويات الألمانية',
+          desc: config.desc || 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية.',
+          cta: config.cta_text || 'احجز مقعدك بالخصم',
+          link: config.cta_link || '/#online-courses',
+          badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
+          highlightColor: 'text-amber-300',
+          hasDiscount: !!config.has_discount,
+          discountPercent: config.discount_percent || '',
+        };
+        setItems([customItem, DEFAULT_ITEMS[1], DEFAULT_ITEMS[2]]);
+        setIndex(0);
+      }
+    };
+
+    window.addEventListener('announcementUpdated', handleUpdate);
+    return () => window.removeEventListener('announcementUpdated', handleUpdate);
+  }, []);
+
+  useEffect(() => {
+    if (isPaused || items.length <= 1) return;
     const timer = setInterval(() => {
-      setIndex((i) => (i + 1) % AD_ITEMS.length);
+      setIndex((i) => (i + 1) % items.length);
     }, 5500);
     return () => clearInterval(timer);
-  }, [isPaused]);
+  }, [isPaused, items.length]);
 
-  if (!isVisible) return null;
+  if (!isVisible || items.length === 0) return null;
 
-  const current = AD_ITEMS[index];
+  const current = items[index] || items[0];
   const IconComponent = current.icon;
 
   const handlePrev = (e) => {
     e.preventDefault();
-    setIndex((i) => (i === 0 ? AD_ITEMS.length - 1 : i - 1));
+    setIndex((i) => (i === 0 ? items.length - 1 : i - 1));
   };
 
   const handleNext = (e) => {
     e.preventDefault();
-    setIndex((i) => (i + 1) % AD_ITEMS.length);
+    setIndex((i) => (i + 1) % items.length);
   };
 
   return (
@@ -94,7 +168,7 @@ export default function AnnouncementBar() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       role="region"
-      aria-label="شريط الإعلانات والعروض الترويجية"
+      aria-label="شريط الإعلانات الترويجي"
     >
       {/* Radiant Top Luminous Accent Line */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-90 animate-pulse" />
@@ -108,33 +182,35 @@ export default function AnnouncementBar() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
             </span>
-            <span className="tracking-wide">جديد وحصري</span>
+            <span className="tracking-wide">إعلان مميز</span>
             <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
           </div>
 
-          {/* Navigation Arrows for fast browsing */}
-          <div className="flex items-center gap-0.5 bg-slate-800/80 rounded-full p-0.5 border border-slate-700">
-            <button 
-              onClick={handleNext}
-              className="p-1 rounded-full hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-              title="الإعلان التالي"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-            <button 
-              onClick={handlePrev}
-              className="p-1 rounded-full hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-              title="الإعلان السابق"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          {/* Navigation Arrows for fast browsing if multiple items */}
+          {items.length > 1 && (
+            <div className="flex items-center gap-0.5 bg-slate-800/80 rounded-full p-0.5 border border-slate-700">
+              <button 
+                onClick={handleNext}
+                className="p-1 rounded-full hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                title="الإعلان التالي"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+              <button 
+                onClick={handlePrev}
+                className="p-1 rounded-full hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                title="الإعلان السابق"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Center: Animated Announcement Message with Ultra-Clear Typography */}
         <div className="w-full overflow-hidden text-center md:text-right flex items-center justify-center md:justify-start gap-2 sm:gap-3 min-h-[32px]">
           <div 
-            key={current.id} 
+            key={current.id || index} 
             className="flex flex-wrap items-center justify-center md:justify-start gap-2 animate-fadeIn transition-all duration-300"
           >
             {/* Tag Badge */}
@@ -142,6 +218,14 @@ export default function AnnouncementBar() {
               <IconComponent className="w-3.5 h-3.5" />
               <span>{current.tag}</span>
             </span>
+
+            {/* Optional Discount Tag if Admin enabled discount */}
+            {current.hasDiscount && current.discountPercent && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-300 border border-rose-400/40 shadow-[0_0_10px_rgba(244,63,94,0.3)] animate-pulse">
+                <Percent className="w-3 h-3 text-rose-400" />
+                <span>خصم {current.discountPercent}</span>
+              </span>
+            )}
 
             {/* Title & Description with Maximum Contrast */}
             <div className="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm font-medium">
@@ -169,20 +253,22 @@ export default function AnnouncementBar() {
       </div>
 
       {/* Progress Dots Bar */}
-      <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-1 pb-0.5">
-        {AD_ITEMS.map((item, i) => (
-          <button
-            key={item.id}
-            onClick={() => setIndex(i)}
-            className={`h-1 rounded-full transition-all duration-300 ${
-              i === index 
-                ? 'w-6 bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]' 
-                : 'w-1.5 bg-slate-700 hover:bg-slate-500'
-            }`}
-            title={item.tag}
-          />
-        ))}
-      </div>
+      {items.length > 1 && (
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-1 pb-0.5">
+          {items.map((item, i) => (
+            <button
+              key={item.id || i}
+              onClick={() => setIndex(i)}
+              className={`h-1 rounded-full transition-all duration-300 ${
+                i === index 
+                  ? 'w-6 bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]' 
+                  : 'w-1.5 bg-slate-700 hover:bg-slate-500'
+              }`}
+              title={item.tag}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

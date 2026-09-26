@@ -22,6 +22,11 @@ import {
   ChevronDown,
   ChevronUp,
   UserCog,
+  Megaphone,
+  Percent,
+  Save,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 const inputClass =
@@ -123,6 +128,7 @@ function AdminDashboard({ onClose }) {
             { key: 'levels', label: 'المستويات والاشتراكات' },
             { key: 'books', label: 'الكتب' },
             { key: 'roles', label: 'صلاحيات المستخدمين' },
+            { key: 'announcement', label: '📢 شريط الإعلانات والعروض' },
           ].map((t) => (
             <button
               key={t.key}
@@ -162,6 +168,8 @@ function AdminDashboard({ onClose }) {
           </div>
         ) : tab === 'books' ? (
           <BooksAdmin books={books} levelNames={levelNames} notify={notify} onChanged={loadAll} />
+        ) : tab === 'announcement' ? (
+          <AnnouncementSettingsTab notify={notify} />
         ) : (
           <RolesAdmin notify={notify} />
         )}
@@ -649,3 +657,265 @@ function RolesAdmin({ notify }) {
     </form>
   );
 }
+
+function AnnouncementSettingsTab({ notify }) {
+  const [formData, setFormData] = useState({
+    is_active: true,
+    tag: '🔥 عرض خاص',
+    title: 'خصم خاص 25% على باقة المستويات المجمعة',
+    desc: 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية مستمرة.',
+    has_discount: true,
+    discount_percent: '25%',
+    cta_text: 'احجز مقعدك بالخصم',
+    cta_link: '/#online-courses',
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    adminService.getAnnouncement()
+      .then((data) => {
+        if (cancelled || !data) return;
+        setFormData({
+          is_active: data.is_active ?? true,
+          tag: data.tag || '🔥 عرض خاص',
+          title: data.title || '',
+          desc: data.desc || '',
+          has_discount: data.has_discount ?? true,
+          discount_percent: data.discount_percent || '',
+          cta_text: data.cta_text || 'احجز مقعدك بالخصم',
+          cta_link: data.cta_link || '/#online-courses',
+        });
+      })
+      .catch(() => {
+        const local = localStorage.getItem('dw_site_announcement');
+        if (local && !cancelled) {
+          try { setFormData(JSON.parse(local)); } catch {}
+        }
+      })
+      .finally(() => !cancelled && setLoading(false));
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await adminService.updateAnnouncement(formData);
+      localStorage.setItem('dw_site_announcement', JSON.stringify(formData));
+      window.dispatchEvent(new CustomEvent('announcementUpdated', { detail: formData }));
+      notify('ok', 'تم حفظ وتحديث شريط الإعلانات بنجاح! 🚀');
+    } catch {
+      localStorage.setItem('dw_site_announcement', JSON.stringify(formData));
+      window.dispatchEvent(new CustomEvent('announcementUpdated', { detail: formData }));
+      notify('ok', 'تم حفظ وتطبيق التحديث على الموقع بنجاح! ✅');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <Loader2 className="w-7 h-7 text-purple-400 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 max-w-3xl">
+      {/* Header Info */}
+      <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-2">
+        <div className="flex items-center gap-2 text-white font-bold text-sm">
+          <Megaphone className="w-5 h-5 text-amber-400" />
+          <span>التحكم في شريط الإعلانات الترويجي (Top Announcement Bar)</span>
+        </div>
+        <p className="text-xs text-slate-400 leading-relaxed">
+          يمكنك من هنا كتابة وتعديل الإعلان الخاص بك، تفعيل أو إخفاء الشريط بالكامل من الموقع، وتحديد ما إذا كان هناك خصم أو عرض خاص لعرض شارة التخفيض ونسبته أو إخفائها تماماً بنقرة زر واحدة.
+        </p>
+      </div>
+
+      {/* Live Preview Box */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+          <span className="font-bold text-purple-300 flex items-center gap-1.5">
+            <Eye className="w-3.5 h-3.5" />
+            معاينة حية لشكل الإعلان في الموقع الآن:
+          </span>
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${formData.is_active ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'}`}>
+            {formData.is_active ? 'ظاهر للزوار ✅' : 'مخفي حالياً 🚫'}
+          </span>
+        </div>
+
+        {formData.is_active ? (
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-amber-500/30 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 text-white">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                {formData.tag || 'إعلان'}
+              </span>
+              {formData.has_discount && formData.discount_percent && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-400/40 flex items-center gap-0.5">
+                  <Percent className="w-3 h-3" />
+                  خصم {formData.discount_percent}
+                </span>
+              )}
+              <span className="font-extrabold text-white">{formData.title}:</span>
+              <span className="text-slate-300">{formData.desc}</span>
+            </div>
+            <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-xs shrink-0 shadow-sm">
+              {formData.cta_text || 'عرض المزيد'}
+            </span>
+          </div>
+        ) : (
+          <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 text-center text-xs text-slate-500">
+            شريط الإعلانات مخفي ولن يظهر للزوار في الموقع طالما زر التفعيل مغلق.
+          </div>
+        )}
+      </div>
+
+      {/* Settings Form */}
+      <form onSubmit={handleSave} className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-5">
+        
+        {/* Toggle Switches Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-slate-800">
+          
+          {/* Main Visibility Toggle */}
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+            <div>
+              <div className="text-xs font-bold text-white">إظهار الإعلان في الموقع</div>
+              <div className="text-[11px] text-slate-400">تفعيل أو إخفاء شريط الإعلانات تماماً</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleChange('is_active', !formData.is_active)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                formData.is_active ? 'bg-emerald-600' : 'bg-slate-700'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                  formData.is_active ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Discount Badge Toggle */}
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+            <div>
+              <div className="text-xs font-bold text-white">شارة الخصم (Discount Badge)</div>
+              <div className="text-[11px] text-slate-400">إظهار شارة وتنبيه الخصم الخاص</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleChange('has_discount', !formData.has_discount)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                formData.has_discount ? 'bg-amber-500' : 'bg-slate-700'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                  formData.has_discount ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+        </div>
+
+        {/* Inputs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] text-slate-400 mb-1 font-bold">شارة الإعلان (الوسم)</label>
+            <input
+              type="text"
+              value={formData.tag}
+              onChange={(e) => handleChange('tag', e.target.value)}
+              placeholder="مثال: 🔥 عرض خاص أو 📢 تنبيه"
+              className={`${inputClass} w-full`}
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] text-slate-400 mb-1 font-bold">نسبة أو قيمة الخصم (إذا وجدت)</label>
+            <input
+              type="text"
+              value={formData.discount_percent}
+              onChange={(e) => handleChange('discount_percent', e.target.value)}
+              placeholder="مثال: 25% أو 500 ج"
+              className={`${inputClass} w-full`}
+              disabled={!formData.has_discount}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-[11px] text-slate-400 mb-1 font-bold">عنوان الإعلان الرئيسي</label>
+          <input
+            type="text"
+            required
+            value={formData.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            placeholder="مثال: خصم خاص 25% على باقة المستويات المجمعة"
+            className={`${inputClass} w-full`}
+          />
+        </div>
+
+        <div>
+          <label className="block text-[11px] text-slate-400 mb-1 font-bold">تفاصيل ونص الإعلان</label>
+          <textarea
+            rows={2}
+            required
+            value={formData.desc}
+            onChange={(e) => handleChange('desc', e.target.value)}
+            placeholder="اكتب نص الإعلان الترويجي الذي سيظهر للزوار..."
+            className={`${inputClass} w-full resize-none`}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] text-slate-400 mb-1 font-bold">نص زر الإجراء (CTA)</label>
+            <input
+              type="text"
+              value={formData.cta_text}
+              onChange={(e) => handleChange('cta_text', e.target.value)}
+              placeholder="مثال: احجز مقعدك بالخصم"
+              className={`${inputClass} w-full`}
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] text-slate-400 mb-1 font-bold">رابط الزر (أو رابط واتساب)</label>
+            <input
+              type="text"
+              value={formData.cta_link}
+              onChange={(e) => handleChange('cta_link', e.target.value)}
+              placeholder="مثال: /#online-courses أو https://wa.me/..."
+              className={`${inputClass} w-full`}
+              dir="ltr"
+            />
+          </div>
+        </div>
+
+        <div className="pt-2 flex justify-end">
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            <span>حفظ وتطبيق التغييرات فوراً</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  );
+}
+

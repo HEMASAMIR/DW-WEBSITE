@@ -46,6 +46,9 @@ export const API_ENDPOINTS = {
   ADMIN_BOOK_USERS: (bookId) => `/api/books/admin/${bookId}/users/`,
   ADMIN_GRANT_BOOK: (bookId) => `/api/books/admin/${bookId}/grant/`,
   ADMIN_REVOKE_BOOK: (bookId) => `/api/books/admin/${bookId}/revoke/`,
+
+  // 11. Site Announcement Banner
+  ANNOUNCEMENT: '/api/announcements/',
 };
 
 // Relative media paths from the API (e.g. "/media/profile_photos/x.jpg") need the API host.

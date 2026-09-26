@@ -95,6 +95,9 @@ urlpatterns = [
     # 8. Admin Book Access Requests
     path('api/books/admin/requests/', AdminBookRequestsAPIView.as_view(), name='api-admin-book-requests'),
 
+    # 9. Site Announcement Banner (Admin & Public)
+    path('api/announcements/', api.AnnouncementAPIView.as_view(), name='api-announcements'),
+
     # Default Router URLs
     path('api/', include(router.urls)),
 ]
