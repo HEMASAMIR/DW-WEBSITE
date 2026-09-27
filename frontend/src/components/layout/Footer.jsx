@@ -236,7 +236,7 @@ export default function Footer() {
 
           <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-right">
             <p className="font-semibold">
-              © {new Date().getFullYear()} Deutsche Welt Akademie — الأستاذ خالد الحلواني. جميع الحقوق محفوظة.
+              © {new Date().getFullYear()} Deutsche Welt Akademie — هير خالد الحلواني. جميع الحقوق محفوظة.
             </p>
             <span className="hidden sm:inline text-slate-600">•</span>
             <span className="text-[11px] text-teal-400/90 font-bold flex items-center gap-1">

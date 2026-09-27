@@ -2,7 +2,7 @@
 // lesson data always come from the backend — never hard-code them here.
 
 export const ACADEMY_INFO = {
-  name: 'Deutsche Welt - الأستاذ خالد',
+  name: 'Deutsche Welt - هير خالد الحلواني',
   subtitle: 'أكاديمية اللغة الألمانية المتخصصة للمرحلتين الثانوية والجامعية والراغبين للسفر',
   // International format without "+" (used for wa.me links). Override via NEXT_PUBLIC_WHATSAPP_NUMBER.
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '2010552287454',

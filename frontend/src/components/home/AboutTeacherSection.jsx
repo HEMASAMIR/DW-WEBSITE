@@ -58,7 +58,7 @@ export default function AboutTeacherSection() {
               <div className="relative aspect-[4/5] sm:aspect-[3/4] rounded-2xl overflow-hidden border-2 border-slate-200/80 bg-slate-900 shadow-xl group">
                 <img
                   src="/assets/images/herr_khaled_2.jpg"
-                  alt="الأستاذ خالد - Herr Khaled"
+                  alt="هير خالد الحلواني - Herr Khaled"
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                 />
                 
@@ -75,7 +75,7 @@ export default function AboutTeacherSection() {
                 {/* Bottom Floating Name Glass Plate */}
                 <div className="absolute bottom-4 inset-x-4 p-4 bg-slate-900/90 backdrop-blur-xl rounded-2xl border border-slate-700/80 shadow-2xl space-y-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-white font-black text-lg">الأستاذ خالد (Herr Khaled)</h4>
+                    <h4 className="text-white font-black text-lg">هير خالد الحلواني (Herr Khaled)</h4>
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                   </div>
                   <p className="text-xs text-amber-400 font-extrabold flex items-center gap-1.5">

@@ -19,8 +19,8 @@ import FileViewerModal from '@/components/modals/FileViewerModal';
 import LogoutConfirmModal from '@/components/modals/LogoutConfirmModal';
 
 export const metadata = {
-  title: 'Deutsche Welt Academy | الأستاذ خالد - أكاديمية اللغة الألمانية',
-  description: 'أكاديمية تدريس وتأسيس اللغة الألمانية للمراحل الثانوية والجامعية والراغبين بالسفر لألمانيا مع الأستاذ خالد.',
+  title: 'Deutsche Welt Academy | هير خالد الحلواني - أكاديمية اللغة الألمانية',
+  description: 'أكاديمية تدريس وتأسيس اللغة الألمانية للمراحل الثانوية والجامعية والراغبين بالسفر لألمانيا مع هير خالد الحلواني.',
 };
 
 export default function RootLayout({ children }) {

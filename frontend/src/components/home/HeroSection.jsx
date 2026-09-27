@@ -37,37 +37,63 @@ export default function HeroSection() {
   };
 
   return (
-    <section id="hero" className="relative pt-12 pb-20 lg:pt-16 lg:pb-28 overflow-hidden z-10 bg-gradient-to-br from-[#f0fdfa] via-[#ecfeff] to-[#fffbeb] border-b border-teal-500/10">
-      
-      {/* Radial Glow Spotlight in Background */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-teal-500/10 blur-[120px] rounded-full pointer-events-none"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
+    <section id="hero" className="relative pt-12 pb-20 lg:pt-16 lg:pb-28 overflow-hidden z-10 bg-gradient-to-b from-[#effcfa] via-white to-[#fffaf0] border-b border-slate-200/70">
+
+      {/* Background: soft light + fading grid */}
+      <div className="absolute -top-32 right-[10%] w-[520px] h-[520px] bg-teal-300/25 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-40 left-[5%] w-[420px] h-[420px] bg-amber-300/20 blur-[120px] rounded-full pointer-events-none" />
+      <div
+        className="absolute inset-0 opacity-[0.35] pointer-events-none [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]"
+        style={{
+          backgroundImage: 'linear-gradient(to right, rgba(14,44,78,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(14,44,78,0.06) 1px, transparent 1px)',
+          backgroundSize: '44px 44px',
+        }}
+      />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+
         {/* Top Hero Section Header Content */}
-        <Reveal className="text-center max-w-4xl mx-auto space-y-6">
-          
+        <Reveal className="text-center max-w-4xl mx-auto space-y-7">
+
           {/* Top Capsule Badge */}
-          <div className="inline-flex items-center gap-2 glass-pill px-5 py-2 rounded-full shadow-md text-xs sm:text-sm font-bold tracking-wide">
-            <Sparkles className="w-4 h-4 text-teal-600 animate-pulse" />
+          <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur border border-teal-200 shadow-md shadow-teal-900/5 px-5 py-2 rounded-full text-xs sm:text-sm font-black text-teal-800">
+            <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
             <span>منصة تأسيس واستكمال اللغة الألمانية الأولى في مصر والوطن العربي</span>
           </div>
 
-          {/* Multi-Tone Gradient Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-tight tracking-tight">
-            تعلم الألمانية مع الأستاذ خالد <br className="hidden sm:inline" />
-            <span className="text-gradient-cyan">لكل مرحلة تستحق التوثيق </span>
-            <span className="text-gradient-gold">والتميز</span>
+          {/* Headline */}
+          <h1 className="text-[2rem] sm:text-5xl lg:text-6xl font-black text-[#0e2c4e] leading-[1.25] tracking-tight">
+            <span className="block">
+              تعلم الألمانية مع{' '}
+              <span className="relative inline-block text-teal-600">
+                هير خالد الحلواني
+                <span className="absolute -bottom-1 sm:-bottom-2 inset-x-0 flex h-1.5 sm:h-2 rounded-full overflow-hidden" dir="ltr">
+                  <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+                </span>
+              </span>
+            </span>
+            <span className="block mt-3 sm:mt-4 text-2xl sm:text-4xl lg:text-5xl">
+              لكل مرحلة تستحق التوثيق <span className="text-amber-500">والتميز</span>
+            </span>
           </h1>
 
           {/* Sub-headline */}
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            خبرة أكثر من 10 سنوات في إعداد وتهيئة الطلاب للامتحانات الدولية <span className="text-amber-700 font-bold">(Goethe & Telc & ÖSD)</span> والالتحاق بالجامعات وسوق العمل بألمانيا.
+            خبرة أكثر من 10 سنوات في إعداد وتهيئة الطلاب للامتحانات الدولية والالتحاق بالجامعات وسوق العمل بألمانيا.
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-2 -mt-2" dir="ltr">
+            {[
+              { name: 'Goethe', cls: 'bg-teal-50 text-teal-700 border-teal-200' },
+              { name: 'telc', cls: 'bg-sky-50 text-sky-700 border-sky-200' },
+              { name: 'ÖSD', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
+            ].map((x) => (
+              <span key={x.name} className={`px-4 py-1.5 rounded-full border text-sm font-black ${x.cls}`}>{x.name}</span>
+            ))}
+          </div>
 
           {/* Search Capsule Bar */}
-          <form onSubmit={handleSearchSubmit} className="pt-2">
-            <div className="search-glow relative max-w-2xl mx-auto rounded-full bg-white backdrop-blur-xl border border-teal-500/30 p-2 sm:p-2.5 flex items-center shadow-lg transition-all">
+          <form onSubmit={handleSearchSubmit}>
+            <div className="relative max-w-2xl mx-auto rounded-2xl bg-white border-2 border-slate-200 focus-within:border-teal-400 p-2 flex items-center shadow-xl shadow-slate-900/[0.06] transition-colors">
               <div className="pr-3 text-teal-600">
                 <Search className="w-5 h-5" />
               </div>
@@ -76,11 +102,11 @@ export default function HeroSection() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="ابحث باسم الكورس (A1, A2, B1, B2) أو الثانوية العامة..."
-                className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-xs sm:text-sm focus:outline-none px-2"
+                className="w-full bg-transparent text-slate-900 placeholder-slate-400 text-xs sm:text-sm font-semibold focus:outline-none px-2 py-2"
               />
               <button
                 type="submit"
-                className="glass-pill-gold px-5 py-2.5 rounded-full text-xs font-black flex items-center gap-1.5 shrink-0 transition-transform transform hover:scale-105"
+                className="dw-shine bg-[#0e2c4e] hover:bg-teal-700 text-white px-4 sm:px-6 py-3 rounded-xl text-xs sm:text-sm font-black flex items-center gap-1.5 shrink-0 transition-colors"
               >
                 <span>استعرض الكورسات</span>
                 <ArrowLeft className="w-4 h-4" />
@@ -88,43 +114,40 @@ export default function HeroSection() {
             </div>
           </form>
 
-          {/* Interactive CV Banner Trigger Bar */}
-          <div 
+          {/* CV bar */}
+          <button
+            type="button"
             onClick={() => openCvModal('overview')}
-            className="glass-pill p-3 sm:p-4 rounded-full max-w-3xl mx-auto flex items-center justify-between cursor-pointer border border-teal-500/30 hover:border-teal-400 transition-all shadow-md group"
+            className="group w-full max-w-3xl mx-auto flex items-center justify-between gap-3 p-2 pr-3 rounded-2xl bg-white/90 backdrop-blur border border-slate-200 hover:border-amber-300 shadow-md hover:shadow-xl transition-all text-right"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0">
-                <FileText className="w-4 h-4" />
-              </div>
-              <span className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-teal-700 transition-colors">
-                الملف المهني والشهادات المعتمدة للمحاضر هير خالد (Concentrix & Vodafone DE)
+            <span className="flex items-center gap-3 min-w-0">
+              <span className="dw-wiggle w-10 h-10 rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-[#0e2c4e] flex items-center justify-center shrink-0 shadow-md shadow-amber-500/25">
+                <FileText className="w-5 h-5" />
               </span>
-            </div>
-            <div className="glass-pill-gold px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-1 shrink-0">
-              <span>استعرض الـ CV كاملاً</span>
-              <ChevronLeft className="w-4 h-4" />
-            </div>
-          </div>
+              <span className="text-xs sm:text-sm font-black text-[#0e2c4e] leading-snug">
+                الملف المهني والشهادات المعتمدة لهير خالد الحلواني
+                <span className="block text-[11px] sm:text-xs font-bold text-slate-500 mt-0.5" dir="ltr">Concentrix &amp; Vodafone DE</span>
+              </span>
+            </span>
+            <span className="shrink-0 bg-amber-400 group-hover:bg-amber-300 text-[#0e2c4e] px-3 sm:px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-1 transition-colors">
+              <span>استعرض الـ CV</span>
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            </span>
+          </button>
 
-          {/* Feature Capsule Badges Row */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-1 text-xs">
-            <div className="glass-pill px-4 py-2 rounded-full flex items-center gap-2">
-              <Users className="w-4 h-4 text-emerald-600" />
-              <span>+15,000 طالب محترف</span>
-            </div>
-            <div className="glass-pill px-4 py-2 rounded-full flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-amber-600" />
-              <span>شهادات معتمدة 100%</span>
-            </div>
-            <div className="glass-pill px-4 py-2 rounded-full flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-teal-600" />
-              <span>كتب ومناهج أونلاين</span>
-            </div>
-            <div className="glass-pill px-4 py-2 rounded-full flex items-center gap-2">
-              <Zap className="w-4 h-4 text-teal-600" />
-              <span>استجابة وتصحيح يومي</span>
-            </div>
+          {/* Feature pills — one calm colour each */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 text-xs sm:text-sm">
+            {[
+              { icon: Users, text: '+15,000 طالب محترف', cls: 'bg-teal-50 border-teal-200 text-teal-800', ic: 'text-teal-600' },
+              { icon: ShieldCheck, text: 'شهادات معتمدة 100%', cls: 'bg-amber-50 border-amber-200 text-amber-800', ic: 'text-amber-600' },
+              { icon: BookOpen, text: 'كتب ومناهج أونلاين', cls: 'bg-sky-50 border-sky-200 text-sky-800', ic: 'text-sky-600' },
+              { icon: Zap, text: 'استجابة وتصحيح يومي', cls: 'bg-violet-50 border-violet-200 text-violet-800', ic: 'text-violet-600' },
+            ].map(({ icon: Icon, text, cls, ic }, i) => (
+              <Reveal key={text} from="zoom" delay={300 + i * 100} className={`group px-4 py-2 rounded-full border font-bold flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-md ${cls}`}>
+                <Icon className={`dw-wiggle w-4 h-4 ${ic}`} />
+                <span>{text}</span>
+              </Reveal>
+            ))}
           </div>
 
         </Reveal>
@@ -223,7 +246,7 @@ export default function HeroSection() {
               <div className="relative rounded-2xl overflow-hidden aspect-[4/3] sm:aspect-[16/11] bg-slate-100 border border-teal-500/30 group shadow-inner">
                 <img
                   src="/assets/images/herr_khaled_1.jpg"
-                  alt="الأستاذ خالد - Herr Khaled"
+                  alt="هير خالد الحلواني - Herr Khaled"
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
                 

@@ -30,7 +30,7 @@ const NAV_LINKS = [
   { label: 'الكورسات', href: '/courses', icon: Sparkles, highlighted: true, tile: 'bg-amber-50 text-amber-600' },
   { label: 'الكتب', href: '/books', icon: BookOpen, bar: 'bg-amber-500', text: 'text-amber-600', tile: 'bg-amber-50 text-amber-600' },
   { label: 'آراء الطلاب', href: '/#reviews', section: 'reviews', icon: Star, bar: 'bg-emerald-500', text: 'text-emerald-600', tile: 'bg-emerald-50 text-emerald-600' },
-  { label: 'عن الأستاذ خالد', href: '/#about-teacher', section: 'about-teacher', icon: UserRound, bar: 'bg-violet-500', text: 'text-violet-600', tile: 'bg-violet-50 text-violet-600' },
+  { label: 'عن هير خالد', href: '/#about-teacher', section: 'about-teacher', icon: UserRound, bar: 'bg-violet-500', text: 'text-violet-600', tile: 'bg-violet-50 text-violet-600' },
   { label: 'الفروع', href: '/#branches', section: 'branches', icon: MapPin, bar: 'bg-rose-500', text: 'text-rose-600', tile: 'bg-rose-50 text-rose-600' },
   { label: 'تواصل معنا', href: '/#contact', section: 'contact', icon: MessageCircle, bar: 'bg-sky-500', text: 'text-sky-600', tile: 'bg-sky-50 text-sky-600' },
 ];
@@ -98,7 +98,7 @@ export default function Header() {
             </span>
             <span className="text-[11px] text-slate-500 font-bold tracking-wide flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-              الأستاذ خالد • أكاديمية الألمانية
+              هير خالد الحلواني • أكاديمية الألمانية
             </span>
           </div>
         </Link>

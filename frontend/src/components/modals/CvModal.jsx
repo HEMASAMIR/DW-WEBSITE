@@ -79,7 +79,7 @@ export default function CvModal() {
               <span>السيرة الذاتية والشهادات الرسمية</span>
             </div>
             <h3 className="text-2xl font-black text-[#0f172a]">
-              Herr Khaled El-Halawany (الأستاذ خالد)
+              Herr Khaled El-Halawany (هير خالد الحلواني)
             </h3>
             <p className="text-xs sm:text-sm text-teal-800 font-bold">
               مؤسس أكاديمية دويتشه فيلت • كبير مدربي اللغة الألمانية وتأهيل الشركات
