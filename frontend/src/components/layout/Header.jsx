@@ -38,9 +38,9 @@ const NAV_LINKS = [
 const noopSubscribe = () => () => {};
 
 export default function Header() {
-  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { openAuthModal, openProfileModal, openAdminDashboard } = useModal();
+  const { openAuthModal, openProfileModal, openAdminDashboard, askLogout } = useModal();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [scrolled, setScrolled] = useState(false);
@@ -182,7 +182,7 @@ export default function Header() {
                 <span className="text-xs font-black text-[#0e2c4e] max-w-[90px] truncate hidden sm:inline">{user?.first_name || 'حسابي'}</span>
               </button>
               <button
-                onClick={logout}
+                onClick={askLogout}
                 className="w-10 h-10 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors"
                 title="خروج"
               >

@@ -16,6 +16,7 @@ import LightboxModal from '@/components/modals/LightboxModal';
 import CvModal from '@/components/modals/CvModal';
 import LoginPromptModal from '@/components/modals/LoginPromptModal';
 import FileViewerModal from '@/components/modals/FileViewerModal';
+import LogoutConfirmModal from '@/components/modals/LogoutConfirmModal';
 
 export const metadata = {
   title: 'Deutsche Welt Academy | الأستاذ خالد - أكاديمية اللغة الألمانية',
@@ -41,6 +42,7 @@ export default function RootLayout({ children }) {
               <CvModal />
               <LoginPromptModal />
               <FileViewerModal />
+              <LogoutConfirmModal />
             </ModalProvider>
           </ThemeProvider>
         </AuthProvider>

@@ -1,12 +1,16 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 
 const ModalContext = createContext();
 
 export function ModalProvider({ children }) {
   const [activeModal, setActiveModal] = useState(null); // 'auth' | 'enroll' | 'bookOrder' | 'profile' | 'adminDashboard' | 'lightbox' | 'cv' | 'loginPrompt'
   const [modalData, setModalData] = useState(null);
+  // Separate flag so the confirm dialog can sit on top of another open modal
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const askLogout = useCallback(() => setLogoutConfirmOpen(true), []);
+  const closeLogoutConfirm = useCallback(() => setLogoutConfirmOpen(false), []);
 
   const openAuthModal = (mode = 'login') => {
     setModalData({ mode });
@@ -72,7 +76,10 @@ export function ModalProvider({ children }) {
     openLightboxModal,
     openCvModal,
     openFileViewer,
-    closeModal
+    closeModal,
+    logoutConfirmOpen,
+    askLogout,
+    closeLogoutConfirm,
   };
 
   return <ModalContext.Provider value={value}>{children}</ModalContext.Provider>;

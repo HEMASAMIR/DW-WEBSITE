@@ -41,7 +41,7 @@ export function OrderShell({ icon: Icon, title, subtitle, onClose, children }) {
 }
 
 export const PAY_OPTIONS = [
-  { value: 'محفظة إلكترونية', label: 'محفظة', icon: Wallet, on: 'border-rose-400 bg-rose-50 text-rose-700' },
+  { value: 'فودافون كاش', label: 'فودافون كاش', icon: Wallet, on: 'border-rose-400 bg-rose-50 text-rose-700' },
   { value: 'إنستا باي', label: 'إنستا باي', icon: Zap, on: 'border-violet-400 bg-violet-50 text-violet-700' },
   { value: 'دفع نقدي بالفرع', label: 'نقدي بالفرع', icon: Store, on: 'border-amber-400 bg-amber-50 text-amber-700' },
 ];

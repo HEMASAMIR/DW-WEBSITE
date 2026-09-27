@@ -10,8 +10,8 @@ import { Home, ListVideo, BookOpen, User, LayoutDashboard, LogOut, LogIn } from 
 /** Slim top bar for the standalone courses/books pages (replaces the site header & footer). */
 export default function LearnTopBar() {
   const pathname = usePathname();
-  const { user, isAuthenticated, isAdmin, logout } = useAuth();
-  const { openAuthModal, openProfileModal, openAdminDashboard } = useModal();
+  const { user, isAuthenticated, isAdmin } = useAuth();
+  const { openAuthModal, openProfileModal, openAdminDashboard, askLogout } = useModal();
 
   const links = [
     { href: '/courses', label: 'المستويات', icon: ListVideo },
@@ -67,7 +67,7 @@ export default function LearnTopBar() {
                 <User className="w-4 h-4 text-teal-600" />
                 <span className="hidden sm:inline max-w-[90px] truncate">{user?.first_name || 'حسابي'}</span>
               </button>
-              <button onClick={logout} className="p-2 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="خروج">
+              <button onClick={askLogout} className="p-2 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50" title="خروج">
                 <LogOut className="w-4 h-4" />
               </button>
             </>

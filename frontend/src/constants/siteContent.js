@@ -14,7 +14,7 @@ export const ACADEMY_INFO = {
 export const PAYMENT_INFO = {
   number: '01010169369',
   methods: [
-    { id: 'wallet', label: 'محفظة إلكترونية', hint: 'تحويل من أي محفظة موبايل' },
+    { id: 'wallet', label: 'فودافون كاش', hint: 'Vodafone Cash — تحويل على الرقم' },
     { id: 'instapay', label: 'إنستا باي', hint: 'InstaPay — تحويل على رقم الموبايل' },
   ],
 };
