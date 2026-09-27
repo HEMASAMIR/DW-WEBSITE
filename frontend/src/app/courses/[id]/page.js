@@ -7,17 +7,14 @@ import { useCourses } from '@/hooks/useCourses';
 import { useModal } from '@/context/ModalContext';
 import { formatPrice } from '@/services/courses.service';
 import LevelView from '@/components/course/LevelView';
-import { useAuth } from '@/context/AuthContext';
 import { ArrowRight, CheckCircle2, Unlock, Lock, Loader2, AlertCircle, RefreshCw, LogIn } from 'lucide-react';
 
 export default function CoursePage() {
   const { id } = useParams();
   const { allCourses, loading, error, requiresLogin, isGuest, reload } = useCourses();
   const { openAuthModal } = useModal();
-  const { isAdmin } = useAuth();
 
   const level = allCourses.find((c) => String(c.id) === String(id));
-  const hasAccess = level ? (level.hasAccess || isAdmin) : false;
   const price = level ? formatPrice(level.price) : null;
   const oldPrice = level?.oldPrice && level.oldPrice > (level.price || 0) ? formatPrice(level.oldPrice) : null;
 
@@ -58,7 +55,7 @@ export default function CoursePage() {
               </span>
               <div className="flex-1 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  {hasAccess ? (
+                  {level.hasAccess ? (
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center gap-1">
                       <Unlock className="w-3.5 h-3.5" /> مفعّل لك
                     </span>

@@ -1,18 +1,9 @@
-import apiClient, { saveBlob, filenameFromResponse, tokenStorage } from './api';
+import apiClient, { saveBlob, filenameFromResponse } from './api';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
 const toNumber = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
 
-/** Normalizes an API level. Admin automatically has full access to all levels. */
+/** Normalizes an API level. Only backend data — no hard-coded text. */
 export function normalizeLevel(level) {
-  const user = tokenStorage.getUser();
-  const isAdmin = user && (
-    !!user.is_staff || 
-    !!user.is_superuser || 
-    !!user.is_admin || 
-    user.role === 'admin' || 
-    user.username === 'admin' || 
-    (Array.isArray(user.groups) && user.groups.some(g => (typeof g === 'string' ? g : g?.name) === 'Admin'))
-  );
   return {
     id: level.id,
     code: level.name,
@@ -21,7 +12,7 @@ export function normalizeLevel(level) {
     price: toNumber(level.price),
     oldPrice: toNumber(level.old_price),
     order: level.order ?? 0,
-    hasAccess: isAdmin ? true : !!level.has_access,
+    hasAccess: !!level.has_access,
     subName: null,
     badge: null,
     features: [],

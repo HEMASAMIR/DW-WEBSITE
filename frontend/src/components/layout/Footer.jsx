@@ -242,12 +242,12 @@ export default function Footer() {
                   <div className="space-y-2 relative z-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-400/30">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                      <span>خدمة العملاء متواجدون الآن</span>
+                      <span>تواصل معنا</span>
                     </div>
 
                     <h5 className="text-white font-black text-lg">تواصل معنا فوراً 💬</h5>
                     <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                      للاستفسار عن مواعيد الكورسات، حجز المقاعد، أو طلب شحن كتب المنهج المطبوعة.
+                      للاستفسار عن الكورسات والاشتراك وطلب الكتب.
                     </p>
                   </div>
 

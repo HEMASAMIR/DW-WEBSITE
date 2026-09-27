@@ -27,7 +27,7 @@ export default function ContactSection() {
     e.preventDefault();
     setLoading(true);
 
-    const text = `🇩🇪 *طلب استفسار وحجز جديد عبر موقع دويتشه فيلت:*\n\n👤 *الاسم:* ${formData.name}\n📱 *رقم الهاتف:* ${formData.phone}\n🎓 *المستوى المطلوب:* ${formData.level}\n💬 *الاستفسار / الملاحظات:* ${formData.message || 'لا توجد ملاحظات إضافية'}\n\nيرجى التواصل معي لتأكيد التفاصيل ومواعيد الكورسات. شكراً جزيلاً!`;
+    const text = `🇩🇪 *طلب استفسار وحجز جديد عبر موقع دويتشه فيلت:*\n\n👤 *الاسم:* ${formData.name}\n📱 *رقم الهاتف:* ${formData.phone}\n🎓 *المستوى المطلوب:* ${TOPICS[formData.level] || formData.level}\n💬 *الاستفسار / الملاحظات:* ${formData.message || 'لا توجد ملاحظات إضافية'}\n\nيرجى التواصل معي لتأكيد التفاصيل ومواعيد الكورسات. شكراً جزيلاً!`;
     
     setTimeout(() => {
       setLoading(false);
@@ -70,20 +70,8 @@ export default function ContactSection() {
                   </span>
                 </h2>
                 <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
-                  فريق الأكاديمية متواجد على مدار اليوم لمساعدتك في تحديد مستواك، مواعيد المحاضرات، وتوصيل كتب المنهج حتى باب منزلك.
+                  تواصل معنا للاستفسار عن المستويات والاشتراك والكتب.
                 </p>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-teal-50/60 border border-teal-100 text-teal-900 text-xs sm:text-sm font-bold">
-                  <Clock className="w-5 h-5 text-teal-600 shrink-0" />
-                  <span>رد فوري من مسؤولي التسجيل خلال دقائق</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-amber-50/60 border border-amber-100 text-amber-900 text-xs sm:text-sm font-bold">
-                  <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
-                  <span>تأكيد حجز رسمي وتفعيل فوري للحساب والجروب</span>
-                </div>
               </div>
 
               {/* Direct Buttons */}
@@ -184,12 +172,9 @@ export default function ContactSection() {
                       onChange={(e) => setFormData({ ...formData, level: e.target.value })}
                       className="w-full bg-white border border-slate-300/90 rounded-2xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 shadow-xs transition-all font-bold cursor-pointer"
                     >
-                      <option value="A1">كورس اللغة الألمانية - المستوى A1 (المبتدئين من الصفر)</option>
-                      <option value="A2">كورس اللغة الألمانية - المستوى A2 (المحادثة والتأسيس الثاني)</option>
-                      <option value="B1">كورس اللغة الألمانية - المستوى B1 (مؤهل السفر والعمل)</option>
-                      <option value="B2">كورس الاحتراف والألماني الطبي - المستوى B2</option>
-                      <option value="BOOKS">شراء كتب المنهج المطبوعة (A1 - B2)</option>
-                      <option value="GENERAL">استفسار عام عن الفروع والمواعيد</option>
+                      {Object.entries(TOPICS).map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
                     </select>
                   </div>
 
