@@ -123,12 +123,15 @@ export default function AboutTeacherSection() {
                 <span>المُحاضِر والخبِير التربَوي المعتمد</span>
               </div>
 
-              <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+              <h2 className="text-3xl sm:text-5xl font-black text-[#0e2c4e] tracking-tight leading-tight">
                 السيرة الذاتية{' '}
-                <span className="bg-gradient-to-r from-teal-600 via-sky-600 to-amber-600 bg-clip-text text-transparent">
+                <span className="text-teal-600">
                   ورؤية التدريس
                 </span>
               </h2>
+              <div className="flex h-1.5 w-24 rounded-full overflow-hidden">
+                <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+              </div>
 
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
                 خبرة ممتدة في تدريس وتأسيس آلاف الطلاب والمهندسين والأطباء من الصفر حتى اجتياز امتحانات جوته وتيلك الدولية والالتحاق بسوق العمل في كبرى الشركات الألمانية.
@@ -136,7 +139,7 @@ export default function AboutTeacherSection() {
             </div>
 
             {/* Nav Tabs */}
-            <div className="flex flex-wrap gap-2 pt-2 border-b border-slate-200 pb-3">
+            <div className="grid grid-cols-3 gap-1 p-1.5 rounded-2xl bg-slate-100 border border-slate-200/80">
               {[
                 { key: 'experience', label: 'الخبرات العملية', icon: Briefcase },
                 { key: 'education', label: 'المؤهلات والاعتمادات', icon: GraduationCap },
@@ -148,13 +151,13 @@ export default function AboutTeacherSection() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black transition-all duration-300 transform active:scale-95 cursor-pointer shadow-xs ${
+                    className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 px-2 py-3 rounded-xl text-[11px] sm:text-sm font-black transition-all duration-300 cursor-pointer ${
                       isActive
-                        ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-teal-500/25 shadow-md scale-105'
-                        : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-teal-400'
+                        ? 'bg-[#0e2c4e] text-white shadow-lg shadow-[#0e2c4e]/25'
+                        : 'text-slate-600 hover:text-[#0e2c4e] hover:bg-white'
                     }`}
                   >
-                    <IconComponent className="w-4 h-4" />
+                    <IconComponent className={`w-4 h-4 ${isActive ? 'text-amber-300' : ''}`} />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -162,82 +165,75 @@ export default function AboutTeacherSection() {
             </div>
 
             {/* Tab Pane Content Box */}
-            <div className="min-h-[240px] bg-gradient-to-br from-slate-50 via-white to-slate-50 p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-md">
-              
+            <div className="min-h-[260px]">
+
               {activeTab === 'experience' && (
-                <div className="space-y-4 animate-fadeIn">
+                <ol className="relative space-y-5 pr-7 animate-fadeIn before:absolute before:top-3 before:bottom-3 before:right-[11px] before:w-0.5 before:bg-gradient-to-b before:from-teal-500 before:via-amber-400 before:to-transparent">
                   {TEACHER_CV_DATA.experience.map((exp, idx) => (
-                    <div
-                      key={idx}
-                      className="group flex items-start gap-4 p-4 rounded-2xl bg-white hover:bg-teal-50/40 border border-slate-200/80 hover:border-teal-400/50 shadow-xs hover:shadow-md transition-all duration-300"
-                    >
-                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-md shadow-teal-500/20 group-hover:scale-110 transition-transform">
-                        <Briefcase className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <h4 className="text-slate-900 font-black text-base">{exp.title}</h4>
-                          <span className="text-xs font-mono font-black text-amber-800 bg-amber-100/90 px-3 py-0.5 rounded-full border border-amber-300 shadow-xs">
+                    <li key={idx} className="relative">
+                      <span className="absolute -right-7 top-5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 shadow-md shadow-teal-500/30" />
+                      <div className="group p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-lg shadow-slate-900/[0.04] hover:shadow-xl hover:border-teal-300 transition-all duration-300 hover:-translate-x-1">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-teal-600/25 group-hover:scale-110 transition-transform">
+                              <Briefcase className="w-5 h-5" />
+                            </span>
+                            <div>
+                              <h4 className="text-[#0e2c4e] font-black text-base sm:text-lg leading-snug">{exp.title}</h4>
+                              <span className="text-xs text-teal-700 font-extrabold flex items-center gap-1.5 mt-0.5">
+                                <Building2 className="w-3.5 h-3.5" />
+                                <span>{exp.org}</span>
+                              </span>
+                            </div>
+                          </div>
+                          <span className="text-xs font-black text-[#0e2c4e] bg-amber-100 px-3 py-1 rounded-lg border border-amber-300/70 inline-flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-amber-600" />
                             {exp.period}
                           </span>
                         </div>
-                        <span className="text-xs text-teal-700 font-extrabold flex items-center gap-1.5">
-                          <Building2 className="w-3.5 h-3.5" />
-                          <span>{exp.org}</span>
-                        </span>
-                        <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed pt-1">
-                          {exp.desc}
-                        </p>
+                        <p className="text-sm text-slate-600 font-medium leading-relaxed mt-4 pt-4 border-t border-slate-100">{exp.desc}</p>
                       </div>
-                    </div>
+                    </li>
                   ))}
-                </div>
+                </ol>
               )}
 
               {activeTab === 'education' && (
-                <div className="space-y-4 animate-fadeIn">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 animate-fadeIn">
                   {TEACHER_CV_DATA.education.map((edu, idx) => (
                     <div
                       key={idx}
-                      className="group flex items-start gap-4 p-4 rounded-2xl bg-white hover:bg-cyan-50/40 border border-slate-200/80 hover:border-cyan-400/50 shadow-xs hover:shadow-md transition-all duration-300"
+                      className="group relative overflow-hidden p-6 rounded-3xl bg-white border border-slate-200/80 shadow-lg shadow-slate-900/[0.04] hover:shadow-xl hover:border-sky-300 transition-all duration-300 hover:-translate-y-1 space-y-3"
                     >
-                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-md shadow-cyan-500/20 group-hover:scale-110 transition-transform">
-                        <GraduationCap className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <h4 className="text-slate-900 font-black text-base">{edu.title}</h4>
-                          <span className="text-xs font-bold text-teal-800 bg-teal-100/90 px-3 py-0.5 rounded-full border border-teal-300 shadow-xs">
-                            {edu.period}
-                          </span>
-                        </div>
-                        <span className="text-xs text-cyan-700 font-extrabold flex items-center gap-1.5">
-                          <Award className="w-3.5 h-3.5" />
-                          <span>{edu.org}</span>
-                        </span>
-                        <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed pt-1">
-                          {edu.desc}
-                        </p>
-                      </div>
+                      <span className="absolute -top-10 -left-10 w-32 h-32 rounded-full bg-sky-100 group-hover:scale-125 transition-transform duration-500" />
+                      <span className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-[#0e2c4e] text-white flex items-center justify-center shadow-lg shadow-sky-600/25">
+                        <GraduationCap className="w-6 h-6" />
+                      </span>
+                      <h4 className="relative text-[#0e2c4e] font-black text-base leading-snug">{edu.title}</h4>
+                      <span className="relative text-xs text-sky-700 font-extrabold flex items-center gap-1.5">
+                        <Award className="w-3.5 h-3.5" />
+                        <span>{edu.org}</span>
+                      </span>
+                      <span className="relative inline-block text-[11px] font-black text-[#0e2c4e] bg-slate-100 px-3 py-1 rounded-lg">{edu.period}</span>
+                      <p className="relative text-sm text-slate-600 font-medium leading-relaxed">{edu.desc}</p>
                     </div>
                   ))}
                 </div>
               )}
 
               {activeTab === 'quote' && (
-                <div className="flex flex-col items-center text-center space-y-5 py-6 px-4 animate-fadeIn">
-                  <div className="w-14 h-14 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-600 shadow-sm">
-                    <Quote className="w-7 h-7" />
-                  </div>
-                  <p className="text-base sm:text-xl text-slate-900 leading-relaxed font-black max-w-xl italic">
-                    "{TEACHER_CV_DATA.quote}"
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <span className="h-px w-8 bg-amber-400" />
-                    <span className="text-xs text-amber-900 font-black bg-amber-100 px-4 py-1 rounded-full border border-amber-300">
-                      هير خالد الحلواني • Deutsche Welt
-                    </span>
-                    <span className="h-px w-8 bg-amber-400" />
+                <div className="relative overflow-hidden rounded-3xl bg-[#0e2c4e] text-white p-8 sm:p-12 text-center animate-fadeIn shadow-2xl shadow-[#0e2c4e]/25">
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(20,184,166,0.35),transparent_60%)]" />
+                  <Quote className="absolute top-4 right-6 w-24 h-24 text-white/[0.06]" />
+                  <div className="relative space-y-6">
+                    <p className="text-lg sm:text-2xl leading-relaxed font-black max-w-xl mx-auto">
+                      {TEACHER_CV_DATA.quote.replace(/^"|"$/g, '')}
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="flex h-1 w-10 rounded-full overflow-hidden"><span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" /></span>
+                      <span className="text-xs sm:text-sm text-amber-300 font-black">هير خالد الحلواني • Deutsche Welt</span>
+                      <span className="flex h-1 w-10 rounded-full overflow-hidden"><span className="flex-1 bg-amber-400" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-slate-950" /></span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -248,15 +244,15 @@ export default function AboutTeacherSection() {
             <button
               type="button"
               onClick={() => openCvModal('overview')}
-              className="w-full p-4 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 hover:from-teal-100 hover:to-emerald-100 border border-teal-300/80 text-teal-950 font-black text-xs sm:text-sm flex items-center justify-between transition-all shadow-sm hover:shadow-md group cursor-pointer"
+              className="w-full p-2 pr-5 rounded-2xl bg-white border border-slate-200 hover:border-[#0e2c4e]/30 text-[#0e2c4e] font-black text-xs sm:text-sm flex items-center justify-between gap-3 transition-all shadow-lg shadow-slate-900/[0.04] hover:shadow-xl group cursor-pointer"
             >
-              <div className="flex items-center gap-2.5">
-                <FileText className="w-4 h-4 text-teal-700 group-hover:scale-110 transition-transform" />
+              <span className="flex items-center gap-2.5 text-right">
+                <FileText className="w-5 h-5 text-teal-600 shrink-0" />
                 <span>شاهد تفاصيل المهارات والاعتمادات والشهادات الدولية الرسمية بالكامل</span>
-              </div>
-              <span className="text-teal-700 font-extrabold flex items-center gap-1 group-hover:-translate-x-1 transition-transform">
+              </span>
+              <span className="shrink-0 bg-[#0e2c4e] text-white px-4 py-3 rounded-xl flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
                 <span>عرض الـ CV الكامل</span>
-                <ArrowLeft className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-4 h-4" />
               </span>
             </button>
 

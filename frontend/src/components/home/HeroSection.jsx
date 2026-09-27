@@ -6,7 +6,6 @@ import {
   Sparkles, 
   Award, 
   Play, 
-  CheckCircle2, 
   Users, 
   BookOpen, 
   Search,
@@ -17,7 +16,10 @@ import {
   FileText,
   Briefcase,
   Building2,
-  ChevronLeft
+  ChevronLeft,
+  MessagesSquare,
+  MonitorPlay,
+  Target
 } from 'lucide-react';
 
 export default function HeroSection() {
@@ -134,56 +136,64 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* Key Benefits & CV Stats */}
-          <div className="lg:col-span-6 space-y-4">
-            <div className="glass-emerald rounded-3xl p-6 space-y-4 border border-slate-200 shadow-xl">
-              <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                <Award className="w-6 h-6 text-amber-600" />
-                لماذا تشترك في أكاديمية Herr Khaled؟
-              </h3>
-              
-              <div className="space-y-3 text-sm text-slate-700">
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-teal-50 border border-teal-200">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-teal-800 block">شرح مبسط وتأسيس قوي في الجرامر والـ Sprechen</span>
-                    <span className="text-xs text-slate-600">أساليب حديثة تعتمد على التحدث والتدريب العملي المستمر.</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-amber-50 border border-amber-200">
-                  <CheckCircle2 className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-amber-800 block">منصة تفاعلية مخصصة لكل طالب</span>
-                    <span className="text-xs text-slate-600">محاضرات مسجلة ومباشرة مع متابعة التقييم والواجبات أونلاين.</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-teal-50 border border-teal-200">
-                  <CheckCircle2 className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-teal-800 block">اختبار تحديد مستوى مجاني شامل</span>
-                    <span className="text-xs text-slate-600">حدد مستواك بدقة في دقائق للحصول على الخطة المناسبة لك.</span>
-                  </div>
-                </div>
+          <div className="lg:col-span-6">
+            <div className="relative overflow-hidden rounded-[2rem] bg-[#0e2c4e] text-white p-6 sm:p-8 shadow-2xl shadow-[#0e2c4e]/30">
+              {/* light + dot pattern + German-flag stripe (brand) */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(20,184,166,0.35),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(245,158,11,0.22),transparent_55%)]" />
+              <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
+              <div className="absolute top-0 inset-x-0 h-1.5 flex">
+                <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  onClick={openQuizModal}
-                  className="glass-pill-gold py-3.5 rounded-2xl text-xs font-black flex items-center justify-center gap-2"
-                >
-                  <Award className="w-4 h-4" />
-                  <span>اختبار تحديد المستوى (مجاناً)</span>
-                </button>
+              <div className="relative space-y-6">
+                <h3 className="text-xl sm:text-2xl font-black flex items-center gap-3">
+                  <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-[#0e2c4e] flex items-center justify-center shadow-lg shadow-amber-500/30 shrink-0">
+                    <Award className="w-6 h-6" />
+                  </span>
+                  <span>لماذا تشترك في أكاديمية <span className="text-amber-300" dir="ltr">Herr Khaled</span>؟</span>
+                </h3>
 
-                <button
-                  onClick={() => openCvModal('overview')}
-                  className="glass-pill py-3.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 text-teal-800 border border-teal-300"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>السيرة الذاتية والشهادات 📄</span>
-                </button>
+                <ol className="space-y-3">
+                  {[
+                    { icon: MessagesSquare, title: 'شرح مبسط وتأسيس قوي في الجرامر والـ Sprechen', desc: 'أساليب حديثة تعتمد على التحدث والتدريب العملي المستمر.' },
+                    { icon: MonitorPlay, title: 'منصة تفاعلية مخصصة لكل طالب', desc: 'محاضرات مسجلة ومباشرة مع متابعة التقييم والواجبات أونلاين.' },
+                    { icon: Target, title: 'اختبار تحديد مستوى مجاني شامل', desc: 'حدد مستواك بدقة في دقائق للحصول على الخطة المناسبة لك.' },
+                  ].map(({ icon: Icon, title, desc }, i) => (
+                    <li
+                      key={title}
+                      className="group relative flex items-start gap-4 p-4 rounded-2xl bg-white/[0.06] hover:bg-white/[0.11] border border-white/10 hover:border-teal-300/40 transition-all duration-300 hover:-translate-x-1"
+                    >
+                      <span className="w-11 h-11 rounded-xl bg-teal-400/15 border border-teal-300/25 text-teal-300 group-hover:bg-teal-400 group-hover:text-[#0e2c4e] flex items-center justify-center shrink-0 transition-colors">
+                        <Icon className="w-5 h-5" />
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <span className="font-black text-sm sm:text-base block leading-snug">{title}</span>
+                        <span className="text-xs sm:text-[13px] text-slate-300 leading-relaxed block mt-1">{desc}</span>
+                      </div>
+                      <span className="text-3xl font-black text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.18)] leading-none shrink-0" dir="ltr">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={openQuizModal}
+                    className="py-4 rounded-2xl bg-gradient-to-r from-amber-300 to-amber-500 text-[#0e2c4e] text-sm font-black flex items-center justify-center gap-2 shadow-xl shadow-amber-500/25 hover:-translate-y-0.5 transition-transform"
+                  >
+                    <Award className="w-4 h-4" />
+                    <span>اختبار تحديد المستوى (مجاناً)</span>
+                  </button>
+                  <button
+                    onClick={() => openCvModal('overview')}
+                    className="py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white text-sm font-black flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>السيرة الذاتية والشهادات</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

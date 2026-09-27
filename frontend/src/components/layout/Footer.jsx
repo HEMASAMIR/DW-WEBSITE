@@ -10,7 +10,6 @@ import {
   MessageCircle,
   MapPin,
   ShieldCheck,
-  Code2,
   Mail,
   Sparkles,
   ExternalLink,
@@ -20,15 +19,25 @@ import {
   ChevronLeft,
   Globe2,
   Award,
-  BookOpen,
-  Building2,
-  UserCheck,
-  Star,
-  Clock,
-  Flame,
-  Send,
   Lock
 } from 'lucide-react';
+
+const QUICK_LINKS = [
+  { href: '/#hero', label: 'الرئيسية' },
+  { href: '/courses', label: 'الكورسات والمستويات' },
+  { href: '/books', label: 'متجر كتب المنهج' },
+  { href: '/#branches', label: 'الفروع والمقرات' },
+  { href: '/#about-teacher', label: 'عن هير خالد الحلواني' },
+  { href: '/#reviews', label: 'آراء وتجارب الطلاب' },
+];
+
+function FlagStripe({ className = '' }) {
+  return (
+    <span className={`flex overflow-hidden ${className}`}>
+      <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+    </span>
+  );
+}
 
 export default function Footer() {
   const { openAdminDashboard } = useModal();
@@ -50,223 +59,170 @@ export default function Footer() {
     encodeURIComponent('تواصل واستفسار برمجي - Eng. Ibrahim Samir');
 
   return (
-    <footer className="bg-[#050a15] text-slate-300 pt-20 pb-12 relative z-10 overflow-hidden border-t border-slate-800">
-      
-      {/* Top Luminous Neon Gradient Border */}
-      <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-teal-500 via-amber-400 to-transparent shadow-[0_0_20px_rgba(13,148,136,0.8)]" />
+    <footer className="bg-[#071427] text-slate-300 pt-16 pb-10 relative z-10 overflow-hidden">
+      <FlagStripe className="absolute top-0 inset-x-0 h-1.5" />
 
-      {/* Ambient Lighting Orbs */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[400px] bg-gradient-to-b from-teal-500/10 via-emerald-500/5 to-transparent blur-[140px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute bottom-10 left-1/4 w-[500px] h-[350px] bg-gradient-to-t from-amber-500/10 via-amber-600/5 to-transparent blur-[140px] rounded-full pointer-events-none -z-10" />
+      {/* Ambient light + grid */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_85%_0%,rgba(20,184,166,0.18),transparent_60%),radial-gradient(ellipse_50%_50%_at_0%_100%,rgba(245,158,11,0.12),transparent_60%)] pointer-events-none" />
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: 'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+        }}
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative space-y-16">
-        
-        {/* Main 4-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
-          
-          {/* Column 1: Brand Info & Identity (lg:col-span-4) */}
-          <div className="lg:col-span-4 space-y-5">
-            
-            {/* Brand Logo & Tag */}
-            <div className="space-y-3">
-              {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
-              <img src="/assets/images/logo-full-white.png" alt="Deutsche Welt" className="h-24 w-auto" />
-              <span className="text-xs text-teal-400 font-extrabold block">الأستاذ خالد • أكاديمية الألمانية</span>
-            </div>
-            
-            <p className="text-xs sm:text-sm leading-relaxed text-slate-400 max-w-sm font-medium">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative space-y-14">
+
+        {/* Contact / admin CTA band */}
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-l from-[#0e2c4e] via-[#0f3a5c] to-teal-900 border border-white/10 p-6 sm:p-8 shadow-2xl">
+          <div className="absolute -top-20 -left-10 w-72 h-72 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            {isAdmin ? (
+              <>
+                <div className="space-y-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>جلسة المشرف نشطة</span>
+                  </span>
+                  <h5 className="text-white font-black text-2xl">لوحة تحكم الأدمن</h5>
+                  <p className="text-sm text-slate-300">إدارة المستويات الدراسية، الكتب، ومتابعة حجوزات الطلاب وقاعدة البيانات.</p>
+                </div>
+                <button
+                  onClick={openAdminDashboard}
+                  className="shrink-0 px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-300 to-amber-500 text-[#0e2c4e] font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-amber-500/25 hover:-translate-y-0.5 transition-transform cursor-pointer"
+                >
+                  <Lock className="w-4 h-4" />
+                  <span>دخول لوحة التحكم المباشرة</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-extrabold bg-white/10 text-amber-300 border border-white/15">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>تواصل معنا</span>
+                  </span>
+                  <h5 className="text-white font-black text-2xl sm:text-3xl">تواصل معنا فوراً</h5>
+                  <p className="text-sm text-slate-300">للاستفسار عن الكورسات والاشتراك وطلب الكتب.</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                  <a
+                    href={whatsappLink('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية والاشتراك')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-7 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/25 hover:-translate-y-0.5 transition-all"
+                  >
+                    <MessageCircle className="w-5 h-5 fill-white" />
+                    <span>محادثة واتساب سريعة</span>
+                  </a>
+                  <a
+                    href={`tel:${ACADEMY_INFO.phonePrimary}`}
+                    className="px-7 py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-black text-sm flex items-center justify-center gap-2.5 transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-amber-300" />
+                    <span dir="ltr">{ACADEMY_INFO.phonePrimary}</span>
+                  </a>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Main grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12">
+
+          {/* Brand */}
+          <div className="lg:col-span-5 space-y-5">
+            {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
+            <img src="/assets/images/logo-full-white.png" alt="Deutsche Welt" className="h-24 w-auto" />
+            <p className="text-sm leading-relaxed text-slate-400 max-w-md font-medium">
               {ACADEMY_INFO.subtitle} — منصتك الأولى والمتكاملة لاجتياز امتحانات جوته وتيلك وتأهيل الكول سنتر وسوق العمل الطبي والمهني في ألمانيا.
             </p>
-
-            {/* Quick Trust Badges */}
-            <div className="flex flex-wrap gap-2 pt-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/90 text-slate-300 border border-slate-700/80">
+            <div className="flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white/[0.05] text-slate-300 border border-white/10">
                 <Award className="w-3.5 h-3.5 text-amber-400" />
                 <span>شهادات معتمدة دولياً</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-800/90 text-slate-300 border border-slate-700/80">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white/[0.05] text-slate-300 border border-white/10">
                 <Globe2 className="w-3.5 h-3.5 text-teal-400" />
-                <span>٤ فروع + أونلاين Live</span>
+                <span>{BRANCHES_DATA.length} فروع + أونلاين</span>
               </span>
             </div>
-
-            {/* Interactive Social Buttons */}
-            <div className="flex items-center gap-3 pt-2">
-              <a
-                href={whatsappLink()}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="محادثة واتساب الأكاديمية"
-                className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600/30 to-teal-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 hover:bg-emerald-600 hover:text-white hover:border-emerald-400 transition-all duration-300 shadow-lg hover:shadow-emerald-500/30 hover:scale-110"
-              >
-                <MessageCircle className="w-5 h-5 fill-current" />
-              </a>
-              <a
-                href={`tel:${ACADEMY_INFO.phonePrimary}`}
-                title="الاتصال الهاتفي المباشر"
-                className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-teal-600/30 to-sky-600/20 border border-teal-500/40 flex items-center justify-center text-teal-400 hover:bg-teal-600 hover:text-white hover:border-teal-400 transition-all duration-300 shadow-lg hover:shadow-teal-500/30 hover:scale-110"
-              >
-                <Phone className="w-5 h-5" />
-              </a>
-              <a
-                href="#branches"
-                title="مواقع الفروع على الخريطة"
-                className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-600/30 to-amber-700/20 border border-amber-500/40 flex items-center justify-center text-amber-400 hover:bg-amber-600 hover:text-slate-950 hover:border-amber-400 transition-all duration-300 shadow-lg hover:shadow-amber-500/30 hover:scale-110"
-              >
-                <MapPin className="w-5 h-5" />
-              </a>
+            <div className="flex items-center gap-3 pt-1">
+              {[
+                { href: whatsappLink(), title: 'محادثة واتساب الأكاديمية', icon: MessageCircle, cls: 'hover:bg-emerald-500 hover:border-emerald-400', external: true, fill: true },
+                { href: `tel:${ACADEMY_INFO.phonePrimary}`, title: 'الاتصال الهاتفي المباشر', icon: Phone, cls: 'hover:bg-teal-500 hover:border-teal-400' },
+                { href: '/#branches', title: 'مواقع الفروع على الخريطة', icon: MapPin, cls: 'hover:bg-amber-500 hover:border-amber-400' },
+              ].map(({ href, title, icon: Icon, cls, external, fill }) => (
+                <a
+                  key={title}
+                  href={href}
+                  title={title}
+                  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className={`w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center text-slate-200 hover:text-white hover:-translate-y-1 transition-all duration-300 ${cls}`}
+                >
+                  <Icon className={`w-5 h-5 ${fill ? 'fill-current' : ''}`} />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Column 2: Quick Links (lg:col-span-2) */}
-          <div className="lg:col-span-2 space-y-4">
-            <h4 className="text-white font-black text-base flex items-center gap-2 border-r-4 border-teal-400 pr-3">
+          {/* Quick links */}
+          <div className="lg:col-span-3 space-y-5">
+            <h4 className="text-white font-black text-lg flex items-center gap-3">
+              <FlagStripe className="h-5 w-1.5 flex-col rounded-full" />
               <span>الروابط السريعة</span>
             </h4>
-            <ul className="space-y-2 text-xs sm:text-sm font-semibold text-slate-400">
-              <li>
-                <Link href="/#hero" className="group flex items-center gap-2 py-1 hover:text-teal-300 transition-colors">
-                  <ChevronLeft className="w-3.5 h-3.5 text-teal-400 group-hover:-translate-x-1 transition-transform" />
-                  <span>الرئيسية</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/#online-courses" className="group flex items-center gap-2 py-1 hover:text-teal-300 transition-colors">
-                  <ChevronLeft className="w-3.5 h-3.5 text-teal-400 group-hover:-translate-x-1 transition-transform" />
-                  <span>الكورسات والمستويات</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/#books-store" className="group flex items-center gap-2 py-1 hover:text-teal-300 transition-colors">
-                  <ChevronLeft className="w-3.5 h-3.5 text-teal-400 group-hover:-translate-x-1 transition-transform" />
-                  <span>متجر كتب المنهج</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/#branches" className="group flex items-center gap-2 py-1 hover:text-teal-300 transition-colors">
-                  <ChevronLeft className="w-3.5 h-3.5 text-teal-400 group-hover:-translate-x-1 transition-transform" />
-                  <span>الفروع والمقرات</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/#about-teacher" className="group flex items-center gap-2 py-1 hover:text-teal-300 transition-colors">
-                  <ChevronLeft className="w-3.5 h-3.5 text-teal-400 group-hover:-translate-x-1 transition-transform" />
-                  <span>عن هير خالد الحلواني</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/#reviews" className="group flex items-center gap-2 py-1 hover:text-teal-300 transition-colors">
-                  <ChevronLeft className="w-3.5 h-3.5 text-teal-400 group-hover:-translate-x-1 transition-transform" />
-                  <span>آراء وتجارب الطلاب</span>
-                </Link>
-              </li>
+            <ul className="space-y-1 text-sm font-semibold text-slate-400">
+              {QUICK_LINKS.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="group flex items-center gap-2 py-1.5 hover:text-white transition-colors">
+                    <span className="w-6 h-6 rounded-lg bg-white/[0.04] group-hover:bg-teal-500/20 flex items-center justify-center transition-colors">
+                      <ChevronLeft className="w-3.5 h-3.5 text-teal-400 group-hover:-translate-x-0.5 transition-transform" />
+                    </span>
+                    <span>{l.label}</span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Column 3: Branches Contact (lg:col-span-3) */}
-          <div className="lg:col-span-3 space-y-4">
-            <h4 className="text-white font-black text-base flex items-center gap-2 border-r-4 border-amber-400 pr-3">
+          {/* Branches */}
+          <div className="lg:col-span-4 space-y-5">
+            <h4 className="text-white font-black text-lg flex items-center gap-3">
+              <FlagStripe className="h-5 w-1.5 flex-col rounded-full" />
               <span>فروعنا بالحضور</span>
             </h4>
-            
-            <div className="space-y-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
               {BRANCHES_DATA.map((b) => (
                 <a
                   key={b.id}
                   href={b.mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group block p-3 rounded-2xl bg-slate-900/60 hover:bg-slate-850 border border-slate-800 hover:border-amber-400/40 transition-all duration-300 shadow-sm"
+                  className="group flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-amber-400/40 transition-all duration-300"
                 >
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <strong className="text-xs sm:text-sm font-extrabold text-white group-hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                      <span>{b.name}</span>
-                    </strong>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 group-hover:bg-amber-500/20 group-hover:text-amber-300 transition-colors shrink-0">
-                      {b.city}
+                  <span className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-400 group-hover:bg-amber-400 group-hover:text-[#0e2c4e] flex items-center justify-center shrink-0 transition-colors">
+                    <MapPin className="w-4 h-4" />
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="flex items-center justify-between gap-2">
+                      <strong className="text-sm font-extrabold text-white">{b.name}</strong>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/[0.06] text-slate-300 shrink-0">{b.city}</span>
                     </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 line-clamp-1 pr-5">
-                    {b.address}
-                  </p>
+                    <span className="block text-[11px] text-slate-400 truncate mt-0.5">{b.address}</span>
+                  </span>
                 </a>
               ))}
-            </div>
-          </div>
-
-          {/* Column 4: Quick Contact Box (lg:col-span-3) */}
-          <div className="lg:col-span-3">
-            <div className="relative rounded-3xl p-6 bg-gradient-to-br from-slate-900/95 via-slate-850 to-slate-900/95 backdrop-blur-2xl border-2 border-amber-400/40 shadow-2xl shadow-amber-500/10 flex flex-col justify-between space-y-5 hover:border-amber-400/70 transition-all group overflow-hidden">
-              
-              {/* Top ambient glow inside the card */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
-
-              {isAdmin ? (
-                <>
-                  <div className="space-y-1.5 relative z-10">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>جلسة المشرف نشطة</span>
-                    </span>
-                    <h5 className="text-white font-black text-lg pt-1">لوحة تحكم الأدمن 👑</h5>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      إدارة المستويات الدراسية، الكتب، ومتابعة حجوزات الطلاب وقاعدة البيانات.
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={openAdminDashboard}
-                    className="w-full relative py-3.5 rounded-2xl bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600 hover:from-teal-400 hover:to-emerald-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl shadow-teal-500/20 transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer"
-                  >
-                    <Lock className="w-4 h-4 text-slate-950" />
-                    <span>دخول لوحة التحكم المباشرة</span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="space-y-2 relative z-10">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-400/30">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                      <span>تواصل معنا</span>
-                    </div>
-
-                    <h5 className="text-white font-black text-lg">تواصل معنا فوراً 💬</h5>
-                    <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                      للاستفسار عن الكورسات والاشتراك وطلب الكتب.
-                    </p>
-                  </div>
-
-                  {/* Primary WhatsApp Button */}
-                  <a
-                    href={whatsappLink('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية والاشتراك')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full relative py-3.5 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-teal-900/25 transition-all transform hover:scale-[1.02] active:scale-95"
-                  >
-                    <MessageCircle className="w-4 h-4 fill-white" />
-                    <span>محادثة واتساب سريعة</span>
-                  </a>
-
-                  {/* Quick Phone Call Sub-Action */}
-                  <a
-                    href={`tel:${ACADEMY_INFO.phonePrimary}`}
-                    className="w-full py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-750 text-slate-300 hover:text-white text-xs font-bold flex items-center justify-center gap-2 border border-slate-700/80 transition-colors"
-                  >
-                    <Phone className="w-3.5 h-3.5 text-teal-400" />
-                    <span>أو اتصل بنا: <span dir="ltr">{ACADEMY_INFO.phonePrimary}</span></span>
-                  </a>
-                </>
-              )}
-
             </div>
           </div>
 
         </div>
 
         {/* Bottom Bar: Copyright & Eng. Ibrahim Samir Developer Badge */}
-        <div className="pt-8 border-t border-slate-800/90 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400 gap-6 relative">
-          
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400 gap-6 relative">
+
           <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-right">
             <p className="font-semibold">
               © {new Date().getFullYear()} Deutsche Welt Akademie — الأستاذ خالد الحلواني. جميع الحقوق محفوظة.
