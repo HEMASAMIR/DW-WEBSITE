@@ -8,19 +8,18 @@ import {
   ChevronRight, 
   ChevronLeft, 
   Sparkles, 
-  BookOpen, 
-  Briefcase,
-  Percent
+  Percent,
+  Timer
 } from 'lucide-react';
 import { adminService } from '@/services/admin.service';
 
-const DEFAULT_ITEMS = [
+const DISCOUNT_ITEMS = [
   {
     id: 1,
-    tag: '🔥 عرض خاص',
+    tag: '🔥 خصم خاص 25%',
     icon: Flame,
-    title: 'خصم خاص 25% على باقة المستويات المجمعة',
-    desc: 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية 24/7 وبنك أسئلة ومتابعة شخصية مستمرة.',
+    title: 'عرض الدفعة الجديدة لفترة محدودة',
+    desc: 'خصم فوري 25% على باقة المستويات الألمانية المجمعة والتسجيل المبكر متاح الآن!',
     cta: 'احجز مقعدك بالخصم',
     link: '/#online-courses',
     badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
@@ -30,34 +29,34 @@ const DEFAULT_ITEMS = [
   },
   {
     id: 2,
-    tag: '📚 كتب المنهج المعتمدة',
-    icon: BookOpen,
-    title: 'كتاب دويتشه فيلت الشامل (مطبوع + PDF + صوتيات QR)',
-    desc: 'المناهج الأصلية الأكثر طلباً مع شروحات وتدريبات وحلول وتوصيل سريع لجميع المحافظات.',
-    cta: 'اطلب كتابك الآن',
-    link: '/#books-store',
-    badgeColor: 'from-emerald-500/20 to-teal-500/20 text-emerald-300 border-emerald-400/50',
-    highlightColor: 'text-emerald-300',
-    hasDiscount: false,
-    discountPercent: '',
+    tag: '⚡ تخفيض حصري',
+    icon: Percent,
+    title: 'وفّر حتى 1,000 ج.م عند الاشتراك المجمع',
+    desc: 'احصل على أكبر نسبة خصم عند حجز أكثر من مستوى معاً مع تدريبات المحادثة والملفات مجاناً.',
+    cta: 'استفد من الخصم الآن',
+    link: '/#online-courses',
+    badgeColor: 'from-rose-500/20 to-orange-500/20 text-rose-300 border-rose-400/50',
+    highlightColor: 'text-rose-300',
+    hasDiscount: true,
+    discountPercent: '1,000 ج',
   },
   {
     id: 3,
-    tag: '💼 سوق العمل الألماني',
-    icon: Briefcase,
-    title: 'تأهيل احترافي لكبرى شركات الـ Call Center الألمانية',
-    desc: 'رواتب مجزية تبدأ من 25,000 ج شهرياً مع تدريب عملي مكثف على طلاقة التحدث والمقابلات.',
-    cta: 'تواصل للاستفسار',
-    link: '/#contact',
-    badgeColor: 'from-cyan-500/20 to-blue-500/20 text-cyan-300 border-cyan-400/50',
-    highlightColor: 'text-cyan-300',
-    hasDiscount: false,
-    discountPercent: '',
+    tag: '⏳ مقاعد الخصم محدودة',
+    icon: Timer,
+    title: 'متبقي 4 مقاعد فقط بسعر الخصم المخفض',
+    desc: 'بادر بحجز مقعدك بالخصم قبل اكتمال العدد وبدء المحاضرات مع هير خالد.',
+    cta: 'احجز بالخصم قبل النفاذ',
+    link: '/#online-courses',
+    badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
+    highlightColor: 'text-amber-300',
+    hasDiscount: true,
+    discountPercent: '25%',
   },
 ];
 
 export default function AnnouncementBar() {
-  const [items, setItems] = useState(DEFAULT_ITEMS);
+  const [items, setItems] = useState(DISCOUNT_ITEMS);
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -82,23 +81,23 @@ export default function AnnouncementBar() {
 
         const customAdminItem = {
           id: 'admin-custom',
-          tag: config.tag || '🔥 عرض خاص',
-          icon: config.has_discount ? Flame : Sparkles,
-          title: config.title || 'خصم خاص على باقة المستويات الألمانية',
-          desc: config.desc || 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية.',
+          tag: config.tag || '🔥 خصم خاص 25%',
+          icon: Flame,
+          title: config.title || 'عرض الخصم والتسجيل المبكر',
+          desc: config.desc || 'خصم فوري 25% على باقة المستويات الألمانية المجمعة والتسجيل متاح الآن.',
           cta: config.cta_text || 'احجز مقعدك بالخصم',
           link: config.cta_link || '/#online-courses',
           badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
           highlightColor: 'text-amber-300',
-          hasDiscount: !!config.has_discount,
-          discountPercent: config.discount_percent || '',
+          hasDiscount: config.has_discount !== false,
+          discountPercent: config.discount_percent || '25%',
         };
 
-        // Put custom announcement first
+        // All items are strictly discount-focused
         setItems([
           customAdminItem,
-          DEFAULT_ITEMS[1], // Books
-          DEFAULT_ITEMS[2], // Call Center
+          DISCOUNT_ITEMS[1],
+          DISCOUNT_ITEMS[2],
         ]);
       }
     } catch {
@@ -119,18 +118,18 @@ export default function AnnouncementBar() {
         setIsVisible(true);
         const customItem = {
           id: 'admin-custom',
-          tag: config.tag || '🔥 عرض خاص',
-          icon: config.has_discount ? Flame : Sparkles,
-          title: config.title || 'خصم خاص على باقة المستويات الألمانية',
-          desc: config.desc || 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية.',
+          tag: config.tag || '🔥 خصم خاص 25%',
+          icon: Flame,
+          title: config.title || 'عرض الخصم والتسجيل المبكر',
+          desc: config.desc || 'خصم فوري 25% على باقة المستويات الألمانية المجمعة والتسجيل متاح الآن.',
           cta: config.cta_text || 'احجز مقعدك بالخصم',
           link: config.cta_link || '/#online-courses',
           badgeColor: 'from-amber-500/20 to-yellow-500/20 text-amber-300 border-amber-400/50',
           highlightColor: 'text-amber-300',
-          hasDiscount: !!config.has_discount,
-          discountPercent: config.discount_percent || '',
+          hasDiscount: config.has_discount !== false,
+          discountPercent: config.discount_percent || '25%',
         };
-        setItems([customItem, DEFAULT_ITEMS[1], DEFAULT_ITEMS[2]]);
+        setItems([customItem, DISCOUNT_ITEMS[1], DISCOUNT_ITEMS[2]]);
         setIndex(0);
       }
     };
@@ -168,7 +167,7 @@ export default function AnnouncementBar() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       role="region"
-      aria-label="شريط الإعلانات الترويجي"
+      aria-label="شريط عروض الخصم"
     >
       {/* Radiant Top Luminous Accent Line */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-90 animate-pulse" />
@@ -182,24 +181,24 @@ export default function AnnouncementBar() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
             </span>
-            <span className="tracking-wide">إعلان مميز</span>
+            <span className="tracking-wide">عروض وخصومات</span>
             <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
           </div>
 
-          {/* Navigation Arrows for fast browsing if multiple items */}
+          {/* Navigation Arrows for fast browsing */}
           {items.length > 1 && (
             <div className="flex items-center gap-0.5 bg-slate-800/80 rounded-full p-0.5 border border-slate-700">
               <button 
                 onClick={handleNext}
                 className="p-1 rounded-full hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                title="الإعلان التالي"
+                title="العرض التالي"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
               <button 
                 onClick={handlePrev}
                 className="p-1 rounded-full hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                title="الإعلان السابق"
+                title="العرض السابق"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
@@ -207,7 +206,7 @@ export default function AnnouncementBar() {
           )}
         </div>
 
-        {/* Center: Animated Announcement Message with Ultra-Clear Typography */}
+        {/* Center: Animated Announcement Message strictly about DISCOUNTS */}
         <div className="w-full overflow-hidden text-center md:text-right flex items-center justify-center md:justify-start gap-2 sm:gap-3 min-h-[32px]">
           <div 
             key={current.id || index} 
@@ -219,7 +218,7 @@ export default function AnnouncementBar() {
               <span>{current.tag}</span>
             </span>
 
-            {/* Optional Discount Tag if Admin enabled discount */}
+            {/* Discount Percentage Pill */}
             {current.hasDiscount && current.discountPercent && (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-rose-500/20 text-rose-300 border border-rose-400/40 shadow-[0_0_10px_rgba(244,63,94,0.3)] animate-pulse">
                 <Percent className="w-3 h-3 text-rose-400" />
