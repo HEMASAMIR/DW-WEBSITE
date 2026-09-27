@@ -65,6 +65,27 @@ function DocxView({ blob }) {
 }
 
 function Viewer({ title, load, onClose }) {
+  return (
+    <div className="fixed inset-0 z-[110] flex flex-col bg-slate-950/95 backdrop-blur-md animate-fadeIn">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-800 bg-slate-900">
+        <div className="flex items-center gap-2 min-w-0">
+          <FileText className="w-5 h-5 text-amber-400 shrink-0" />
+          <span className="text-sm font-bold text-white truncate">{title}</span>
+        </div>
+        <button onClick={onClose} className="p-2 rounded-xl text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700" aria-label="إغلاق">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+      <FileContent title={title} load={load} />
+    </div>
+  );
+}
+
+/**
+ * Loads an authenticated file and renders it (PDF/image inline, Word via docx-preview, otherwise
+ * a "open on your device" fallback). Fills its parent; used by the modal and the book reader page.
+ */
+export function FileContent({ title, load }) {
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [progress, setProgress] = useState({ ratio: null, loaded: 0 });
@@ -86,18 +107,7 @@ function Viewer({ title, load, onClose }) {
   const isImage = file?.type?.startsWith('image/');
 
   return (
-    <div className="fixed inset-0 z-[110] flex flex-col bg-slate-950/95 backdrop-blur-md animate-fadeIn">
-      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-800 bg-slate-900">
-        <div className="flex items-center gap-2 min-w-0">
-          <FileText className="w-5 h-5 text-amber-400 shrink-0" />
-          <span className="text-sm font-bold text-white truncate">{title || file?.filename}</span>
-        </div>
-        <button onClick={onClose} className="p-2 rounded-xl text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700" aria-label="إغلاق">
-          <X className="w-5 h-5" />
-        </button>
-      </div>
-
-      <div className="flex-1 min-h-0 flex items-center justify-center" onContextMenu={(e) => e.preventDefault()}>
+      <div className="flex-1 min-h-0 flex items-center justify-center bg-slate-950" onContextMenu={(e) => e.preventDefault()}>
         {error ? (
           <div className="text-center space-y-3 p-6">
             <AlertCircle className="w-10 h-10 text-rose-400 mx-auto" />
@@ -140,6 +150,5 @@ function Viewer({ title, load, onClose }) {
           </div>
         )}
       </div>
-    </div>
   );
 }

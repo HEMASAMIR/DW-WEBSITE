@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useBooks } from '@/hooks/useBooks';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
-import { booksService } from '@/services/books.service';
 import { formatPrice } from '@/services/courses.service';
 import { BookOpen, Eye, ShoppingCart, Lock, Sparkles, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 
@@ -13,11 +12,8 @@ import { BookOpen, Eye, ShoppingCart, Lock, Sparkles, RefreshCw, AlertCircle, Ch
 // Do not add hard-coded descriptions/features here.
 export default function BooksSection() {
   const { books, loading, error, requiresLogin, reload } = useBooks();
-  const { openBookOrderModal, openAuthModal, openLoginPromptModal, openFileViewer } = useModal();
+  const { openBookOrderModal, openAuthModal, openLoginPromptModal } = useModal();
   const { isAuthenticated } = useAuth();
-
-  const handleView = (book) =>
-    openFileViewer({ title: book.name, load: (onProgress) => booksService.viewBook(book, onProgress) });
 
   const handleOrder = (book) => {
     if (!isAuthenticated) {
@@ -131,13 +127,13 @@ export default function BooksSection() {
 
                     <div className="space-y-2">
                       {book.hasAccess ? (
-                        <button
-                          onClick={() => handleView(book)}
+                        <Link
+                          href={`/books/${book.id}/read`}
                           className="w-full glass-pill-active py-3 rounded-2xl text-sm font-black flex items-center justify-center gap-2 shadow-md"
                         >
                           <Eye className="w-4 h-4" />
-                          <span>عرض الكتاب</span>
-                        </button>
+                          <span>اقرأ الكتاب</span>
+                        </Link>
                       ) : (
                         <button
                           onClick={() => handleOrder(book)}
