@@ -23,7 +23,7 @@ import {
 export default function Header() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { openAuthModal, openQuizModal, openStudentDashboard, openProfileModal, openAdminDashboard } = useModal();
+  const { openAuthModal, openQuizModal, openProfileModal, openAdminDashboard } = useModal();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeNav, setActiveNav] = useState('/#hero');
   const [mounted, setMounted] = useState(false);
@@ -137,14 +137,14 @@ export default function Header() {
           {/* User Auth Button */}
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => openStudentDashboard()}
+              <Link
+                href="/courses"
                 className="flex items-center gap-2 text-xs text-teal-800 glass-pill px-3.5 py-2"
                 title="محاضراتي"
               >
                 <PlayCircle className="w-4 h-4 text-emerald-600" />
                 <span className="font-semibold hidden sm:inline">محاضراتي</span>
-              </button>
+              </Link>
               <button
                 onClick={openProfileModal}
                 className="flex items-center gap-2 text-xs text-teal-800 glass-pill px-3.5 py-2"

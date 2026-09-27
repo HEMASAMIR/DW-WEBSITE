@@ -102,49 +102,49 @@ export default function CommentsPanel({ levelId, videoId }) {
     );
 
   return (
-    <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 space-y-4">
-      <h5 className="text-sm font-bold text-white flex items-center gap-2">
-        <MessageSquare className="w-4 h-4 text-amber-400" />
-        <span>مناقشة المحاضرة</span>
-        {count > 0 && <span className="text-[11px] text-slate-400 font-normal">({count})</span>}
-      </h5>
+    <div className="space-y-5">
+      <div className="flex items-center gap-2 text-sm font-black text-slate-900">
+        <MessageSquare className="w-4 h-4 text-teal-600" />
+        <span>أسئلة ونقاش المحاضرة</span>
+        {count > 0 && <span className="text-xs text-slate-500 font-bold">({count})</span>}
+      </div>
 
       <form onSubmit={handlePost} className="space-y-2">
-        <div className="flex gap-2">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-teal-400 focus-within:ring-4 focus-within:ring-teal-500/10 transition-all">
           <textarea
-            rows={2}
+            rows={3}
             value={text}
             maxLength={COMMENT_MAX_LENGTH}
             onChange={(e) => setText(e.target.value)}
             placeholder="اكتب سؤالك أو تعليقك على المحاضرة..."
-            className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-amber-400 resize-none"
+            className="w-full bg-transparent px-4 pt-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none resize-none"
           />
-          <button
-            type="submit"
-            disabled={posting || !text.trim()}
-            className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-4 rounded-xl disabled:opacity-40"
-            aria-label="إرسال"
-          >
-            {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </button>
+          <div className="flex items-center justify-between px-3 pb-3">
+            <span className="text-[11px] text-slate-400 font-mono">{text.length}/{COMMENT_MAX_LENGTH}</span>
+            <button
+              type="submit"
+              disabled={posting || !text.trim()}
+              className="inline-flex items-center gap-1.5 bg-teal-600 hover:bg-teal-500 text-white font-black text-xs px-4 py-2 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              نشر
+            </button>
+          </div>
         </div>
-        <div className="flex justify-between text-[10px] text-slate-500">
-          <span className="text-rose-400">{postError}</span>
-          <span>{text.length}/{COMMENT_MAX_LENGTH}</span>
-        </div>
+        {postError && <p className="text-xs text-rose-600 font-semibold">{postError}</p>}
       </form>
 
       {loading ? (
         <div className="flex justify-center py-6">
-          <Loader2 className="w-5 h-5 text-amber-400 animate-spin" />
+          <Loader2 className="w-5 h-5 text-teal-600 animate-spin" />
         </div>
       ) : error && comments.length === 0 ? (
-        <p className="text-xs text-rose-400 text-center py-4 flex items-center justify-center gap-2">
+        <p className="text-sm text-rose-600 text-center py-4 flex items-center justify-center gap-2">
           <AlertCircle className="w-4 h-4" />
           {error}
         </p>
       ) : comments.length === 0 ? (
-        <p className="text-xs text-slate-500 text-center py-4">لا توجد تعليقات بعد. كن أول من يسأل!</p>
+        <p className="text-sm text-slate-500 text-center py-6">لا توجد تعليقات بعد. كن أول من يسأل!</p>
       ) : (
         <div className="space-y-3">
           {comments.map((c) => (
@@ -168,7 +168,7 @@ export default function CommentsPanel({ levelId, videoId }) {
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="w-full text-xs text-amber-300 hover:text-amber-200 py-2 font-semibold disabled:opacity-50"
+              className="w-full text-sm text-teal-700 hover:text-teal-900 py-2 font-black disabled:opacity-50"
             >
               {loadingMore ? 'جاري التحميل...' : 'عرض المزيد من التعليقات'}
             </button>
@@ -236,20 +236,20 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
   };
 
   return (
-    <div className={`${isReply ? 'bg-slate-950/60 mr-6' : 'bg-slate-900'} p-3 rounded-xl border border-slate-800 space-y-2`}>
+    <div className={`${isReply ? 'bg-white border-slate-200 mr-8' : 'bg-slate-50 border-slate-200'} p-4 rounded-2xl border space-y-2`}>
       <div className="flex items-center justify-between text-xs gap-2">
         <div className="flex items-center gap-2 min-w-0">
           {photo ? (
             // eslint-disable-next-line @next/next/no-img-element -- user avatar from the API host
-            <img src={photo} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
+            <img src={photo} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
           ) : (
-            <span className="w-6 h-6 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center text-[10px] font-bold shrink-0">
+            <span className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs font-black shrink-0">
               {author.charAt(0)}
             </span>
           )}
-          <span className="font-bold text-amber-300 truncate">{author}</span>
+          <span className="font-black text-slate-900 truncate text-sm">{author}</span>
         </div>
-        <span className="text-[10px] text-slate-500 shrink-0">
+        <span className="text-[11px] text-slate-400 shrink-0">
           {timeAgo(comment.created_at)}
           {comment.updated_at && comment.updated_at !== comment.created_at && !removed ? ' • معدّل' : ''}
         </span>
@@ -262,44 +262,44 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
             value={editText}
             maxLength={COMMENT_MAX_LENGTH}
             onChange={(e) => setEditText(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400 resize-none"
+            className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-teal-500 resize-none"
           />
-          <div className="flex gap-2 justify-end">
-            <button onClick={() => setEditing(false)} className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1">
+          <div className="flex gap-3 justify-end">
+            <button onClick={() => setEditing(false)} className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 font-bold">
               <X className="w-3 h-3" /> إلغاء
             </button>
-            <button onClick={saveEdit} disabled={busy} className="text-[11px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-bold">
+            <button onClick={saveEdit} disabled={busy} className="text-xs text-teal-700 hover:text-teal-900 flex items-center gap-1 font-black">
               <Check className="w-3 h-3" /> حفظ
             </button>
           </div>
         </div>
       ) : (
-        <p className={`text-xs whitespace-pre-wrap break-words ${removed ? 'text-slate-500 italic' : 'text-slate-200'}`}>
+        <p className={`text-sm leading-relaxed whitespace-pre-wrap break-words ${removed ? 'text-slate-400 italic' : 'text-slate-700'}`} dir="auto">
           {removed ? 'تم حذف هذا التعليق.' : comment.content}
         </p>
       )}
 
       {!editing && (
-        <div className="flex items-center gap-3 text-[11px]">
+        <div className="flex items-center gap-4 text-xs font-bold">
           {!isReply && !removed && (
-            <button onClick={() => setReplying((v) => !v)} className="text-slate-400 hover:text-amber-300 flex items-center gap-1">
-              <Reply className="w-3 h-3" /> رد
+            <button onClick={() => setReplying((v) => !v)} className="text-slate-500 hover:text-teal-700 flex items-center gap-1">
+              <Reply className="w-3.5 h-3.5" /> رد
             </button>
           )}
           {canEdit && (
-            <button onClick={() => { setEditText(comment.content); setEditing(true); }} className="text-slate-400 hover:text-sky-300 flex items-center gap-1">
-              <Pencil className="w-3 h-3" /> تعديل
+            <button onClick={() => { setEditText(comment.content); setEditing(true); }} className="text-slate-500 hover:text-sky-700 flex items-center gap-1">
+              <Pencil className="w-3.5 h-3.5" /> تعديل
             </button>
           )}
           {canDelete && (
-            <button onClick={remove} disabled={busy} className="text-slate-400 hover:text-rose-400 flex items-center gap-1">
+            <button onClick={remove} disabled={busy} className="text-slate-500 hover:text-rose-600 flex items-center gap-1">
               <Trash2 className="w-3 h-3" /> حذف
             </button>
           )}
         </div>
       )}
 
-      {error && <p className="text-[11px] text-rose-400">{error}</p>}
+      {error && <p className="text-xs text-rose-600 font-semibold">{error}</p>}
 
       {replying && (
         <form onSubmit={sendReply} className="flex gap-2">
@@ -309,9 +309,9 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
             maxLength={COMMENT_MAX_LENGTH}
             onChange={(e) => setReplyText(e.target.value)}
             placeholder="اكتب ردك..."
-            className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400"
+            className="flex-1 bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-teal-500"
           />
-          <button type="submit" disabled={busy || !replyText.trim()} className="bg-amber-400 text-slate-950 rounded-lg px-3 disabled:opacity-40">
+          <button type="submit" disabled={busy || !replyText.trim()} className="bg-teal-600 text-white rounded-xl px-3.5 disabled:opacity-40">
             {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
           </button>
         </form>

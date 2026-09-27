@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 export default function HeroSection() {
-  const { openQuizModal, openStudentDashboard, openCvModal } = useModal();
+  const { openQuizModal, openCvModal } = useModal();
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
 

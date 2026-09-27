@@ -13,7 +13,6 @@ import AuthModal from '@/components/modals/AuthModal';
 import CourseEnrollModal from '@/components/modals/CourseEnrollModal';
 import BookOrderModal from '@/components/modals/BookOrderModal';
 import PlacementQuizModal from '@/components/modals/PlacementQuizModal';
-import StudentDashboardModal from '@/components/modals/StudentDashboardModal';
 import ProfileModal from '@/components/modals/ProfileModal';
 import AdminDashboardModal from '@/components/modals/AdminDashboardModal';
 import LightboxModal from '@/components/modals/LightboxModal';
@@ -44,7 +43,6 @@ export default function RootLayout({ children }) {
               <CourseEnrollModal />
               <BookOrderModal />
               <PlacementQuizModal />
-              <StudentDashboardModal />
               <ProfileModal />
               <AdminDashboardModal />
               <LightboxModal />

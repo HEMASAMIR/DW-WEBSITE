@@ -33,11 +33,6 @@ export function ModalProvider({ children }) {
     setActiveModal('quiz');
   };
 
-  // levelId is optional — the dashboard picks the first level the user has access to.
-  const openStudentDashboard = (levelId = null) => {
-    setModalData({ levelId });
-    setActiveModal('studentDashboard');
-  };
 
   const openProfileModal = () => {
     setModalData(null);
@@ -78,7 +73,6 @@ export function ModalProvider({ children }) {
     openEnrollModal,
     openBookOrderModal,
     openQuizModal,
-    openStudentDashboard,
     openProfileModal,
     openAdminDashboard,
     openLightboxModal,
