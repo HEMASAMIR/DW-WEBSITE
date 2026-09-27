@@ -23,11 +23,9 @@ export default function LearnTopBar() {
       <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
         {/* Brand → home */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0" title="الرئيسية">
-          <span className="w-10 h-10 rounded-full overflow-hidden bg-white border border-teal-500/30 p-0.5">
-            {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
-            <img src="/assets/images/logo.png" alt="Deutsche Welt" className="w-full h-full object-contain" />
-          </span>
-          <span className="hidden sm:block font-black text-lg text-slate-900 tracking-tight">Deutsche Welt</span>
+          {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
+          <img src="/assets/images/logo-mark.png" alt="Deutsche Welt" className="h-9 w-auto" />
+          <span className="hidden sm:block font-serif font-bold text-xl text-[#0e2c4e] tracking-tight" dir="ltr">deutsche welt</span>
         </Link>
 
         {/* Section switcher */}

@@ -6,7 +6,6 @@ import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
 import { ACADEMY_INFO, BRANCHES_DATA, whatsappLink } from '@/constants/siteContent';
 import {
-  GraduationCap,
   Phone,
   MessageCircle,
   MapPin,
@@ -69,23 +68,10 @@ export default function Footer() {
           <div className="lg:col-span-4 space-y-5">
             
             {/* Brand Logo & Tag */}
-            <div className="flex items-center gap-3.5">
-              <div className="relative group">
-                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-teal-500 via-emerald-400 to-amber-400 flex items-center justify-center text-slate-950 font-black shadow-xl shadow-teal-500/30 group-hover:scale-105 transition-transform duration-300 p-2.5">
-                  <GraduationCap className="w-7 h-7 stroke-[2.5]" />
-                </div>
-                <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#050a15] animate-ping" />
-                <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#050a15]" />
-              </div>
-              <div>
-                <span className="font-black text-2xl sm:text-3xl text-white tracking-tight block">
-                  Deutsche <span className="bg-gradient-to-r from-amber-400 to-amber-500 bg-clip-text text-transparent">Welt</span>
-                </span>
-                <span className="text-xs text-teal-400 font-extrabold flex items-center gap-1.5 mt-0.5">
-                  <span>الأستاذ خالد • أكاديمية الألمانية</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-teal-950/80 border border-teal-500/40 text-teal-300 font-mono">2026</span>
-                </span>
-              </div>
+            <div className="space-y-3">
+              {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
+              <img src="/assets/images/logo-full-white.png" alt="Deutsche Welt" className="h-24 w-auto" />
+              <span className="text-xs text-teal-400 font-extrabold block">الأستاذ خالد • أكاديمية الألمانية</span>
             </div>
             
             <p className="text-xs sm:text-sm leading-relaxed text-slate-400 max-w-sm font-medium">

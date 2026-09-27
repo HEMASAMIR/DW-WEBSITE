@@ -10,7 +10,8 @@ export default function SiteLayout({ children }) {
       <ParticleCanvas />
       <Header />
       <AnnouncementBar />
-      <main className="relative z-10">{children}</main>
+      {/* overflow-x-clip: decorative blurred blobs in the sections must not widen the page on phones */}
+      <main className="relative z-10 overflow-x-clip">{children}</main>
       <Footer />
     </>
   );

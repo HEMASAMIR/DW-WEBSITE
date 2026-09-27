@@ -54,12 +54,11 @@ export default function Header() {
         
         {/* Brand Logo with Real Academy Logo Image & Fayrouza Shining Text */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-white border-2 border-teal-500/30 shadow-md shadow-teal-500/10 group-hover:scale-105 transition-transform flex items-center justify-center p-1">
-            <img src="/assets/images/logo.png" alt="Deutsche Welt Logo" className="w-full h-full object-contain" />
-          </div>
-          <div className="flex flex-col">
-            <span className="fayrouza-logo-text font-extrabold text-xl sm:text-2xl tracking-tight leading-tight">
-              Deutsche Welt
+          {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
+          <img src="/assets/images/logo-mark.png" alt="Deutsche Welt" className="h-11 w-auto group-hover:scale-105 transition-transform" />
+          <div className="hidden sm:flex flex-col whitespace-nowrap">
+            <span className="font-serif font-bold text-xl sm:text-2xl text-[#0e2c4e] tracking-tight leading-tight" dir="ltr">
+              deutsche welt
             </span>
             <span className="text-[11px] text-teal-700 font-bold tracking-wide flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shadow-sm shadow-teal-400"></span>
