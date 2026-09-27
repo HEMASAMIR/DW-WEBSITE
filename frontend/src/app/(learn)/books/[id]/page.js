@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
 import { formatPrice, formatPriceLatin } from '@/services/courses.service';
 import BookCover, { toneFor } from '@/components/book/BookCover';
+import PaymentInfo from '@/components/common/PaymentInfo';
 import {
   ArrowRight, CheckCircle2, BookOpenText, ShoppingCart, Lock, LogIn, AlertCircle, RefreshCw, ChevronLeft, BookOpen,
 } from 'lucide-react';
@@ -25,8 +26,15 @@ export default function BookPage() {
     return (
       <div className="pb-16">
         <BookHero book={book} />
+        {!book.hasAccess && (
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-12">
+            <div className="max-w-2xl">
+              <PaymentInfo amount={formatPriceLatin(book.price)} />
+            </div>
+          </div>
+        )}
         {otherBooks.length > 0 && (
-          <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 space-y-5">
+          <section className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 ${book.hasAccess ? '-mt-8' : ''}`}>
             <div className="flex items-center gap-3 bg-white/80 backdrop-blur rounded-2xl w-fit pl-5 pr-2 py-2 shadow-sm border border-slate-200/70">
               <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center shadow-lg shadow-teal-600/25">
                 <BookOpen className="w-4 h-4" />

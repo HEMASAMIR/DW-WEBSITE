@@ -4,9 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
-import { coursesService, formatDuration, formatPrice } from '@/services/courses.service';
+import { coursesService, formatDuration, formatPrice, formatPriceLatin } from '@/services/courses.service';
 import { useLevelContent, formatTotal, totalSeconds } from './useLevelContent';
 import Reveal from '@/components/common/Reveal';
+import PaymentInfo from '@/components/common/PaymentInfo';
+import { levelGroupLink } from '@/constants/siteContent';
 import {
   PlayCircle, Play, FileText, AlertCircle, RefreshCw, Lock, LogIn, MessageCircle, Clock, ListVideo,
   Eye, CheckCircle2, ChevronLeft, FileType2, Sparkles,
@@ -145,6 +147,7 @@ function UnlockedLevel({ level }) {
   const files = content?.files || [];
   const total = totalSeconds(videos);
   const first = videos[0];
+  const group = levelGroupLink(level.code);
 
   const viewFile = (file) =>
     openFileViewer({ title: file.name, load: (onProgress) => coursesService.viewFile(level.id, file, onProgress) });
@@ -174,6 +177,12 @@ function UnlockedLevel({ level }) {
                 <Play className="w-5 h-5 fill-slate-950" />
                 ابدأ المشاهدة
               </Link>
+              {group && (
+                <a href={group} target="_blank" rel="noopener noreferrer" className={`${ghostBtn} !bg-emerald-500/90 hover:!bg-emerald-400 !border-emerald-300/40`}>
+                  <MessageCircle className="w-4 h-4 fill-white" />
+                  جروب الواتساب
+                </a>
+              )}
               {files.length > 0 && (
                 <a href="#level-files" className={ghostBtn}>
                   <FileText className="w-4 h-4" />
@@ -234,6 +243,7 @@ function UnlockedLevel({ level }) {
 
             {/* Files */}
             <aside id="level-files" className="lg:col-span-4 lg:sticky lg:top-24 scroll-mt-24 space-y-5">
+              {group && <GroupCard href={group} code={level.code} />}
               <section className="rounded-[2rem] bg-white border border-slate-200/80 shadow-xl shadow-slate-900/[0.04] p-5 sm:p-6">
                 <SectionTitle icon={FileText} title="ملفات المستوى" sub={files.length ? `${files.length} ملف • بتتفتح جوه الموقع` : 'لا توجد ملفات'} />
                 {files.length > 0 && (
@@ -251,6 +261,37 @@ function UnlockedLevel({ level }) {
         )}
       </div>
     </div>
+  );
+}
+
+/** WhatsApp group of the level (subscribers only). */
+function GroupCard({ href, code }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="dw-shine group relative block overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-500 to-teal-700 text-white p-6 shadow-xl shadow-emerald-600/25 hover:-translate-y-1 transition-transform"
+    >
+      <MessageCircle className="absolute -left-6 -bottom-6 w-32 h-32 text-white/10 -rotate-12" />
+      <div className="relative flex items-center gap-4">
+        <span className="relative w-14 h-14 rounded-2xl bg-white text-emerald-600 flex items-center justify-center shadow-lg shrink-0">
+          <span className="absolute inset-0 rounded-2xl bg-white/60 animate-ping opacity-30" />
+          <MessageCircle className="relative w-7 h-7 fill-emerald-600" />
+        </span>
+        <div className="min-w-0">
+          <span className="block text-xs font-bold text-emerald-100">جروب الطلاب</span>
+          <span className="block text-lg font-black leading-snug">جروب واتساب المستوى <span dir="ltr">{code}</span></span>
+        </div>
+      </div>
+      <p className="relative text-sm text-emerald-50/90 mt-4 leading-relaxed">
+        انضم لجروب المستوى عشان تتابع كل جديد وتسأل وتتواصل مع زمايلك.
+      </p>
+      <span className="relative mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-emerald-700 text-sm font-black group-hover:gap-3 transition-all">
+        انضم للجروب
+        <ChevronLeft className="w-4 h-4" />
+      </span>
+    </a>
   );
 }
 
@@ -403,8 +444,8 @@ function LockedLevel({ level }) {
         }
       />
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 -mt-6 relative">
-        <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 sm:p-12 text-center space-y-4 shadow-xl shadow-slate-900/[0.05]">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-6 relative grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 sm:p-10 text-center space-y-4 shadow-xl shadow-slate-900/[0.05]">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/30">
             <Lock className="w-7 h-7 text-slate-950" />
           </div>
@@ -416,7 +457,14 @@ function LockedLevel({ level }) {
               ? 'اشترك في المستوى وبعد تأكيد الدفع هيتفعّل على حسابك وتقدر تشوف كل المحاضرات والملفات وتشارك في المناقشة.'
               : 'للاشتراك لازم تسجّل الدخول أو تعمل حساب جديد الأول، وبعد تأكيد الدفع هيتفعّل المستوى على حسابك.'}
           </p>
+          {levelGroupLink(level.code) && (
+            <p className="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2">
+              <MessageCircle className="w-4 h-4" />
+              بعد التفعيل هيظهرلك رابط جروب الواتساب الخاص بالمستوى
+            </p>
+          )}
         </div>
+        <PaymentInfo amount={formatPriceLatin(level.price)} />
       </div>
     </div>
   );

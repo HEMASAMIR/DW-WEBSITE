@@ -10,6 +10,24 @@ export const ACADEMY_INFO = {
   phoneSecondary: '01144151673',
 };
 
+// Payment details shown in the subscribe / order flows.
+export const PAYMENT_INFO = {
+  number: '01010169369',
+  methods: [
+    { id: 'wallet', label: 'محفظة إلكترونية', hint: 'تحويل من أي محفظة موبايل' },
+    { id: 'instapay', label: 'إنستا باي', hint: 'InstaPay — تحويل على رقم الموبايل' },
+  ],
+};
+
+// WhatsApp group per level — shown only to students the level is unlocked for.
+export const LEVEL_WHATSAPP_GROUPS = {
+  A1: 'https://chat.whatsapp.com/JPLSf99guLQ8zXlFvDsE7Z',
+  A2: 'https://chat.whatsapp.com/LRvGNwMDDQmEoM6ZXYlTl5',
+  B1: 'https://chat.whatsapp.com/IGEot5E1QYBH1zf9Q4AAZs',
+  B2: 'https://chat.whatsapp.com/LpLRjlH1oyq6QWas1VvhAs',
+};
+export const levelGroupLink = (code) => LEVEL_WHATSAPP_GROUPS[String(code || '').toUpperCase()] || null;
+
 export function whatsappLink(message = '') {
   const text = message ? `?text=${encodeURIComponent(message)}` : '';
   return `https://wa.me/${ACADEMY_INFO.whatsapp}${text}`;
