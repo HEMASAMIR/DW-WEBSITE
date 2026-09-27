@@ -47,19 +47,33 @@ function ConfirmDialog() {
       aria-modal="true"
       aria-labelledby="logout-title"
     >
-      <div className="relative w-full max-w-sm bg-white rounded-[2rem] shadow-2xl overflow-hidden text-center">
-        <div className="flex h-1" dir="ltr">
-          <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+      <div className="relative w-full max-w-sm bg-white rounded-[2rem] shadow-2xl overflow-hidden text-center animate-fadeIn">
+        {/* Brand header */}
+        <div className="relative h-28 bg-[#0e2c4e] overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.5),transparent_60%),radial-gradient(ellipse_at_bottom_left,rgba(245,158,11,0.3),transparent_55%)]" />
+          <div
+            className="absolute inset-0 opacity-[0.1]"
+            style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '14px 14px' }}
+          />
+          <div className="absolute top-0 inset-x-0 flex h-1.5" dir="ltr">
+            <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+          </div>
         </div>
 
-        <div className="px-6 sm:px-8 pt-8 pb-6 space-y-5">
-          <span className="relative inline-flex">
-            <span className="absolute inset-0 rounded-full bg-rose-400/30 animate-ping" />
-            <span className="relative w-20 h-20 rounded-full bg-gradient-to-br from-rose-50 to-rose-100 border-4 border-white shadow-lg shadow-rose-500/20 flex items-center justify-center">
-              <LogOut className="w-9 h-9 text-rose-600 -scale-x-100" />
+        {/* Logo badge overlapping the header */}
+        <div className="relative -mt-14 flex justify-center">
+          <span className="relative">
+            <span className="relative w-28 h-28 rounded-[1.75rem] bg-white shadow-xl shadow-[#0e2c4e]/20 ring-4 ring-white flex items-center justify-center p-4">
+              {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
+              <img src="/assets/images/logo-full.png" alt="Deutsche Welt" className="w-full h-full object-contain" />
+            </span>
+            <span className="absolute -bottom-2 -left-2 w-10 h-10 rounded-full bg-rose-500 text-white border-4 border-white shadow-lg flex items-center justify-center">
+              <LogOut className="w-4 h-4 -scale-x-100" />
             </span>
           </span>
+        </div>
 
+        <div className="px-6 sm:px-8 pt-5 pb-6 space-y-5">
           <div className="space-y-2">
             <h3 id="logout-title" className="text-2xl font-black text-[#0e2c4e]">متأكد إنك عايز تخرج؟</h3>
             <p className="text-sm text-slate-500 leading-relaxed">
