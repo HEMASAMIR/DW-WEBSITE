@@ -15,10 +15,12 @@ export default function CoursePage() {
 
   const level = allCourses.find((c) => String(c.id) === String(id));
 
+  if (level) return <LevelView level={level} />;
+
   return (
     <div className="min-h-[70vh] bg-gradient-to-b from-slate-100 to-slate-50 py-6 sm:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {loading && !level ? (
+        {loading ? (
           <div className="space-y-6 animate-pulse">
             <div className="h-48 rounded-[2rem] bg-slate-300/70" />
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -40,15 +42,13 @@ export default function CoursePage() {
               إعادة المحاولة
             </button>
           </Notice>
-        ) : !level ? (
+        ) : (
           <Notice icon={AlertCircle} text="المستوى غير موجود.">
             <Link href="/courses" className="inline-flex items-center gap-1.5 text-sm font-black text-teal-700">
               <ArrowRight className="w-4 h-4" />
               كل المستويات
             </Link>
           </Notice>
-        ) : (
-          <LevelView level={level} />
         )}
       </div>
     </div>
