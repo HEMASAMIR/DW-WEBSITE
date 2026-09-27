@@ -41,6 +41,8 @@ function AdminDashboard({ onClose }) {
   const [levelsError, setLevelsError] = useState(null); // { status, message }
   const [booksError, setBooksError] = useState(null);
   const [levelNames, setLevelNames] = useState([]);
+  // Regular levels list — shown read-only when the server refuses the level-admin endpoints (403).
+  const [catalogLevels, setCatalogLevels] = useState([]);
   const [toast, setToast] = useState({ type: '', text: '' });
 
   const notify = useCallback((type, text) => setToast({ type, text }), []);
@@ -64,6 +66,7 @@ function AdminDashboard({ onClose }) {
         const names = (lv.status === 'fulfilled' ? lv.value.map((l) => l.name)
           : studentLevels.status === 'fulfilled' ? studentLevels.value.map((l) => l.code) : []);
         setLevelNames(names);
+        setCatalogLevels(studentLevels.status === 'fulfilled' ? studentLevels.value : []);
         if (lv.status === 'fulfilled') {
           setLevels([...lv.value].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
           setLevelsError(null);
@@ -112,7 +115,7 @@ function AdminDashboard({ onClose }) {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Stat icon={Layers} label="المستويات" value={levelsError ? '—' : levels.length} color="text-amber-400" />
+          <Stat icon={Layers} label="المستويات" value={levelsError ? (catalogLevels.length || '—') : levels.length} color="text-amber-400" />
           <Stat icon={Users} label="اشتراكات المستويات المفعلة" value={levelsError ? '—' : totalSubscriptions} color="text-emerald-400" />
           <Stat icon={BookOpen} label="الكتب" value={booksError ? '—' : books.length} color="text-sky-400" />
           <Stat icon={BookOpen} label="الكتب المنشورة" value={booksError ? '—' : books.filter((b) => b.is_active).length} color="text-purple-400" />
@@ -149,6 +152,8 @@ function AdminDashboard({ onClose }) {
 
         {loading && levels.length === 0 && books.length === 0 ? (
           <div className="flex justify-center py-12"><Loader2 className="w-7 h-7 text-purple-400 animate-spin" /></div>
+        ) : tab === 'levels' && levelsError?.status === 403 && catalogLevels.length > 0 ? (
+          <LevelsReadOnly levels={catalogLevels} onClose={onClose} />
         ) : tab === 'levels' && levelsError ? (
           <SectionError error={levelsError} what="المستويات وتفعيلها للطلاب" />
         ) : tab === 'books' && booksError ? (
@@ -186,6 +191,44 @@ function SectionError({ error, what }) {
       ) : (
         <p className="text-sm text-rose-300">{error.message}</p>
       )}
+    </div>
+  );
+}
+
+/**
+ * Shown while the server still refuses level management for the "Admin" group (403):
+ * the real levels list (read-only) + a short note, instead of a big error.
+ */
+function LevelsReadOnly({ levels, onClose }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+        <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-xs text-amber-100 leading-relaxed">
+          <strong className="text-amber-300">تفعيل المستويات للطلاب من هنا</strong> هيشتغل أول ما يتحدّث السيرفر
+          (صلاحية جروب Admin لقسم المستويات). لحد ده، المستويات معروضة للاطلاع، وإدارة الكتب شغالة عادي.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {levels.map((l) => (
+          <div key={l.id} className="flex items-center gap-3 p-4 rounded-2xl bg-slate-950 border border-slate-800">
+            <span className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-slate-950 font-black flex items-center justify-center shrink-0" dir="ltr">
+              {l.code}
+            </span>
+            <div className="flex-1 min-w-0">
+              <span className="block text-sm font-bold text-white truncate" dir="auto">{l.title}</span>
+              {formatPrice(l.price) && <span className="text-xs text-emerald-400 font-bold">{formatPrice(l.price)} ج.م</span>}
+            </div>
+            <a
+              href={`/courses/${l.id}`}
+              onClick={onClose}
+              className="shrink-0 px-3 py-2 rounded-xl bg-slate-800 hover:bg-purple-600 text-xs font-bold text-slate-200 hover:text-white transition-colors"
+            >
+              عرض المحاضرات
+            </a>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
