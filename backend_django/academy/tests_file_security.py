@@ -133,6 +133,24 @@ class PaidContentSecurityTests(TestCase):
         self.assertEqual(r['X-Accel-Redirect'], f'/_protected/{self.book.file.name}')
         self.assertEqual(r.content, b'')
 
+    # --- "Admin" group members (not is_staff) can use every admin endpoint ----------------
+    def test_admin_group_member_can_manage_levels_and_books(self):
+        from django.contrib.auth.models import Group
+        group_admin = User.objects.create_user(username='g@x.com', email='g@x.com', password='pass12345')
+        group_admin.groups.add(Group.objects.get_or_create(name='Admin')[0])
+        self.assertFalse(group_admin.is_staff)
+        c = self.client_for(group_admin)
+        self.assertEqual(c.get('/api/courses/admin/levels/').status_code, 200)
+        self.assertEqual(c.get(f'/api/courses/admin/levels/{self.level.id}/users/').status_code, 200)
+        self.assertEqual(c.get('/api/books/admin/').status_code, 200)
+        r = c.post(f'/api/courses/admin/levels/{self.level.id}/grant/', {'user_id': self.student.id}, format='json')
+        self.assertIn(r.status_code, (200, 201))
+        self.assertTrue(LevelAccess.objects.filter(user=self.student, level=self.level, is_active=True).exists())
+        # Moderator group is still not an admin
+        mod = User.objects.create_user(username='m@x.com', email='m@x.com', password='pass12345')
+        mod.groups.add(Group.objects.get_or_create(name='Moderator')[0])
+        self.assertEqual(self.client_for(mod).get('/api/courses/admin/levels/').status_code, 403)
+
     # --- Groups endpoint only accepts known roles -----------------------------------------
     def test_groups_rejects_unknown_roles(self):
         c = self.client_for(self.admin)

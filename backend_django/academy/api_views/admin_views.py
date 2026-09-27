@@ -43,12 +43,18 @@ def _to_bool(value, default=True):
     return str(value).strip().lower() in ('1', 'true', 'yes', 'on')
 
 
+ADMIN_GROUP = 'Admin'
+
+
 def _is_admin(user):
-    return user and user.is_authenticated and (user.is_staff or user.is_superuser)
+    """Staff, superuser, or a member of the "Admin" group (roles are managed with groups)."""
+    if not (user and user.is_authenticated):
+        return False
+    return bool(user.is_staff or user.is_superuser or user.groups.filter(name=ADMIN_GROUP).exists())
 
 
 class IsStaffUser(BasePermission):
-    """Staff/superuser only. Runs after DRF authentication, so JWT users are recognised."""
+    """Admins only (staff / superuser / "Admin" group). Runs after DRF authentication, so JWT users are recognised."""
     message = 'هذا الإجراء يتطلب صلاحيات المسؤول.'
 
     def has_permission(self, request, view):
