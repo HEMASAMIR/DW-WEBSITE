@@ -6,6 +6,7 @@ import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
 import { coursesService, formatDuration, formatPrice } from '@/services/courses.service';
 import { useLevelContent, formatTotal, totalSeconds } from './useLevelContent';
+import Reveal from '@/components/common/Reveal';
 import {
   PlayCircle, Play, FileText, AlertCircle, RefreshCw, Lock, LogIn, MessageCircle, Clock, ListVideo,
   Eye, CheckCircle2, ChevronLeft, FileType2, Sparkles,
@@ -223,9 +224,9 @@ function UnlockedLevel({ level }) {
               ) : (
                 <ol className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-6">
                   {videos.map((vid, idx) => (
-                    <li key={vid.id}>
+                    <Reveal as="li" key={vid.id} delay={(idx % 2) * 120} className="h-full [&>*]:h-full">
                       <LectureCard levelId={level.id} video={vid} index={idx} />
-                    </li>
+                    </Reveal>
                   ))}
                 </ol>
               )}

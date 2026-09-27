@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 import BookCover, { toneFor } from '@/components/book/BookCover';
+import Reveal from '@/components/common/Reveal';
 import { Lock, Unlock, AlertCircle, RefreshCw, LogIn, CheckCircle2, ChevronLeft, Layers } from 'lucide-react';
 
 /**
@@ -78,23 +79,32 @@ export default function AccessGroups({
               <LoginBtn onClick={() => openAuthModal('login')} />
             </div>
             <div className={`grid ${gridClass} gap-6`}>
-              {items.map((i) => <React.Fragment key={i.id}>{renderCard(i)}</React.Fragment>)}
+              {items.map((i, n) => <Staggered key={i.id} n={n}>{renderCard(i)}</Staggered>)}
             </div>
           </section>
         ) : (
           <>
             <Group icon={Unlock} tone="emerald" label="مفعّلة لك" count={unlocked.length} empty="لسه مفيش حاجة متفعّلة على حسابك." gridClass={gridClass}>
-              {unlocked.map((i) => <React.Fragment key={i.id}>{renderCard(i)}</React.Fragment>)}
+              {unlocked.map((i, n) => <Staggered key={i.id} n={n}>{renderCard(i)}</Staggered>)}
             </Group>
             {locked.length > 0 && (
               <Group icon={Lock} tone="amber" label="متاحة للاشتراك" count={locked.length} gridClass={gridClass}>
-                {locked.map((i) => <React.Fragment key={i.id}>{renderCard(i)}</React.Fragment>)}
+                {locked.map((i, n) => <Staggered key={i.id} n={n}>{renderCard(i)}</Staggered>)}
               </Group>
             )}
           </>
         )}
       </div>
     </div>
+  );
+}
+
+/** Cards rise in one after another (per row of 3). */
+function Staggered({ n, children }) {
+  return (
+    <Reveal delay={(n % 3) * 130} className="h-full [&>*]:h-full">
+      {children}
+    </Reveal>
   );
 }
 

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { TEACHER_CV_DATA } from '@/constants/siteContent';
 import { useModal } from '@/context/ModalContext';
+import Reveal from '@/components/common/Reveal';
 import {
   UserCheck,
   Briefcase,
@@ -22,6 +23,17 @@ import {
   Flame,
   ArrowLeft
 } from 'lucide-react';
+
+// One colour per item (Tailwind needs the full class names written out).
+const EXP_TONES = [
+  { dot: 'border-teal-500', ping: 'bg-teal-400', side: 'border-r-teal-500', hover: 'hover:border-teal-300', icon: 'from-teal-500 to-emerald-600 shadow-teal-600/25', text: 'text-teal-700' },
+  { dot: 'border-amber-500', ping: 'bg-amber-400', side: 'border-r-amber-500', hover: 'hover:border-amber-300', icon: 'from-amber-400 to-orange-500 shadow-amber-500/25', text: 'text-amber-700' },
+  { dot: 'border-rose-500', ping: 'bg-rose-400', side: 'border-r-rose-500', hover: 'hover:border-rose-300', icon: 'from-rose-500 to-red-600 shadow-rose-600/25', text: 'text-rose-700' },
+];
+const EDU_TONES = [
+  { side: 'border-t-sky-500', blob: 'bg-sky-100', icon: 'from-sky-500 to-[#0e2c4e] shadow-sky-600/25', text: 'text-sky-700', chip: 'bg-sky-50 text-sky-800' },
+  { side: 'border-t-violet-500', blob: 'bg-violet-100', icon: 'from-violet-500 to-indigo-700 shadow-violet-600/25', text: 'text-violet-700', chip: 'bg-violet-50 text-violet-800' },
+];
 
 export default function AboutTeacherSection() {
   const { openCvModal } = useModal();
@@ -169,18 +181,22 @@ export default function AboutTeacherSection() {
 
               {activeTab === 'experience' && (
                 <ol className="relative space-y-5 pr-7 animate-fadeIn before:absolute before:top-3 before:bottom-3 before:right-[11px] before:w-0.5 before:bg-gradient-to-b before:from-teal-500 before:via-amber-400 before:to-transparent">
-                  {TEACHER_CV_DATA.experience.map((exp, idx) => (
-                    <li key={idx} className="relative">
-                      <span className="absolute -right-7 top-5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 shadow-md shadow-teal-500/30" />
-                      <div className="group p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-lg shadow-slate-900/[0.04] hover:shadow-xl hover:border-teal-300 transition-all duration-300 hover:-translate-x-1">
+                  {TEACHER_CV_DATA.experience.map((exp, idx) => {
+                    const t = EXP_TONES[idx % EXP_TONES.length];
+                    return (
+                    <Reveal as="li" key={idx} from="left" delay={idx * 180} className="relative">
+                      <span className={`absolute -right-7 top-5 w-6 h-6 rounded-full bg-white border-4 ${t.dot}`}>
+                        <span className={`absolute inset-0 rounded-full ${t.ping} animate-ping opacity-40`} />
+                      </span>
+                      <div className={`dw-shine group p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 border-r-4 ${t.side} shadow-lg shadow-slate-900/[0.04] hover:shadow-xl ${t.hover} transition-all duration-300 hover:-translate-x-1`}>
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-teal-600/25 group-hover:scale-110 transition-transform">
+                            <span className={`dw-wiggle w-12 h-12 rounded-2xl bg-gradient-to-br ${t.icon} text-white flex items-center justify-center shrink-0 shadow-lg`}>
                               <Briefcase className="w-5 h-5" />
                             </span>
                             <div>
                               <h4 className="text-[#0e2c4e] font-black text-base sm:text-lg leading-snug">{exp.title}</h4>
-                              <span className="text-xs text-teal-700 font-extrabold flex items-center gap-1.5 mt-0.5">
+                              <span className={`text-xs ${t.text} font-extrabold flex items-center gap-1.5 mt-0.5`}>
                                 <Building2 className="w-3.5 h-3.5" />
                                 <span>{exp.org}</span>
                               </span>
@@ -193,31 +209,37 @@ export default function AboutTeacherSection() {
                         </div>
                         <p className="text-sm text-slate-600 font-medium leading-relaxed mt-4 pt-4 border-t border-slate-100">{exp.desc}</p>
                       </div>
-                    </li>
-                  ))}
+                    </Reveal>
+                    );
+                  })}
                 </ol>
               )}
 
               {activeTab === 'education' && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 animate-fadeIn">
-                  {TEACHER_CV_DATA.education.map((edu, idx) => (
-                    <div
+                  {TEACHER_CV_DATA.education.map((edu, idx) => {
+                    const t = EDU_TONES[idx % EDU_TONES.length];
+                    return (
+                    <Reveal
                       key={idx}
-                      className="group relative overflow-hidden p-6 rounded-3xl bg-white border border-slate-200/80 shadow-lg shadow-slate-900/[0.04] hover:shadow-xl hover:border-sky-300 transition-all duration-300 hover:-translate-y-1 space-y-3"
+                      from="zoom"
+                      delay={idx * 180}
+                      className={`dw-shine group relative overflow-hidden p-6 rounded-3xl bg-white border border-slate-200/80 border-t-4 ${t.side} shadow-lg shadow-slate-900/[0.04] hover:shadow-xl hover:-translate-y-1 space-y-3`}
                     >
-                      <span className="absolute -top-10 -left-10 w-32 h-32 rounded-full bg-sky-100 group-hover:scale-125 transition-transform duration-500" />
-                      <span className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-[#0e2c4e] text-white flex items-center justify-center shadow-lg shadow-sky-600/25">
+                      <span className={`absolute -top-10 -left-10 w-32 h-32 rounded-full ${t.blob} group-hover:scale-125 transition-transform duration-500`} />
+                      <span className={`dw-wiggle relative w-12 h-12 rounded-2xl bg-gradient-to-br ${t.icon} text-white flex items-center justify-center shadow-lg`}>
                         <GraduationCap className="w-6 h-6" />
                       </span>
                       <h4 className="relative text-[#0e2c4e] font-black text-base leading-snug">{edu.title}</h4>
-                      <span className="relative text-xs text-sky-700 font-extrabold flex items-center gap-1.5">
+                      <span className={`relative text-xs ${t.text} font-extrabold flex items-center gap-1.5`}>
                         <Award className="w-3.5 h-3.5" />
                         <span>{edu.org}</span>
                       </span>
-                      <span className="relative inline-block text-[11px] font-black text-[#0e2c4e] bg-slate-100 px-3 py-1 rounded-lg">{edu.period}</span>
+                      <span className={`relative inline-block text-[11px] font-black px-3 py-1 rounded-lg ${t.chip}`}>{edu.period}</span>
                       <p className="relative text-sm text-slate-600 font-medium leading-relaxed">{edu.desc}</p>
-                    </div>
-                  ))}
+                    </Reveal>
+                    );
+                  })}
                 </div>
               )}
 

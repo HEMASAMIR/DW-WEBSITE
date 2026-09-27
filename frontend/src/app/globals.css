@@ -168,6 +168,47 @@
 .dw-eq span:nth-child(2) { animation-delay: 0.2s; }
 .dw-eq span:nth-child(3) { animation-delay: 0.4s; }
 
+/* ---------- Motion ---------- */
+/* Light sweep across a card on hover (.dw-shine on a `group` element with overflow-hidden) */
+.dw-shine { position: relative; overflow: hidden; }
+.dw-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+.dw-shine:hover::after { animation: dw-shine 0.9s ease-out; }
+@keyframes dw-shine { to { transform: translateX(120%); } }
+
+/* Gentle floating (pins, badges) */
+@keyframes dw-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+.dw-float { animation: dw-float 3.2s ease-in-out infinite; }
+
+/* Icon wiggle when its card is hovered */
+@keyframes dw-wiggle {
+  0%, 100% { transform: rotate(0deg) scale(1.1); }
+  25% { transform: rotate(-10deg) scale(1.1); }
+  75% { transform: rotate(10deg) scale(1.1); }
+}
+.group:hover .dw-wiggle { animation: dw-wiggle 0.6s ease-in-out; }
+
+/* Slowly shifting gradient (headline accents, stripes) */
+@keyframes dw-pan {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.dw-pan { background-size: 200% 100%; animation: dw-pan 6s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dw-reveal { transition: none !important; opacity: 1 !important; transform: none !important; }
+  .dw-float, .dw-pan, .dw-shine:hover::after, .group:hover .dw-wiggle { animation: none !important; }
+}
+
 /* Mixed-language titles (dir="auto") stay right-aligned in the RTL layout.
    In @layer base so utilities like text-center/text-left still win. */
 @layer base {

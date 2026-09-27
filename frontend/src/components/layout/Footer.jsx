@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
 import { ACADEMY_INFO, BRANCHES_DATA, whatsappLink } from '@/constants/siteContent';
+import Reveal from '@/components/common/Reveal';
 import {
   Phone,
   MessageCircle,
@@ -22,13 +23,20 @@ import {
   Lock
 } from 'lucide-react';
 
+// Each link / branch gets its own accent colour.
 const QUICK_LINKS = [
-  { href: '/#hero', label: 'الرئيسية' },
-  { href: '/courses', label: 'الكورسات والمستويات' },
-  { href: '/books', label: 'متجر كتب المنهج' },
-  { href: '/#branches', label: 'الفروع والمقرات' },
-  { href: '/#about-teacher', label: 'عن هير خالد الحلواني' },
-  { href: '/#reviews', label: 'آراء وتجارب الطلاب' },
+  { href: '/#hero', label: 'الرئيسية', tone: 'text-teal-400 group-hover:bg-teal-500/20' },
+  { href: '/courses', label: 'الكورسات والمستويات', tone: 'text-sky-400 group-hover:bg-sky-500/20' },
+  { href: '/books', label: 'متجر كتب المنهج', tone: 'text-amber-400 group-hover:bg-amber-500/20' },
+  { href: '/#branches', label: 'الفروع والمقرات', tone: 'text-rose-400 group-hover:bg-rose-500/20' },
+  { href: '/#about-teacher', label: 'عن هير خالد الحلواني', tone: 'text-violet-400 group-hover:bg-violet-500/20' },
+  { href: '/#reviews', label: 'آراء وتجارب الطلاب', tone: 'text-emerald-400 group-hover:bg-emerald-500/20' },
+];
+const BRANCH_TONES = [
+  'bg-teal-400/10 text-teal-400 group-hover:bg-teal-400 hover:border-teal-400/40',
+  'bg-sky-400/10 text-sky-400 group-hover:bg-sky-400 hover:border-sky-400/40',
+  'bg-amber-400/10 text-amber-400 group-hover:bg-amber-400 hover:border-amber-400/40',
+  'bg-rose-400/10 text-rose-400 group-hover:bg-rose-400 hover:border-rose-400/40',
 ];
 
 function FlagStripe({ className = '' }) {
@@ -175,15 +183,15 @@ export default function Footer() {
               <span>الروابط السريعة</span>
             </h4>
             <ul className="space-y-1 text-sm font-semibold text-slate-400">
-              {QUICK_LINKS.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="group flex items-center gap-2 py-1.5 hover:text-white transition-colors">
-                    <span className="w-6 h-6 rounded-lg bg-white/[0.04] group-hover:bg-teal-500/20 flex items-center justify-center transition-colors">
-                      <ChevronLeft className="w-3.5 h-3.5 text-teal-400 group-hover:-translate-x-0.5 transition-transform" />
+              {QUICK_LINKS.map((l, i) => (
+                <Reveal as="li" key={l.href} from="left" delay={i * 70}>
+                  <Link href={l.href} className="group flex items-center gap-2 py-1.5 hover:text-white hover:-translate-x-1 transition-all">
+                    <span className={`w-6 h-6 rounded-lg bg-white/[0.04] ${l.tone} flex items-center justify-center transition-colors`}>
+                      <ChevronLeft className="w-3.5 h-3.5" />
                     </span>
                     <span>{l.label}</span>
                   </Link>
-                </li>
+                </Reveal>
               ))}
             </ul>
           </div>
@@ -195,15 +203,18 @@ export default function Footer() {
               <span>فروعنا بالحضور</span>
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
-              {BRANCHES_DATA.map((b) => (
-                <a
+              {BRANCHES_DATA.map((b, i) => (
+                <Reveal
+                  as="a"
                   key={b.id}
+                  from="left"
+                  delay={i * 90}
                   href={b.mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-amber-400/40 transition-all duration-300"
+                  className={`group flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] ${BRANCH_TONES[i % BRANCH_TONES.length].split(' ').pop()}`}
                 >
-                  <span className="w-10 h-10 rounded-xl bg-amber-400/10 text-amber-400 group-hover:bg-amber-400 group-hover:text-[#0e2c4e] flex items-center justify-center shrink-0 transition-colors">
+                  <span className={`w-10 h-10 rounded-xl ${BRANCH_TONES[i % BRANCH_TONES.length]} group-hover:text-[#0e2c4e] flex items-center justify-center shrink-0 transition-colors`}>
                     <MapPin className="w-4 h-4" />
                   </span>
                   <span className="flex-1 min-w-0">
@@ -213,7 +224,7 @@ export default function Footer() {
                     </span>
                     <span className="block text-[11px] text-slate-400 truncate mt-0.5">{b.address}</span>
                   </span>
-                </a>
+                </Reveal>
               ))}
             </div>
           </div>

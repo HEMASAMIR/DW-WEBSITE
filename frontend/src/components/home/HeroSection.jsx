@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useModal } from '@/context/ModalContext';
+import Reveal from '@/components/common/Reveal';
 import { 
   Sparkles, 
   Award, 
@@ -155,25 +156,38 @@ export default function HeroSection() {
 
                 <ol className="space-y-3">
                   {[
-                    { icon: MessagesSquare, title: 'شرح مبسط وتأسيس قوي في الجرامر والـ Sprechen', desc: 'أساليب حديثة تعتمد على التحدث والتدريب العملي المستمر.' },
-                    { icon: MonitorPlay, title: 'منصة تفاعلية مخصصة لكل طالب', desc: 'محاضرات مسجلة ومباشرة مع متابعة التقييم والواجبات أونلاين.' },
-                    { icon: Target, title: 'اختبار تحديد مستوى مجاني شامل', desc: 'حدد مستواك بدقة في دقائق للحصول على الخطة المناسبة لك.' },
-                  ].map(({ icon: Icon, title, desc }, i) => (
-                    <li
+                    {
+                      icon: MessagesSquare, title: 'شرح مبسط وتأسيس قوي في الجرامر والـ Sprechen', desc: 'أساليب حديثة تعتمد على التحدث والتدريب العملي المستمر.',
+                      bar: 'bg-teal-400', icon_: 'bg-teal-400/15 border-teal-300/30 text-teal-300 group-hover:bg-teal-400', border: 'hover:border-teal-300/50', num: 'group-hover:[-webkit-text-stroke:1px_rgba(45,212,191,0.7)]',
+                    },
+                    {
+                      icon: MonitorPlay, title: 'منصة تفاعلية مخصصة لكل طالب', desc: 'محاضرات مسجلة ومباشرة مع متابعة التقييم والواجبات أونلاين.',
+                      bar: 'bg-amber-400', icon_: 'bg-amber-400/15 border-amber-300/30 text-amber-300 group-hover:bg-amber-400', border: 'hover:border-amber-300/50', num: 'group-hover:[-webkit-text-stroke:1px_rgba(251,191,36,0.7)]',
+                    },
+                    {
+                      icon: Target, title: 'اختبار تحديد مستوى مجاني شامل', desc: 'حدد مستواك بدقة في دقائق للحصول على الخطة المناسبة لك.',
+                      bar: 'bg-rose-500', icon_: 'bg-rose-500/15 border-rose-400/30 text-rose-300 group-hover:bg-rose-500', border: 'hover:border-rose-400/50', num: 'group-hover:[-webkit-text-stroke:1px_rgba(251,113,133,0.7)]',
+                    },
+                  ].map(({ icon: Icon, title, desc, bar, icon_, border, num }, i) => (
+                    <Reveal
+                      as="li"
                       key={title}
-                      className="group relative flex items-start gap-4 p-4 rounded-2xl bg-white/[0.06] hover:bg-white/[0.11] border border-white/10 hover:border-teal-300/40 transition-all duration-300 hover:-translate-x-1"
+                      from="left"
+                      delay={150 + i * 150}
+                      className={`dw-shine group relative flex items-start gap-4 p-4 rounded-2xl bg-white/[0.06] hover:bg-white/[0.11] border border-white/10 ${border} hover:-translate-x-1`}
                     >
-                      <span className="w-11 h-11 rounded-xl bg-teal-400/15 border border-teal-300/25 text-teal-300 group-hover:bg-teal-400 group-hover:text-[#0e2c4e] flex items-center justify-center shrink-0 transition-colors">
+                      <span className={`absolute right-0 top-4 bottom-4 w-1 rounded-l-full ${bar} opacity-70 group-hover:opacity-100 transition-opacity`} />
+                      <span className={`dw-wiggle w-11 h-11 rounded-xl border ${icon_} group-hover:text-[#0e2c4e] flex items-center justify-center shrink-0 transition-colors`}>
                         <Icon className="w-5 h-5" />
                       </span>
                       <div className="flex-1 min-w-0">
                         <span className="font-black text-sm sm:text-base block leading-snug">{title}</span>
                         <span className="text-xs sm:text-[13px] text-slate-300 leading-relaxed block mt-1">{desc}</span>
                       </div>
-                      <span className="text-3xl font-black text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.18)] leading-none shrink-0" dir="ltr">
+                      <span className={`text-3xl font-black text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.18)] ${num} transition-all leading-none shrink-0`} dir="ltr">
                         {String(i + 1).padStart(2, '0')}
                       </span>
-                    </li>
+                    </Reveal>
                   ))}
                 </ol>
 
