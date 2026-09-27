@@ -92,10 +92,9 @@ export default function ContactSection() {
                   href={`https://wa.me/${ACADEMY_INFO.whatsapp}?text=${encodeURIComponent('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية مع هير خالد')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 relative group/btn py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-amber-500/25 transition-all transform hover:scale-[1.02] active:scale-95 overflow-hidden"
+                  className="flex-1 relative py-3.5 px-6 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-teal-900/25 transition-all transform hover:scale-[1.02] active:scale-95"
                 >
-                  <span className="absolute inset-0 w-1/2 h-full bg-white/30 skew-x-12 -translate-x-full group-hover/btn:translate-x-[300%] transition-transform duration-1000 ease-in-out" />
-                  <MessageCircle className="w-5 h-5 fill-slate-950" />
+                  <MessageCircle className="w-5 h-5 fill-white" />
                   <span>محادثة واتساب مباشرة</span>
                 </a>
 
@@ -213,9 +212,8 @@ export default function ContactSection() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full relative group/submit py-4 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-700 hover:from-teal-600 hover:to-emerald-600 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-teal-700/25 transition-all transform hover:scale-[1.01] active:scale-98 overflow-hidden cursor-pointer"
+                    className="w-full relative py-4 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-700 hover:from-teal-600 hover:to-emerald-600 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-teal-700/25 transition-all transform hover:scale-[1.01] active:scale-98 cursor-pointer"
                   >
-                    <span className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-12 -translate-x-full group-hover/submit:translate-x-[300%] transition-transform duration-1000 ease-in-out" />
                     <Send className="w-4 h-4" />
                     <span>{loading ? 'جاري التجهيز...' : 'إرسال الاستفسار عبر واتساب الأكاديمية'}</span>
                   </button>

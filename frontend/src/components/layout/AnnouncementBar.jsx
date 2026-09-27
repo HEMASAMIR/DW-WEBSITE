@@ -238,14 +238,14 @@ export default function AnnouncementBar() {
           </div>
         </div>
 
-        {/* Left Side: Glowing High-Contrast VIP Action Button */}
+        {/* Left Side: High-Contrast VIP Action Button */}
         <div className="flex items-center gap-2 shrink-0">
           <Link
             href={current.link}
-            className="group relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_15px_rgba(245,158,11,0.35)] hover:shadow-[0_0_25px_rgba(245,158,11,0.65)] hover:scale-105 active:scale-95 transition-all"
+            className="group relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-black text-xs sm:text-sm shadow-[0_0_15px_rgba(20,184,166,0.35)] hover:shadow-[0_0_25px_rgba(20,184,166,0.65)] hover:scale-105 active:scale-95 transition-all"
           >
             <span>{current.cta}</span>
-            <ArrowLeft className="w-3.5 h-3.5 text-slate-950 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-3.5 h-3.5 text-white group-hover:-translate-x-1 transition-transform" />
           </Link>
         </div>
 
@@ -260,7 +260,7 @@ export default function AnnouncementBar() {
               onClick={() => setIndex(i)}
               className={`h-1 rounded-full transition-all duration-300 ${
                 i === index 
-                  ? 'w-6 bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.8)]' 
+                  ? 'w-6 bg-teal-400 shadow-[0_0_8px_rgba(20,184,166,0.8)]' 
                   : 'w-1.5 bg-slate-700 hover:bg-slate-500'
               }`}
               title={item.tag}

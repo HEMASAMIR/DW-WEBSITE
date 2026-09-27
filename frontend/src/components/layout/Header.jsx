@@ -108,7 +108,7 @@ export default function Header() {
           {/* Level Quiz Button */}
           <button
             onClick={openQuizModal}
-            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-black text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 px-4 py-2.5 rounded-full shadow-md shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 border border-amber-300"
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-black text-white bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 px-4 py-2.5 rounded-full shadow-md shadow-teal-700/20 transition-all transform hover:-translate-y-0.5 border border-teal-500/30"
           >
             <Award className="w-4 h-4" />
             <span>اختبار المستوى</span>
@@ -196,7 +196,7 @@ export default function Header() {
           <div className="pt-2">
             <button
               onClick={() => { setMobileMenuOpen(false); openQuizModal(); }}
-              className="w-full text-center text-xs font-black text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 py-3 rounded-full shadow-md border border-amber-300"
+              className="w-full text-center text-xs font-black text-white bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 py-3 rounded-full shadow-md border border-teal-500/30"
             >
               اختبار تحديد المستوى المجاني 🏆
             </button>

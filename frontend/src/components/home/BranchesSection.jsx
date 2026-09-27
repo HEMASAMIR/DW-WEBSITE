@@ -300,14 +300,11 @@ export default function BranchesSection() {
                     href={branch.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-full relative group/btn flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-gradient-to-r ${branch.theme.ctaGradient} text-white font-black text-sm shadow-md hover:shadow-xl transition-all duration-300 transform active:scale-98 overflow-hidden`}
+                    className={`w-full relative flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-gradient-to-r ${branch.theme.ctaGradient} text-white font-black text-sm shadow-md hover:shadow-xl transition-all duration-300 transform active:scale-98`}
                   >
-                    {/* Subtle shiny light sweep */}
-                    <span className="absolute inset-0 w-1/2 h-full bg-white/20 skew-x-12 -translate-x-full group-hover/btn:translate-x-[300%] transition-transform duration-1000 ease-in-out" />
-                    
                     <Map className="w-4 h-4" />
                     <span>افتح الموقع على Google Maps</span>
-                    <ExternalLink className="w-3.5 h-3.5 group-hover/btn:-translate-x-1 transition-transform" />
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
 
@@ -335,7 +332,7 @@ export default function BranchesSection() {
 
           <a
             href="#online-courses"
-            className="shrink-0 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs sm:text-sm shadow-lg hover:shadow-amber-500/30 transition-all duration-300 flex items-center gap-2 transform active:scale-95"
+            className="shrink-0 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-black text-xs sm:text-sm shadow-lg shadow-teal-500/25 transition-all duration-300 flex items-center gap-2 transform active:scale-95"
           >
             <span>استكشف الكورسات الأونلاين</span>
             <ArrowLeft className="w-4 h-4" />

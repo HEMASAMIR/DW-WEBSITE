@@ -286,10 +286,9 @@ export default function BooksSection() {
                         <button
                           type="button"
                           onClick={() => handleOrder(book)}
-                          className="w-full relative group/btn py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-amber-500/25 transition-all transform hover:scale-[1.02] active:scale-95 overflow-hidden cursor-pointer"
+                          className="w-full relative py-3.5 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-teal-900/25 transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer"
                         >
-                          <span className="absolute inset-0 w-1/2 h-full bg-white/30 skew-x-12 -translate-x-full group-hover/btn:translate-x-[300%] transition-transform duration-1000 ease-in-out" />
-                          <ShoppingCart className="w-4 h-4 fill-slate-950" />
+                          <ShoppingCart className="w-4 h-4 fill-white" />
                           <span>اطلب نسختك المطبوعة الآن 🛒</span>
                         </button>
                       )}

@@ -251,17 +251,14 @@ export default function Footer() {
                     </p>
                   </div>
 
-                  {/* Primary WhatsApp Button with Light Sweep Effect */}
+                  {/* Primary WhatsApp Button */}
                   <a
                     href={whatsappLink('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية والاشتراك')}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full relative group/btn py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-amber-500/20 transition-all transform hover:scale-[1.02] active:scale-95 overflow-hidden"
+                    className="w-full relative py-3.5 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-teal-900/25 transition-all transform hover:scale-[1.02] active:scale-95"
                   >
-                    {/* Sweep Light Animation */}
-                    <span className="absolute inset-0 w-1/2 h-full bg-white/30 skew-x-12 -translate-x-full group-hover/btn:translate-x-[300%] transition-transform duration-1000 ease-in-out" />
-                    
-                    <MessageCircle className="w-4 h-4 fill-slate-950" />
+                    <MessageCircle className="w-4 h-4 fill-white" />
                     <span>محادثة واتساب سريعة</span>
                   </a>
 

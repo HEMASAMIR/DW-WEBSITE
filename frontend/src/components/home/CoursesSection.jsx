@@ -291,16 +291,12 @@ export default function CoursesSection() {
                       <button
                         type="button"
                         onClick={() => handleAction(course)}
-                        className={`w-full relative group/btn py-3 px-5 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-95 shadow-md overflow-hidden cursor-pointer ${
+                        className={`w-full py-3 px-5 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-95 shadow-md cursor-pointer ${
                           hasAccess
                             ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-emerald-500/25'
-                            : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-amber-500/25'
+                            : 'bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 text-white shadow-teal-600/25'
                         }`}
                       >
-                        {!hasAccess && (
-                          <span className="absolute inset-0 w-1/2 h-full bg-white/30 skew-x-12 -translate-x-full group-hover/btn:translate-x-[300%] transition-transform duration-1000 ease-in-out" />
-                        )}
-
                         {!isAuthenticated ? (
                           <>
                             <Lock className="w-3.5 h-3.5" />
@@ -342,7 +338,7 @@ export default function CoursesSection() {
 
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-[0_0_12px_rgba(251,191,36,0.25)]">
                       <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                      <span>🚀 قريباً جداً • Demnächst</span>
+                      <span>قريباً</span>
                     </span>
                   </div>
 
@@ -352,31 +348,24 @@ export default function CoursesSection() {
                       كورس اللغة الألمانية - المستوى المتقدم C1
                     </h3>
                     <p className="text-xs text-amber-300 font-extrabold flex items-center gap-1 font-mono">
-                      <span>Fachstufe (C1) • قمة الطلاقة والألماني المتقدم</span>
+                      <span>Fachstufe (C1)</span>
                     </p>
                   </div>
 
-                  {/* Slick Captivating Slogan (جملة رايقة أوي) */}
-                  <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-amber-400/30 mb-4 text-xs text-amber-100 font-medium leading-relaxed shadow-inner">
-                    « سقف الطلاقة وقمة الاحتراف اللغوي 🇩🇪 — قريباً رحلتك لاجتياز أعقد النقاشات، الأبحاث والمناصب القيادية وسوق العمل المتقدم في ألمانيا بطلاقة المتحدث الأصلي! »
+                  <div className="p-4 rounded-2xl bg-slate-900/90 border border-amber-400/30 mb-4 text-center text-amber-200 font-black text-sm shadow-inner">
+                    ⏳ قريباً
                   </div>
                 </div>
 
-                {/* Bottom Action: Waitlist Button */}
+                {/* Bottom Action */}
                 <div className="pt-4 border-t border-slate-800 space-y-3 mt-auto">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-amber-300">يتم التجهيز والتصوير حالياً ⏳</span>
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40">VIP الدفعة الأولى</span>
-                  </div>
-
                   <a
-                    href={`https://wa.me/2010552287454?text=${encodeURIComponent('مرحباً هير خالد، أود تسجيل اسمي في قائمة الانتظار لكورس C1 وحجز الأولوية في أول دفعة فور انطلاقها.')}`}
+                    href={`https://wa.me/2010552287454?text=${encodeURIComponent('مرحباً هير خالد، أود الاستفسار عن كورس C1.')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full relative group/btn py-3 px-5 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-slate-950 hover:shadow-[0_0_20px_rgba(251,191,36,0.5)] cursor-pointer"
+                    className="w-full py-3.5 px-5 rounded-xl text-sm font-black flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] active:scale-95 shadow-md bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 text-white cursor-pointer"
                   >
-                    <Sparkles className="w-4 h-4 text-slate-950" />
-                    <span>انضم لقائمة الانتظار وحجز الأولوية 🔔</span>
+                    <span>قريباً — تواصل للاستفسار</span>
                   </a>
                 </div>
 
