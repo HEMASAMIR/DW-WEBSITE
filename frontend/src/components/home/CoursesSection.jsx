@@ -250,20 +250,10 @@ export default function CoursesSection() {
 
                     {/* Short Description */}
                     {course.description && (
-                      <p className="text-xs sm:text-sm text-slate-600 mb-5 leading-relaxed font-medium line-clamp-2">
+                      <p className="text-xs sm:text-sm text-slate-600 mb-4 leading-relaxed font-medium line-clamp-2">
                         {course.description}
                       </p>
                     )}
-
-                    {/* Perks List */}
-                    <div className="space-y-2 mb-6 pt-1">
-                      {perks.map((feat, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-xs font-bold text-slate-700">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
-                          <span className="leading-tight">{feat}</span>
-                        </div>
-                      ))}
-                    </div>
                   </div>
 
                   {/* Price & Action Buttons */}
@@ -367,23 +357,8 @@ export default function CoursesSection() {
                   </div>
 
                   {/* Slick Captivating Slogan (جملة رايقة أوي) */}
-                  <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-amber-400/30 mb-5 text-xs text-amber-100 font-medium leading-relaxed shadow-inner">
+                  <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-amber-400/30 mb-4 text-xs text-amber-100 font-medium leading-relaxed shadow-inner">
                     « سقف الطلاقة وقمة الاحتراف اللغوي 🇩🇪 — قريباً رحلتك لاجتياز أعقد النقاشات، الأبحاث والمناصب القيادية وسوق العمل المتقدم في ألمانيا بطلاقة المتحدث الأصلي! »
-                  </div>
-
-                  {/* Perks List */}
-                  <div className="space-y-2 mb-6 pt-1">
-                    {[
-                      'الطلاقة التلقائية والتعبير كمتحدث ألماني أصلي (Native Speaker)',
-                      'المصطلحات التخصصية للأطباء، المهندسين والباحثين وسوق العمل بألمانيا',
-                      'تأهيل لامتحانات Goethe C1 & Telc C1 Hochschule للأبحاث والجامعات',
-                      'أسبقية الحجز وتخفيض حصري للملتحقين بأول دفعة'
-                    ].map((feat, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs font-bold text-slate-200">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-                        <span className="leading-tight">{feat}</span>
-                      </div>
-                    ))}
                   </div>
                 </div>
 
