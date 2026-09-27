@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState } from 'react';
 const ModalContext = createContext();
 
 export function ModalProvider({ children }) {
-  const [activeModal, setActiveModal] = useState(null); // 'auth' | 'enroll' | 'bookOrder' | 'quiz' | 'studentDashboard' | 'profile' | 'adminDashboard' | 'lightbox' | 'cv' | 'loginPrompt'
+  const [activeModal, setActiveModal] = useState(null); // 'auth' | 'enroll' | 'bookOrder' | 'profile' | 'adminDashboard' | 'lightbox' | 'cv' | 'loginPrompt'
   const [modalData, setModalData] = useState(null);
 
   const openAuthModal = (mode = 'login') => {
@@ -26,11 +26,6 @@ export function ModalProvider({ children }) {
   const openBookOrderModal = (book) => {
     setModalData({ book });
     setActiveModal('bookOrder');
-  };
-
-  const openQuizModal = () => {
-    setModalData(null);
-    setActiveModal('quiz');
   };
 
 
@@ -72,7 +67,6 @@ export function ModalProvider({ children }) {
     openLoginPromptModal,
     openEnrollModal,
     openBookOrderModal,
-    openQuizModal,
     openProfileModal,
     openAdminDashboard,
     openLightboxModal,

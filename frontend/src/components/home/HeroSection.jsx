@@ -20,17 +20,13 @@ import {
   ChevronLeft,
   MessagesSquare,
   MonitorPlay,
-  Target
+  PlayCircle
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function HeroSection() {
-  const { openQuizModal, openCvModal } = useModal();
+  const { openCvModal } = useModal();
   const [searchQuery, setSearchQuery] = useState('');
-  const [mounted, setMounted] = useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -164,10 +160,6 @@ export default function HeroSection() {
                       icon: MonitorPlay, title: 'منصة تفاعلية مخصصة لكل طالب', desc: 'محاضرات مسجلة ومباشرة مع متابعة التقييم والواجبات أونلاين.',
                       bar: 'bg-amber-400', icon_: 'bg-amber-400/15 border-amber-300/30 text-amber-300 group-hover:bg-amber-400', border: 'hover:border-amber-300/50', num: 'group-hover:[-webkit-text-stroke:1px_rgba(251,191,36,0.7)]',
                     },
-                    {
-                      icon: Target, title: 'اختبار تحديد مستوى مجاني شامل', desc: 'حدد مستواك بدقة في دقائق للحصول على الخطة المناسبة لك.',
-                      bar: 'bg-rose-500', icon_: 'bg-rose-500/15 border-rose-400/30 text-rose-300 group-hover:bg-rose-500', border: 'hover:border-rose-400/50', num: 'group-hover:[-webkit-text-stroke:1px_rgba(251,113,133,0.7)]',
-                    },
                   ].map(({ icon: Icon, title, desc, bar, icon_, border, num }, i) => (
                     <Reveal
                       as="li"
@@ -193,13 +185,13 @@ export default function HeroSection() {
 
                 {/* Action Buttons */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button
-                    onClick={openQuizModal}
+                  <Link
+                    href="/courses"
                     className="py-4 rounded-2xl bg-gradient-to-r from-amber-300 to-amber-500 text-[#0e2c4e] text-sm font-black flex items-center justify-center gap-2 shadow-xl shadow-amber-500/25 hover:-translate-y-0.5 transition-transform"
                   >
-                    <Award className="w-4 h-4" />
-                    <span>اختبار تحديد المستوى (مجاناً)</span>
-                  </button>
+                    <PlayCircle className="w-4 h-4" />
+                    <span>تصفح الكورسات</span>
+                  </Link>
                   <button
                     onClick={() => openCvModal('overview')}
                     className="py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white text-sm font-black flex items-center justify-center gap-2 transition-colors"

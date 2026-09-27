@@ -52,13 +52,6 @@ export function useCourses() {
     };
   }, [authLoading, isAuthenticated, reloadKey]);
 
-  // The placement quiz asks the courses grid to focus on its recommended level.
-  useEffect(() => {
-    const onSelect = (e) => setActiveTab(e.detail || 'ALL');
-    window.addEventListener('dw:select-level', onSelect);
-    return () => window.removeEventListener('dw:select-level', onSelect);
-  }, []);
-
   const filteredCourses = activeTab === 'ALL' ? courses : courses.filter((c) => c.code === activeTab);
 
   return {
