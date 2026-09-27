@@ -51,7 +51,7 @@ export default function AboutTeacherSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           
           {/* Right Column (in RTL): Teacher Portrait & Stats Stage (lg:col-span-5) */}
-          <div className="lg:col-span-5">
+          <Reveal from="zoom" className="lg:col-span-5">
             <div className="relative mx-auto max-w-md bg-gradient-to-br from-white via-slate-50 to-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-2xl space-y-6">
               
               {/* Photo Frame with 3D Depth */}
@@ -124,10 +124,10 @@ export default function AboutTeacherSection() {
               </button>
 
             </div>
-          </div>
+          </Reveal>
 
           {/* Left Column (in RTL): Interactive CV & Educational Vision (lg:col-span-7) */}
-          <div className="lg:col-span-7 space-y-6">
+          <Reveal from="left" delay={150} className="lg:col-span-7 space-y-6">
             
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black bg-gradient-to-r from-teal-500/15 via-amber-500/15 to-teal-500/15 border border-teal-500/30 text-teal-800 shadow-xs">
@@ -278,7 +278,7 @@ export default function AboutTeacherSection() {
               </span>
             </button>
 
-          </div>
+          </Reveal>
 
         </div>
 

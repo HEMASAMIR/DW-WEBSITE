@@ -45,7 +45,7 @@ export default function HeroSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Top Hero Section Header Content */}
-        <div className="text-center max-w-4xl mx-auto space-y-6">
+        <Reveal className="text-center max-w-4xl mx-auto space-y-6">
           
           {/* Top Capsule Badge */}
           <div className="inline-flex items-center gap-2 glass-pill px-5 py-2 rounded-full shadow-md text-xs sm:text-sm font-bold tracking-wide">
@@ -127,13 +127,13 @@ export default function HeroSection() {
             </div>
           </div>
 
-        </div>
+        </Reveal>
 
         {/* Bottom Hero Grid Details & Photo Box */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
+
           {/* Key Benefits & CV Stats */}
-          <div className="lg:col-span-6">
+          <Reveal from="right" delay={150} className="lg:col-span-6">
             <div className="relative overflow-hidden rounded-[2rem] bg-[#0e2c4e] text-white p-6 sm:p-8 shadow-2xl shadow-[#0e2c4e]/30">
               {/* light + dot pattern + German-flag stripe (brand) */}
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(20,184,166,0.35),transparent_55%),radial-gradient(ellipse_at_bottom_right,rgba(245,158,11,0.22),transparent_55%)]" />
@@ -202,10 +202,10 @@ export default function HeroSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </Reveal>
 
           {/* Photo Frame & Floating Corporate Experience Chips */}
-          <div className="lg:col-span-6">
+          <Reveal from="left" delay={300} className="lg:col-span-6">
             <div className="relative glass-emerald rounded-3xl p-6 border border-slate-200 shadow-xl space-y-4">
               
               {/* Card Header Tag */}
@@ -247,7 +247,7 @@ export default function HeroSection() {
               </button>
 
             </div>
-          </div>
+          </Reveal>
 
         </div>
 

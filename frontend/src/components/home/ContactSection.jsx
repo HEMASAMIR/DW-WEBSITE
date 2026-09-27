@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ACADEMY_INFO, TOPICS } from '@/constants/siteContent';
+import Reveal from '@/components/common/Reveal';
 import {
   Phone,
   MessageCircle,
@@ -55,7 +56,7 @@ export default function ContactSection() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             {/* Left Content / Info Box (lg:col-span-5) */}
-            <div className="lg:col-span-5 space-y-6">
+            <Reveal from="right" className="lg:col-span-5 space-y-6">
               
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black bg-gradient-to-r from-teal-500/15 to-emerald-500/15 border border-teal-500/30 text-teal-800 shadow-xs">
                 <Sparkles className="w-4 h-4 text-amber-500 animate-spin" style={{ animationDuration: '6s' }} />
@@ -95,10 +96,10 @@ export default function ContactSection() {
                 </a>
               </div>
 
-            </div>
+            </Reveal>
 
             {/* Right Contact Form Card (lg:col-span-7) */}
-            <div className="lg:col-span-7 relative rounded-3xl p-7 sm:p-9 bg-gradient-to-br from-slate-50 via-white to-slate-50 border border-slate-200 shadow-lg">
+            <Reveal from="left" delay={150} className="lg:col-span-7 relative rounded-3xl p-7 sm:p-9 bg-gradient-to-br from-slate-50 via-white to-slate-50 border border-slate-200 shadow-lg">
               
               {submitted ? (
                 <div className="text-center py-12 space-y-4 animate-fadeIn">
@@ -206,7 +207,7 @@ export default function ContactSection() {
                 </form>
               )}
 
-            </div>
+            </Reveal>
 
           </div>
         </div>

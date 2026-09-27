@@ -1,16 +1,10 @@
 import React from 'react';
 import { BookOpen } from 'lucide-react';
 
-/** Per-level colour palette (pure design — the level code itself comes from the backend). */
-export const LEVEL_TONES = {
-  A1: { cover: 'from-teal-500 via-teal-700 to-slate-900', stage: 'from-teal-100 via-teal-50 to-white', glow: 'bg-teal-400/40', text: 'text-teal-700', chip: 'bg-teal-50 text-teal-700 border-teal-200' },
-  A2: { cover: 'from-emerald-500 via-emerald-700 to-slate-900', stage: 'from-emerald-100 via-emerald-50 to-white', glow: 'bg-emerald-400/40', text: 'text-emerald-700', chip: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  B1: { cover: 'from-sky-500 via-sky-700 to-slate-900', stage: 'from-sky-100 via-sky-50 to-white', glow: 'bg-sky-400/40', text: 'text-sky-700', chip: 'bg-sky-50 text-sky-700 border-sky-200' },
-  B2: { cover: 'from-indigo-500 via-indigo-700 to-slate-900', stage: 'from-indigo-100 via-indigo-50 to-white', glow: 'bg-indigo-400/40', text: 'text-indigo-700', chip: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  C1: { cover: 'from-violet-500 via-violet-700 to-slate-900', stage: 'from-violet-100 via-violet-50 to-white', glow: 'bg-violet-400/40', text: 'text-violet-700', chip: 'bg-violet-50 text-violet-700 border-violet-200' },
-  C2: { cover: 'from-rose-500 via-rose-700 to-slate-900', stage: 'from-rose-100 via-rose-50 to-white', glow: 'bg-rose-400/40', text: 'text-rose-700', chip: 'bg-rose-50 text-rose-700 border-rose-200' },
-};
-export const toneFor = (code) => LEVEL_TONES[String(code || '').toUpperCase()] || LEVEL_TONES.A1;
+import { LEVEL_TONES, toneFor } from '@/constants/levelTones';
+
+// One palette for the whole site (constants/levelTones).
+export { LEVEL_TONES, toneFor };
 
 const SIZES = {
   sm: { box: 'w-14 h-[4.5rem]', pad: 'p-1.5', title: 'hidden', brand: 'hidden', icon: 'hidden', badge: 'text-sm' },

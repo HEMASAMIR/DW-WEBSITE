@@ -2,6 +2,15 @@
 
 import React, { useState } from 'react';
 import { useModal } from '@/context/ModalContext';
+import Reveal from '@/components/common/Reveal';
+
+// Calm accent per screenshot card (border on hover)
+const SHOT_TONES = [
+  'border-teal-200 hover:border-teal-400',
+  'border-amber-200 hover:border-amber-400',
+  'border-violet-200 hover:border-violet-400',
+  'border-sky-200 hover:border-sky-400',
+];
 import { 
   Star, 
   MessageSquare, 
@@ -92,7 +101,7 @@ export default function ReviewsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative">
         
         {/* Top Header Section */}
-        <div className="text-center max-w-4xl mx-auto space-y-4">
+        <Reveal className="text-center max-w-4xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 glass-pill px-5 py-2 rounded-full text-xs font-bold text-amber-800 border border-amber-400/50 shadow-sm">
             <Sparkles className="w-4 h-4 text-amber-600 animate-pulse" />
             <span>معرض الآراء والتجارب الموثقة 100%</span>
@@ -103,30 +112,36 @@ export default function ReviewsSection() {
           <p className="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
             أكثر من 15,000 طالب حققوا أهدافهم في العمل بشركات الكول سنتر العالمية والتأهيل للسفر والامتحانات الرسمية.
           </p>
-        </div>
+        </Reveal>
 
-        {/* High-Trust Stats Highlight Bar */}
+        {/* High-Trust Stats Highlight Bar — one calm colour each */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-1">
-            <span className="block text-teal-600 font-black text-2xl font-mono">+15,000</span>
-            <span className="text-xs text-slate-700 font-bold">طالب تم تدريبهم</span>
-          </div>
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-1">
-            <span className="block text-amber-600 font-black text-2xl font-mono">98.4%</span>
-            <span className="text-xs text-slate-700 font-bold">نسبة نجاح جوته & تلـك</span>
-          </div>
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-1">
-            <span className="block text-emerald-600 font-black text-2xl font-mono">74+</span>
-            <span className="text-xs text-slate-700 font-bold">شات موثق بالصور</span>
-          </div>
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-1">
-            <span className="block text-teal-700 font-black text-2xl font-mono">+10</span>
-            <span className="text-xs text-slate-700 font-bold">سنوات خبرة بالمجال</span>
-          </div>
+          {[
+            { value: '+15,000', label: 'طالب تم تدريبهم', icon: Users, cls: 'from-teal-50 border-teal-200/70 hover:border-teal-300 hover:shadow-teal-500/15', num: 'text-teal-600', tile: 'bg-teal-100 text-teal-600' },
+            { value: '98.4%', label: 'نسبة نجاح جوته & تلـك', icon: Award, cls: 'from-amber-50 border-amber-200/70 hover:border-amber-300 hover:shadow-amber-500/15', num: 'text-amber-600', tile: 'bg-amber-100 text-amber-600' },
+            { value: '74+', label: 'شات موثق بالصور', icon: MessageSquare, cls: 'from-violet-50 border-violet-200/70 hover:border-violet-300 hover:shadow-violet-500/15', num: 'text-violet-600', tile: 'bg-violet-100 text-violet-600' },
+            { value: '+10', label: 'سنوات خبرة بالمجال', icon: GraduationCap, cls: 'from-sky-50 border-sky-200/70 hover:border-sky-300 hover:shadow-sky-500/15', num: 'text-sky-600', tile: 'bg-sky-100 text-sky-600' },
+          ].map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <Reveal
+                key={s.label}
+                from="zoom"
+                delay={i * 120}
+                className={`group bg-gradient-to-b ${s.cls} to-white p-5 rounded-3xl border shadow-sm hover:shadow-xl hover:-translate-y-1.5 space-y-2`}
+              >
+                <span className={`dw-wiggle mx-auto w-10 h-10 rounded-2xl flex items-center justify-center ${s.tile}`}>
+                  <Icon className="w-5 h-5" />
+                </span>
+                <span className={`block font-black text-2xl font-mono ${s.num}`} dir="ltr">{s.value}</span>
+                <span className="text-xs text-slate-700 font-bold">{s.label}</span>
+              </Reveal>
+            );
+          })}
         </div>
 
         {/* Dynamic Category Switcher Tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+        <Reveal className="flex flex-wrap items-center justify-center gap-2 pt-2">
           <button
             onClick={() => setActiveTab('screenshots')}
             className={`flex items-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-extrabold transition-all ${
@@ -156,7 +171,7 @@ export default function ReviewsSection() {
             <Building2 className="w-4 h-4" />
             <span>تجارب العمل بـ Concentrix & Vodafone</span>
           </button>
-        </div>
+        </Reveal>
 
         {/* Tab 1: 74 Screenshots Swiper Hub */}
         {activeTab === 'screenshots' && (
@@ -186,14 +201,14 @@ export default function ReviewsSection() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handlePrev}
-                    className="w-11 h-11 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center hover:bg-teal-600 hover:text-white hover:scale-110 transition-all shadow-sm"
+                    className="w-11 h-11 rounded-full bg-slate-100 text-slate-700 border border-slate-300 flex items-center justify-center hover:bg-teal-600 hover:text-white hover:scale-110 transition-all shadow-sm"
                     title="السابق"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="w-11 h-11 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center hover:bg-teal-600 hover:text-white hover:scale-110 transition-all shadow-sm"
+                    className="w-11 h-11 rounded-full bg-slate-100 text-slate-700 border border-slate-300 flex items-center justify-center hover:bg-teal-600 hover:text-white hover:scale-110 transition-all shadow-sm"
                     title="التالي"
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -204,11 +219,12 @@ export default function ReviewsSection() {
 
             {/* Screenshots Display Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {currentScreenshots.map((item) => (
-                <div
+              {currentScreenshots.map((item, n) => (
+                <Reveal
                   key={item.id}
+                  delay={n * 110}
                   onClick={() => openLightboxModal(item.image, item.title)}
-                  className="group relative rounded-2xl overflow-hidden bg-slate-50 border-2 border-slate-200 aspect-[3/4] cursor-pointer hover:border-amber-400 transition-all shadow-md hover:shadow-2xl"
+                  className={`dw-shine group relative rounded-2xl overflow-hidden bg-slate-50 border-2 aspect-[3/4] cursor-pointer shadow-md hover:shadow-2xl hover:-translate-y-1.5 ${SHOT_TONES[n % SHOT_TONES.length]}`}
                 >
                   <img
                     src={item.image}
@@ -224,7 +240,7 @@ export default function ReviewsSection() {
                       <span>تكبير وتصفح المحادثة 🔍</span>
                     </div>
                   </div>
-                </div>
+                </Reveal>
               ))}
             </div>
 
@@ -341,7 +357,7 @@ export default function ReviewsSection() {
                       </div>
 
                       <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic bg-slate-50 p-4 rounded-2xl border border-slate-200 font-medium">
-                        "{rev.comment}"
+                        &ldquo;{rev.comment}&rdquo;
                       </p>
                     </div>
                   </div>

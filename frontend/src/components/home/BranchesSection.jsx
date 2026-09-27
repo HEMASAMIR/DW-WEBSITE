@@ -34,7 +34,7 @@ export default function BranchesSection() {
     <section id="branches" className="py-24 bg-gradient-to-b from-slate-50 to-white border-t border-slate-200 relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
+        <Reveal className="text-center max-w-3xl mx-auto mb-14 space-y-4">
           <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-xs font-black text-[#0e2c4e]">
             <Sparkles className="w-4 h-4 text-amber-500" />
             <span>الحضور الفعلي والتواصل المباشر</span>
@@ -48,7 +48,7 @@ export default function BranchesSection() {
           <p className="text-slate-600 text-sm sm:text-base">
             يمكنكم زيارتنا والتسجيل المباشر في أحد فروعنا، أو الدراسة أونلاين من أي مكان.
           </p>
-        </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7 max-w-6xl mx-auto">
           {BRANCHES_DATA.map((branch, idx) => {
