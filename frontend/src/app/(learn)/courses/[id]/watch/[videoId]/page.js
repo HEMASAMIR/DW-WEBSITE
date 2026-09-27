@@ -161,7 +161,7 @@ function Watch({ level, content, videoId }) {
           </div>
         </div>
 
-        <aside className="lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-24">
+        <aside className="lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-20">
           <Playlist levelId={level.id} videos={videos} activeId={active.id} />
         </aside>
 

@@ -3,11 +3,9 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { ModalProvider } from '@/context/ModalContext';
 
-import ParticleCanvas from '@/components/common/ParticleCanvas';
-import AnnouncementBar from '@/components/layout/AnnouncementBar';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-
+// Header/footer live in the route-group layouts:
+//   (site)  → marketing pages with the full header, announcement bar and footer
+//   (learn) → /courses and /books: standalone pages with a slim top bar only
 // Modals
 import AuthModal from '@/components/modals/AuthModal';
 import CourseEnrollModal from '@/components/modals/CourseEnrollModal';
@@ -32,11 +30,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <ThemeProvider>
             <ModalProvider>
-              <ParticleCanvas />
-              <Header />
-              <AnnouncementBar />
-              <main className="relative z-10">{children}</main>
-              <Footer />
+              {children}
 
               {/* Global Modal Layer */}
               <AuthModal />
