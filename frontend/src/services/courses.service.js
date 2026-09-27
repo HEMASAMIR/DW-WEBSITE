@@ -98,3 +98,9 @@ export function formatPrice(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return null;
   return Number(value).toLocaleString('ar-EG', { maximumFractionDigits: 2 });
 }
+
+/** Western digits (2,000) — reads better than Arabic-Indic digits at large display sizes. */
+export function formatPriceLatin(value) {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return null;
+  return Number(value).toLocaleString('en-US', { maximumFractionDigits: 2 });
+}

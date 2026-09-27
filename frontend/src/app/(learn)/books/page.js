@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
+import { BookOpen } from 'lucide-react';
 import { useBooks } from '@/hooks/useBooks';
-import { formatPrice } from '@/services/courses.service';
-import AccessGroups, { AccessCard } from '@/components/common/AccessGroups';
+import { formatPriceLatin } from '@/services/courses.service';
+import AccessGroups, { BookCard } from '@/components/common/AccessGroups';
 
 export default function BooksPage() {
   const { books, loading, error, requiresLogin, isGuest, reload } = useBooks();
@@ -11,7 +12,9 @@ export default function BooksPage() {
   return (
     <AccessGroups
       title="الكتب"
-      subtitle={isGuest ? 'كل كتب الأكاديمية وأسعارها.' : 'الكتب المفعّلة لك تقدر تعرضها أونلاين على طول، والباقي متاح للشراء.'}
+      icon={BookOpen}
+      unit="كتاب"
+      subtitle={isGuest ? 'كل كتب الأكاديمية وأسعارها.' : 'الكتب المفعّلة لك تقدر تقراها أونلاين على طول، والباقي متاح للطلب.'}
       items={books}
       loading={loading}
       error={error}
@@ -20,15 +23,14 @@ export default function BooksPage() {
       reload={reload}
       emptyText="لا توجد كتب متاحة حالياً."
       renderCard={(b) => (
-        <AccessCard
+        <BookCard
           href={`/books/${b.id}`}
-          code={b.level}
-          title={b.name}
-          subtitle={`مستوى ${b.level}`}
-          price={formatPrice(b.price)}
+          name={b.name}
+          level={b.level}
+          price={formatPriceLatin(b.price)}
           hasAccess={b.hasAccess}
           guest={isGuest}
-          actionLabel={b.hasAccess ? 'عرض الكتاب' : isGuest ? 'التفاصيل' : 'اطلب الكتاب'}
+          actionLabel={b.hasAccess ? 'اقرأ الكتاب' : isGuest ? 'التفاصيل' : 'اطلب الكتاب'}
         />
       )}
     />
