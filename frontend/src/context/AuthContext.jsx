@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '@/services/auth.service';
 import { tokenStorage, AUTH_LOGOUT_EVENT } from '@/services/api';
-import { isTemporaryAdmin } from '@/constants/temporaryAdmins';
 
 const AuthContext = createContext();
 
@@ -48,7 +47,7 @@ export function AuthProvider({ children }) {
     /* eslint-enable react-hooks/set-state-in-effect */
 
     // Validates the session (refreshes the access token if needed) and syncs the latest profile.
-    // The profile endpoint does not return id/email/is_staff, so merge instead of replacing.
+    // The profile endpoint does not return id/email/is_admin/groups, so merge instead of replacing.
     authService.getProfile()
       .then((profile) => setUser((prev) => ({ ...(prev || {}), ...profile })))
       .catch((err) => {
@@ -61,16 +60,6 @@ export function AuthProvider({ children }) {
     window.addEventListener(AUTH_LOGOUT_EVENT, clearSession);
     return () => window.removeEventListener(AUTH_LOGOUT_EVENT, clearSession);
   }, [clearSession]);
-
-  // TEMPORARY: known "Admin" group accounts until the API returns groups (see constants/temporaryAdmins.js).
-  const [tempAdmin, setTempAdmin] = useState(false);
-  useEffect(() => {
-    let cancelled = false;
-    isTemporaryAdmin(user?.email).then((ok) => !cancelled && setTempAdmin(ok));
-    return () => {
-      cancelled = true;
-    };
-  }, [user?.email]);
 
   const applySession = (data) => {
     setUser(data.user);
@@ -99,9 +88,9 @@ export function AuthProvider({ children }) {
     user,
     loading,
     isAuthenticated,
-    // Admin = member of the backend "Admin" group (backend decision: groups, not is_staff/superuser).
-    // tempAdmin covers the known admin accounts until the backend returns `groups` in the user object.
-    isAdmin: isAuthenticated && (hasGroup(user, ADMIN_GROUP) || tempAdmin),
+    // Admin comes from the server: `is_admin` (login response), with the "Admin" group as a fallback.
+    // Never is_staff — roles are managed with groups. Every admin action is still authorized by the backend.
+    isAdmin: isAuthenticated && (user?.is_admin === true || hasGroup(user, ADMIN_GROUP)),
     login,
     loginWithGoogle,
     register,
