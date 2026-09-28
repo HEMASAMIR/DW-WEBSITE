@@ -3,12 +3,9 @@
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { useTheme } from '@/context/ThemeContext';
 import { useModal } from '@/context/ModalContext';
 import {
   BookOpen,
-  Sun,
-  Moon,
   User,
   Menu,
   X,
@@ -39,7 +36,6 @@ const noopSubscribe = () => () => {};
 
 export default function Header() {
   const { user, isAuthenticated, isAdmin } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const { openAuthModal, openProfileModal, openAdminDashboard, askLogout } = useModal();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -150,14 +146,6 @@ export default function Header() {
               <LayoutDashboard className="w-4 h-4" />
             </button>
           )}
-
-          <button
-            onClick={toggleTheme}
-            className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 text-slate-600 hover:text-[#0e2c4e] hover:rotate-45 flex items-center justify-center transition-all duration-300"
-            title="تبديل الوضع"
-          >
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4" />}
-          </button>
 
           {!mounted ? (
             <span className="w-28 h-10 rounded-full bg-slate-100 animate-pulse" />

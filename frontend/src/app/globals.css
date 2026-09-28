@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Light-only design: stop browsers from force-darkening (Chrome/Edge auto dark mode). */
+:root { color-scheme: only light; }
+
 @layer base {
   html {
     scroll-behavior: smooth;

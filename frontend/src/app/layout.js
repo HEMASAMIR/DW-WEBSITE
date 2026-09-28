@@ -1,6 +1,5 @@
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
-import { ThemeProvider } from '@/context/ThemeContext';
 import { ModalProvider } from '@/context/ModalContext';
 
 // Header/footer live in the route-group layouts:
@@ -21,14 +20,20 @@ import LogoutConfirmModal from '@/components/modals/LogoutConfirmModal';
 export const metadata = {
   title: 'Deutsche Welt Academy | هير خالد الحلواني - أكاديمية اللغة الألمانية',
   description: 'أكاديمية تدريس وتأسيس اللغة الألمانية للمراحل الثانوية والجامعية والراغبين بالسفر لألمانيا مع هير خالد الحلواني.',
+  // Stops the Dark Reader extension from recolouring the site.
+  other: { 'darkreader-lock': 'true' },
+};
+
+// The design is light-only: "only light" stops Chrome/Edge "auto dark mode" from inverting it.
+export const viewport = {
+  colorScheme: 'only light',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ar" dir="rtl" className="dark" suppressHydrationWarning>
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body className="bg-slate-950 text-slate-100 min-h-screen relative font-sans antialiased" suppressHydrationWarning>
         <AuthProvider>
-          <ThemeProvider>
             <ModalProvider>
               {children}
 
@@ -44,7 +49,6 @@ export default function RootLayout({ children }) {
               <FileViewerModal />
               <LogoutConfirmModal />
             </ModalProvider>
-          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
