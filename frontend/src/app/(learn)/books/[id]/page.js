@@ -11,6 +11,7 @@ import BookCover, { toneFor, bookCoverUrl } from '@/components/book/BookCover';
 import PaymentInfo from '@/components/common/PaymentInfo';
 import {
   ArrowRight, CheckCircle2, BookOpenText, ShoppingCart, Lock, LogIn, AlertCircle, RefreshCw, ChevronLeft, BookOpen,
+  Wallet, Zap, ShieldCheck,
 } from 'lucide-react';
 
 /** Book overview page. Reading happens on its own page: /books/<id>/read. All data from the backend. */
@@ -28,7 +29,7 @@ export default function BookPage() {
         <BookHero book={book} />
         {!book.hasAccess && (
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-12">
-            <div className="max-w-2xl">
+            <div id="payment" className="max-w-2xl scroll-mt-24">
               <PaymentInfo amount={formatPriceLatin(book.price)} />
             </div>
           </div>
@@ -106,6 +107,7 @@ function BookHero({ book }) {
   const { isAuthenticated } = useAuth();
   const { openBookOrderModal, openLoginPromptModal } = useModal();
   const price = formatPriceLatin(book.price);
+  const tone = toneFor(book.level);
 
   const order = () =>
     isAuthenticated
@@ -113,19 +115,23 @@ function BookHero({ book }) {
       : openLoginPromptModal({ type: 'book', name: book.name, price: formatPrice(book.price), item: book });
 
   return (
-    <section className="relative overflow-hidden bg-slate-950 text-white">
+    <section className="relative overflow-hidden bg-[#071427] text-white">
       <CoverBackdrop id={book.id} />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_90%_0%,rgba(20,184,166,0.45),transparent_60%),radial-gradient(ellipse_50%_70%_at_0%_100%,rgba(245,158,11,0.22),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_85%_10%,rgba(20,184,166,0.35),transparent_60%),radial-gradient(ellipse_50%_60%_at_10%_90%,rgba(245,158,11,0.25),transparent_60%)]" />
       <div
-        className="absolute inset-0 opacity-[0.08] [mask-image:linear-gradient(to_bottom,black,transparent)]"
+        className="absolute inset-0 opacity-[0.06] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
         style={{
           backgroundImage: 'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
+          backgroundSize: '44px 44px',
         }}
       />
+      <div className="absolute top-0 inset-x-0 flex h-1" dir="ltr">
+        <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+      </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-20 sm:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        <div className="lg:col-span-7 space-y-6 order-2 lg:order-1">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-16 pb-28 sm:pb-32 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        {/* Info */}
+        <div className="lg:col-span-7 space-y-7 order-2 lg:order-1">
           <nav className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
             <Link href="/books" className="hover:text-teal-300 transition-colors">الكتب</Link>
             <ChevronLeft className="w-3.5 h-3.5" />
@@ -133,26 +139,34 @@ function BookHero({ book }) {
           </nav>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/30">
+            <span className={`px-3.5 py-1.5 rounded-full bg-gradient-to-r ${tone.badge} text-white text-xs font-black shadow-lg`}>
               مستوى {book.level}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-black text-slate-200">
+              <BookOpen className="w-3.5 h-3.5" /> كتاب رقمي • يُقرأ أونلاين
             </span>
             {isAuthenticated && (book.hasAccess ? (
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-400/15 border border-emerald-300/30 text-xs font-black text-emerald-200">
                 <CheckCircle2 className="w-3.5 h-3.5" /> مفعّل لك
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-black text-slate-200">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-black text-slate-300">
                 <Lock className="w-3.5 h-3.5" /> غير مفعّل على حسابك
               </span>
             ))}
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black leading-[1.1] tracking-tight bg-gradient-to-l from-white via-white to-teal-200 bg-clip-text text-transparent pb-1" dir="auto">
-            {book.name}
-          </h1>
+          <div className="space-y-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.12] tracking-tight" dir="auto">
+              {book.name}
+            </h1>
+            <div className="flex h-1.5 w-28 rounded-full overflow-hidden" dir="ltr">
+              <span className="flex-1 bg-slate-950 ring-1 ring-white/20" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+            </div>
+          </div>
 
           {book.hasAccess ? (
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-wrap items-center gap-4">
               <Link href={`/books/${book.id}/read`} className={primaryBtn}>
                 <BookOpenText className="w-5 h-5" />
                 اقرأ الكتاب
@@ -160,37 +174,101 @@ function BookHero({ book }) {
               <span className="text-xs font-bold text-slate-400">بيتفتح جوه الموقع</span>
             </div>
           ) : (
-            <div className="inline-flex flex-wrap items-center gap-6 rounded-3xl bg-white/[0.06] border border-white/10 backdrop-blur p-4 pr-6">
-              {price && (
-                <div>
-                  <span className="block text-xs font-bold text-slate-400 mb-1">سعر الكتاب</span>
-                  <span className="text-4xl sm:text-5xl font-black tracking-tight" dir="ltr">{price}</span>
-                  <span className="text-sm font-black text-slate-400 mr-1.5">ج.م</span>
+            <div className="relative max-w-xl">
+              <div className="absolute -inset-px rounded-[1.75rem] bg-gradient-to-l from-amber-300/60 via-white/10 to-teal-300/40" />
+              <div className="relative rounded-[1.7rem] bg-[#0b1d33]/90 backdrop-blur-xl p-5 sm:p-6">
+                <div className="flex flex-wrap items-end justify-between gap-5">
+                  {price && (
+                    <div>
+                      <span className="block text-xs font-bold text-slate-400 mb-1">سعر الكتاب</span>
+                      <span className="flex items-baseline gap-2">
+                        <span className="text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-amber-200 to-amber-400 bg-clip-text text-transparent" dir="ltr">
+                          {price}
+                        </span>
+                        <span className="text-base font-black text-slate-300">ج.م</span>
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
+                    <button onClick={order} className={`${primaryBtn} justify-center`}>
+                      {isAuthenticated ? <ShoppingCart className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
+                      {isAuthenticated ? 'اطلب الكتاب' : 'سجّل دخول للطلب'}
+                    </button>
+                    <a
+                      href="#payment"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-sm font-black transition-colors"
+                    >
+                      <Wallet className="w-4 h-4 text-amber-300" />
+                      طرق الدفع
+                    </a>
+                  </div>
                 </div>
-              )}
-              <button onClick={order} className={primaryBtn}>
-                {isAuthenticated ? <ShoppingCart className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
-                {isAuthenticated ? 'اطلب الكتاب' : 'سجّل دخول للطلب'}
-              </button>
+                <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] sm:text-xs font-bold text-slate-400">
+                  <span className="inline-flex items-center gap-1.5"><Wallet className="w-3.5 h-3.5 text-rose-300" /> فودافون كاش</span>
+                  <span className="inline-flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-violet-300" /> إنستا باي</span>
+                  <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-300" /> تفعيل على حسابك بعد تأكيد الدفع</span>
+                </div>
+              </div>
             </div>
-          )}
-          {!book.hasAccess && isAuthenticated && (
-            <p className="text-xs sm:text-sm text-slate-400">بعد تأكيد الدفع هيتفعّل الكتاب على حسابك وتقدر تقراه من هنا.</p>
           )}
         </div>
 
+        {/* Book */}
         <div className="lg:col-span-5 flex justify-center order-1 lg:order-2">
-          <div className="group relative py-4">
-            <div className="absolute inset-0 m-auto w-72 h-72 rounded-full bg-teal-400/30 blur-3xl" />
-            <div className="absolute inset-0 m-auto w-48 h-48 translate-x-16 translate-y-16 rounded-full bg-amber-400/20 blur-3xl" />
-            <div className="relative">
-              <BookCover id={book.id} name={book.name} level={book.level} size="lg" />
-            </div>
-            <div className="absolute -bottom-2 inset-x-10 h-5 rounded-[50%] bg-black/50 blur-lg" />
-          </div>
+          <HeroBook book={book} tone={tone} />
         </div>
       </div>
+
+      {/* curved bottom into the page */}
+      <svg className="absolute -bottom-px inset-x-0 w-full h-10 sm:h-14 text-slate-50" viewBox="0 0 1440 56" preserveAspectRatio="none" aria-hidden>
+        <path d="M0 56 C 360 0, 1080 0, 1440 56 Z" fill="currentColor" />
+      </svg>
     </section>
+  );
+}
+
+/** Floating 3D book: real cover + page block + spine; falls back to the drawn cover. */
+function HeroBook({ book, tone }) {
+  const [failed, setFailed] = useState(false);
+  const src = !failed ? bookCoverUrl(book.id) : null;
+
+  return (
+    <div className="group relative py-6">
+      {/* glow in the level colour + warm light */}
+      <div className={`absolute inset-0 m-auto w-80 h-80 rounded-full ${tone.glow} blur-[80px] opacity-80`} />
+      <div className="absolute inset-0 m-auto w-56 h-56 translate-x-20 translate-y-20 rounded-full bg-amber-400/25 blur-[70px]" />
+
+      <div className="relative dw-float">
+        {src ? (
+          <div className="[perspective:1600px]">
+            <div className="relative w-60 sm:w-72 aspect-[1/1.414] [transform:rotateY(-18deg)_rotateX(3deg)] group-hover:[transform:rotateY(-4deg)_rotateX(0deg)] transition-transform duration-700 ease-out">
+              {/* page block (thickness) */}
+              <div
+                className="absolute top-[1.5%] bottom-[1.5%] -right-3 w-4 rounded-r-md shadow-inner"
+                style={{ background: 'repeating-linear-gradient(to bottom, #f8fafc 0, #f8fafc 2px, #dbe2ea 2px, #dbe2ea 3px)' }}
+              />
+              {/* cover */}
+              <div className="absolute inset-0 rounded-l-md rounded-r-xl overflow-hidden shadow-[0_40px_70px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
+                {/* eslint-disable-next-line @next/next/no-img-element -- static pre-rendered cover */}
+                <img src={src} alt={book.name} onError={() => setFailed(true)} className="w-full h-full object-cover object-top" />
+                <div className="absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-black/50 via-black/15 to-transparent" />
+                <div className="absolute inset-y-0 left-6 w-px bg-white/40" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/35 mix-blend-soft-light" />
+                <div className="absolute -inset-y-10 -left-1/2 w-1/3 rotate-12 bg-white/20 blur-md -translate-x-full group-hover:translate-x-[420%] transition-transform duration-[1200ms]" />
+              </div>
+              {/* level ribbon */}
+              <span className={`absolute -top-3 -left-3 px-3 py-1.5 rounded-xl bg-gradient-to-br ${tone.badge} text-white text-sm font-black shadow-lg`} dir="ltr">
+                {book.level}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <BookCover id={null} name={book.name} level={book.level} size="lg" />
+        )}
+      </div>
+      {/* floor shadow */}
+      <div className="absolute -bottom-1 inset-x-12 h-6 rounded-[50%] bg-black/60 blur-xl" />
+    </div>
   );
 }
 
@@ -206,9 +284,9 @@ function CoverBackdrop({ id }) {
         alt=""
         aria-hidden
         onError={() => setFailed(true)}
-        className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-40"
+        className="absolute inset-0 w-full h-full object-cover scale-125 blur-3xl opacity-60"
       />
-      <div className="absolute inset-0 bg-gradient-to-l from-slate-950/60 via-slate-950/80 to-slate-950/95" />
+      <div className="absolute inset-0 bg-gradient-to-l from-[#071427] via-[#071427]/85 to-[#071427]/45" />
     </>
   );
 }
