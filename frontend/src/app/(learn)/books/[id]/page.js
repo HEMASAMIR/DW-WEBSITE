@@ -1,13 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useBooks } from '@/hooks/useBooks';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
 import { formatPrice, formatPriceLatin } from '@/services/courses.service';
-import BookCover, { toneFor } from '@/components/book/BookCover';
+import BookCover, { toneFor, bookCoverUrl } from '@/components/book/BookCover';
 import PaymentInfo from '@/components/common/PaymentInfo';
 import {
   ArrowRight, CheckCircle2, BookOpenText, ShoppingCart, Lock, LogIn, AlertCircle, RefreshCw, ChevronLeft, BookOpen,
@@ -48,7 +48,7 @@ export default function BookPage() {
                   href={`/books/${b.id}`}
                   className="group bg-white rounded-3xl border border-slate-200/80 p-4 flex items-center gap-4 shadow-xl shadow-slate-900/[0.04] hover:border-teal-300 hover:shadow-2xl hover:-translate-y-1 transition-all"
                 >
-                  <BookCover level={b.level} size="sm" />
+                  <BookCover id={b.id} name={b.name} level={b.level} size="sm" />
                   <div className="flex-1 min-w-0">
                     <span className="block text-sm font-black text-slate-900 leading-snug line-clamp-2 group-hover:text-teal-800" dir="auto">{b.name}</span>
                     <span className="flex items-center gap-2 mt-1.5">
@@ -114,6 +114,7 @@ function BookHero({ book }) {
 
   return (
     <section className="relative overflow-hidden bg-slate-950 text-white">
+      <CoverBackdrop id={book.id} />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_70%_at_90%_0%,rgba(20,184,166,0.45),transparent_60%),radial-gradient(ellipse_50%_70%_at_0%_100%,rgba(245,158,11,0.22),transparent_60%)]" />
       <div
         className="absolute inset-0 opacity-[0.08] [mask-image:linear-gradient(to_bottom,black,transparent)]"
@@ -183,13 +184,32 @@ function BookHero({ book }) {
             <div className="absolute inset-0 m-auto w-72 h-72 rounded-full bg-teal-400/30 blur-3xl" />
             <div className="absolute inset-0 m-auto w-48 h-48 translate-x-16 translate-y-16 rounded-full bg-amber-400/20 blur-3xl" />
             <div className="relative">
-              <BookCover name={book.name} level={book.level} size="lg" />
+              <BookCover id={book.id} name={book.name} level={book.level} size="lg" />
             </div>
             <div className="absolute -bottom-2 inset-x-10 h-5 rounded-[50%] bg-black/50 blur-lg" />
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+/** The book's own first page, blurred, behind the hero (hidden if the book has no cover image). */
+function CoverBackdrop({ id }) {
+  const [failed, setFailed] = useState(false);
+  if (failed || !bookCoverUrl(id)) return null;
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- static pre-rendered cover */}
+      <img
+        src={bookCoverUrl(id)}
+        alt=""
+        aria-hidden
+        onError={() => setFailed(true)}
+        className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-40"
+      />
+      <div className="absolute inset-0 bg-gradient-to-l from-slate-950/60 via-slate-950/80 to-slate-950/95" />
+    </>
   );
 }
 

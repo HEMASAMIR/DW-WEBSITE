@@ -195,7 +195,7 @@ function ActionBtn({ hasAccess, label }) {
 }
 
 /** Book card: 3D cover on a tinted stage. */
-export function BookCard({ href, name, level, price, hasAccess, guest, actionLabel }) {
+export function BookCard({ id, href, name, level, price, hasAccess, guest, actionLabel }) {
   const tone = toneFor(level);
   return (
     <Link
@@ -212,7 +212,7 @@ export function BookCard({ href, name, level, price, hasAccess, guest, actionLab
         />
         <div className="absolute top-4 right-4 z-10"><StatusPill hasAccess={hasAccess} guest={guest} /></div>
         <div className="relative group-hover:scale-105 transition-transform duration-500">
-          <BookCover name={name} level={level} size="md" />
+          <BookCover id={id} name={name} level={level} size="md" />
         </div>
         <div className="absolute bottom-5 inset-x-16 h-3 rounded-[50%] bg-slate-900/20 blur-md" />
       </div>

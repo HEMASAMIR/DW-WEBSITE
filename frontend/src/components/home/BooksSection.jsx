@@ -119,7 +119,7 @@ export default function BooksSection() {
                         </span>
                       )}
                       <span className="relative group-hover:scale-105 group-hover:-translate-y-1 transition-transform duration-500">
-                        <BookCover name={book.name} level={book.level} size="md" />
+                        <BookCover id={book.id} name={book.name} level={book.level} size="md" />
                       </span>
                       <span className="absolute bottom-5 inset-x-20 h-3 rounded-[50%] bg-slate-900/20 blur-md" />
                     </Link>

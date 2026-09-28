@@ -24,6 +24,7 @@ export default function BooksPage() {
       emptyText="لا توجد كتب متاحة حالياً."
       renderCard={(b) => (
         <BookCard
+          id={b.id}
           href={`/books/${b.id}`}
           name={b.name}
           level={b.level}

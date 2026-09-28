@@ -141,35 +141,53 @@ export default function CoursesSection() {
 
               return (
                 <Reveal key={course.id} delay={(idx % 4) * 130} className="h-full [&>*]:h-full">
+                  {/* gradient frame */}
                   <div
-                    className={`dw-shine group relative overflow-hidden rounded-[2rem] bg-gradient-to-b ${tone.soft} border ${tone.border} shadow-lg shadow-slate-900/[0.04] hover:shadow-2xl ${tone.shadow} hover:-translate-y-2 transition-all duration-500 flex flex-col`}
+                    className={`group relative rounded-[2rem] p-[2px] bg-gradient-to-br ${tone.edge} shadow-xl shadow-slate-900/[0.06] hover:shadow-2xl ${tone.shadow} hover:-translate-y-2 transition-all duration-500`}
                   >
-                    {/* decoration */}
-                    <span className={`absolute top-0 right-0 h-1.5 w-1/3 rounded-bl-full ${tone.bar} group-hover:w-full transition-all duration-700`} />
-                    <span className={`absolute -top-16 -left-16 w-48 h-48 rounded-full ${tone.glow} blur-2xl group-hover:scale-150 transition-transform duration-700`} />
-                    <span
-                      className={`absolute -bottom-8 -left-2 text-[7.5rem] font-black leading-none text-transparent ${tone.stroke} group-hover:-translate-y-3 transition-transform duration-700 select-none`}
-                      dir="ltr"
-                    >
-                      {course.code}
-                    </span>
+                  <div className="dw-shine relative h-full overflow-hidden rounded-[calc(2rem-2px)] bg-white flex flex-col">
+                    {/* Header band */}
+                    <div className={`relative h-40 bg-gradient-to-br ${tone.badge} overflow-hidden`}>
+                      <div
+                        className="absolute inset-0 opacity-25"
+                        style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1.5px)', backgroundSize: '14px 14px' }}
+                      />
+                      <span className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-white/15 group-hover:scale-125 transition-transform duration-700" />
+                      <span className="absolute top-8 left-16 w-16 h-16 rounded-full border-2 border-white/30 group-hover:translate-x-3 group-hover:-translate-y-2 transition-transform duration-700" />
+                      <span className="absolute -bottom-12 right-10 w-28 h-28 rounded-full bg-black/10 group-hover:scale-110 transition-transform duration-700" />
 
-                    <div className="relative flex-1 flex flex-col p-6">
-                      <div className="flex items-center justify-between gap-2 mb-5">
-                        <span className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tone.badge} text-white font-black text-xl flex items-center justify-center shadow-lg group-hover:rotate-6 group-hover:scale-110 transition-transform duration-500`}>
-                          {course.code}
-                        </span>
-                        {course.hasAccess && (
-                          <span className="px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500 text-white flex items-center gap-1 shadow-md shadow-emerald-500/30">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            مفعّل لك
+                      <div className="relative h-full flex items-end justify-between p-5">
+                        <div className="text-white">
+                          <span className="block text-[11px] font-black tracking-[0.2em] text-white/80 mb-1">المستوى</span>
+                          <span
+                            className="block text-6xl font-black leading-none tracking-tight drop-shadow-[0_6px_16px_rgba(0,0,0,0.18)] group-hover:scale-110 origin-bottom-right transition-transform duration-500"
+                            dir="ltr"
+                          >
+                            {course.code}
                           </span>
-                        )}
+                        </div>
+                        <span className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur border border-white/30 text-white flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
+                          <PlayCircle className="w-6 h-6" />
+                        </span>
                       </div>
 
+                      {course.hasAccess && (
+                        <span className="absolute top-4 right-4 px-3 py-1 rounded-full text-[11px] font-black bg-white text-emerald-700 flex items-center gap-1 shadow-lg">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          مفعّل لك
+                        </span>
+                      )}
+                      {/* curved bottom */}
+                      <svg className="absolute -bottom-px inset-x-0 w-full h-6 text-white" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden>
+                        <path d="M0 24 C 120 0, 280 0, 400 24 Z" fill="currentColor" />
+                      </svg>
+                    </div>
+
+                    <div className="relative flex-1 flex flex-col px-6 pb-6 pt-3">
                       <Link href={`/courses/${course.id}`}>
                         <h3 className="text-xl font-black text-[#0e2c4e] leading-snug" dir="auto">{course.title}</h3>
                       </Link>
+                      <span className={`block h-1 w-10 rounded-full mt-3 ${tone.bar} group-hover:w-20 transition-all duration-500`} />
                       {course.subName && <p className={`text-xs font-bold mt-1 ${tone.text}`}>{course.subName}</p>}
                       {course.description && (
                         <p className="text-sm text-slate-600 mt-3 leading-relaxed line-clamp-3" dir="auto">{course.description}</p>
@@ -187,26 +205,32 @@ export default function CoursesSection() {
 
                       <div className="flex-1" />
 
-                      {price !== null && (
-                        <div className="flex items-baseline gap-2 flex-wrap mt-6">
-                          <span className={`text-3xl font-black tracking-tight ${tone.price}`} dir="ltr">{price}</span>
-                          <span className="text-sm font-black text-slate-500">ج.م</span>
-                          {oldPrice && (
-                            <>
-                              <span className="text-xs text-slate-400 line-through" dir="ltr">{oldPrice}</span>
-                              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">خصم {discount}%</span>
-                            </>
-                          )}
+                      {price !== null && !course.hasAccess && (
+                        <div className="mt-6 flex items-center justify-between gap-2 rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                          <span className="text-xs font-black text-slate-500">سعر المستوى</span>
+                          <span className="flex items-baseline gap-1.5 flex-wrap justify-end">
+                            {oldPrice && <span className="text-xs text-slate-400 line-through" dir="ltr">{oldPrice}</span>}
+                            <span className={`text-2xl font-black tracking-tight ${tone.price}`} dir="ltr">{price}</span>
+                            <span className="text-xs font-black text-slate-500">ج.م</span>
+                          </span>
                         </div>
                       )}
+                      {oldPrice && !course.hasAccess && (
+                        <span className="self-start mt-2 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">خصم {discount}%</span>
+                      )}
 
-                      <div className="space-y-2 mt-5">
+                      <div className="space-y-2 mt-4">
                         <Link
                           href={`/courses/${course.id}`}
-                          className={`w-full py-3 px-4 rounded-2xl text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition-all group-hover:gap-3 ${course.hasAccess ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25' : tone.btn}`}
+                          className={`w-full py-3.5 px-4 rounded-2xl text-white font-black text-xs sm:text-sm flex items-center justify-between gap-2 shadow-lg transition-all ${course.hasAccess ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25' : tone.btn}`}
                         >
-                          <PlayCircle className="w-4 h-4" />
-                          <span>{course.hasAccess ? 'ادخل للمحاضرات' : 'تفاصيل المستوى والمحاضرات'}</span>
+                          <span className="flex items-center gap-2">
+                            <PlayCircle className="w-4 h-4" />
+                            {course.hasAccess ? 'ادخل للمحاضرات' : 'تفاصيل المستوى'}
+                          </span>
+                          <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
+                            <ArrowLeft className="w-4 h-4" />
+                          </span>
                         </Link>
 
                         {!course.hasAccess && (
@@ -220,6 +244,7 @@ export default function CoursesSection() {
                         )}
                       </div>
                     </div>
+                  </div>
                   </div>
                 </Reveal>
               );

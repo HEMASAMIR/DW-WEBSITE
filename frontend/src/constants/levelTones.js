@@ -3,6 +3,7 @@
 export const LEVEL_TONES = {
   A1: {
     name: 'teal',
+    edge: 'from-teal-300 via-white to-emerald-300',
     cover: 'from-teal-400 via-teal-600 to-slate-900',
     stage: 'from-teal-100 via-teal-50 to-white',
     soft: 'from-teal-50 via-white to-white',
@@ -20,6 +21,7 @@ export const LEVEL_TONES = {
   },
   A2: {
     name: 'sky',
+    edge: 'from-sky-300 via-white to-blue-300',
     cover: 'from-sky-400 via-sky-600 to-slate-900',
     stage: 'from-sky-100 via-sky-50 to-white',
     soft: 'from-sky-50 via-white to-white',
@@ -37,6 +39,7 @@ export const LEVEL_TONES = {
   },
   B1: {
     name: 'violet',
+    edge: 'from-violet-300 via-white to-purple-300',
     cover: 'from-violet-400 via-violet-600 to-slate-900',
     stage: 'from-violet-100 via-violet-50 to-white',
     soft: 'from-violet-50 via-white to-white',
@@ -54,6 +57,7 @@ export const LEVEL_TONES = {
   },
   B2: {
     name: 'rose',
+    edge: 'from-rose-300 via-white to-pink-300',
     cover: 'from-rose-400 via-rose-600 to-slate-900',
     stage: 'from-rose-100 via-rose-50 to-white',
     soft: 'from-rose-50 via-white to-white',
@@ -71,6 +75,7 @@ export const LEVEL_TONES = {
   },
   C1: {
     name: 'amber',
+    edge: 'from-amber-300 via-white to-orange-300',
     cover: 'from-amber-400 via-amber-600 to-slate-900',
     stage: 'from-amber-100 via-amber-50 to-white',
     soft: 'from-amber-50 via-white to-white',
@@ -88,6 +93,7 @@ export const LEVEL_TONES = {
   },
   C2: {
     name: 'indigo',
+    edge: 'from-indigo-300 via-white to-blue-300',
     cover: 'from-indigo-400 via-indigo-600 to-slate-900',
     stage: 'from-indigo-100 via-indigo-50 to-white',
     soft: 'from-indigo-50 via-white to-white',
