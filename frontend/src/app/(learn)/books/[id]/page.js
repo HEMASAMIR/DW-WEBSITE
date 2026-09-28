@@ -9,6 +9,8 @@ import { useModal } from '@/context/ModalContext';
 import { formatPrice, formatPriceLatin } from '@/services/courses.service';
 import BookCover, { toneFor, bookCoverUrl } from '@/components/book/BookCover';
 import PaymentInfo from '@/components/common/PaymentInfo';
+import Reveal from '@/components/common/Reveal';
+import { BookCard } from '@/components/common/AccessGroups';
 import {
   ArrowRight, CheckCircle2, BookOpenText, ShoppingCart, Lock, LogIn, AlertCircle, RefreshCw, ChevronLeft, BookOpen,
   Wallet, Zap, ShieldCheck,
@@ -34,39 +36,7 @@ export default function BookPage() {
             </div>
           </div>
         )}
-        {otherBooks.length > 0 && (
-          <section className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 ${book.hasAccess ? '-mt-8' : ''}`}>
-            <div className="flex items-center gap-3 bg-white/80 backdrop-blur rounded-2xl w-fit pl-5 pr-2 py-2 shadow-sm border border-slate-200/70">
-              <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center shadow-lg shadow-teal-600/25">
-                <BookOpen className="w-4 h-4" />
-              </span>
-              <h2 className="text-base sm:text-lg font-black text-slate-900">كتب أخرى</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {otherBooks.map((b) => (
-                <Link
-                  key={b.id}
-                  href={`/books/${b.id}`}
-                  className="group bg-white rounded-3xl border border-slate-200/80 p-4 flex items-center gap-4 shadow-xl shadow-slate-900/[0.04] hover:border-teal-300 hover:shadow-2xl hover:-translate-y-1 transition-all"
-                >
-                  <BookCover id={b.id} name={b.name} level={b.level} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <span className="block text-sm font-black text-slate-900 leading-snug line-clamp-2 group-hover:text-teal-800" dir="auto">{b.name}</span>
-                    <span className="flex items-center gap-2 mt-1.5">
-                      <span className={`px-2 py-0.5 rounded-md border text-[10px] font-black ${toneFor(b.level).chip}`}>مستوى {b.level}</span>
-                      {b.hasAccess ? (
-                        <span className="text-xs font-black text-emerald-600">مفعّل لك</span>
-                      ) : (
-                        formatPriceLatin(b.price) && <span className="text-sm font-black text-slate-900" dir="ltr">{formatPriceLatin(b.price)} <span className="text-[10px] text-slate-500">ج.م</span></span>
-                      )}
-                    </span>
-                  </div>
-                  <ChevronLeft className="w-5 h-5 text-slate-300 group-hover:text-teal-600 group-hover:-translate-x-1 transition-all shrink-0" />
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        {otherBooks.length > 0 && <OtherBooks books={otherBooks} lift={book.hasAccess} />}
       </div>
     );
   }
@@ -97,6 +67,48 @@ export default function BookPage() {
         )}
       </div>
     </div>
+  );
+}
+
+/** "More books" — the same large cards as the books page (real 3D covers, level colours). */
+function OtherBooks({ books, lift }) {
+  const { isAuthenticated } = useAuth();
+  return (
+    <section className={`relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 ${lift ? '-mt-6' : ''}`}>
+      <Reveal className="text-center space-y-3 mb-10">
+        <span className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-xs font-black text-[#0e2c4e]">
+          <BookOpen className="w-4 h-4 text-teal-600" />
+          مكتبة الأكاديمية
+        </span>
+        <h2 className="text-3xl sm:text-4xl font-black text-[#0e2c4e]">
+          كتب <span className="text-teal-600">أخرى</span> ممكن تعجبك
+        </h2>
+        <div className="flex h-1.5 w-24 mx-auto rounded-full overflow-hidden" dir="ltr">
+          <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+        </div>
+      </Reveal>
+      {/* flex + wrap keeps 1–2 books centred instead of leaving an empty column */}
+      <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
+        {books.map((b, n) => (
+          <Reveal
+            key={b.id}
+            delay={(n % 3) * 130}
+            className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1.34rem)] [&>*]:h-full"
+          >
+            <BookCard
+              id={b.id}
+              href={`/books/${b.id}`}
+              name={b.name}
+              level={b.level}
+              price={formatPriceLatin(b.price)}
+              hasAccess={b.hasAccess}
+              guest={!isAuthenticated}
+              actionLabel={b.hasAccess ? 'اقرأ الكتاب' : 'تفاصيل الكتاب'}
+            />
+          </Reveal>
+        ))}
+      </div>
+    </section>
   );
 }
 
