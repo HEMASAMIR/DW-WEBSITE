@@ -170,7 +170,7 @@ export default function HeroSection() {
                   <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-[#0e2c4e] flex items-center justify-center shadow-lg shadow-amber-500/30 shrink-0">
                     <Award className="w-6 h-6" />
                   </span>
-                  <span>لماذا تشترك في أكاديمية <span className="text-amber-300" dir="ltr">Herr Khaled</span>؟</span>
+                  <span>لماذا تشترك في أكاديمية <span className="text-amber-300" dir="ltr">Deutsche Welt</span>؟</span>
                 </h3>
 
                 <ol className="space-y-3">

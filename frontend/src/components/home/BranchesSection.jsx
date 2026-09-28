@@ -9,21 +9,25 @@ import Reveal from '@/components/common/Reveal';
 const TONES = [
   {
     glow: 'bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.55),transparent_60%)]',
+    mapBg: 'from-teal-50 via-emerald-50 to-cyan-100', accent: '#14b8a6', soft: '#99f6e4',
     pin: 'from-teal-300 to-teal-500 text-[#0e2c4e] shadow-teal-500/40', ping: 'bg-teal-400/40', city: 'text-teal-200',
     bar: 'bg-teal-500', icon: 'text-teal-600', border: 'hover:border-teal-300', phone: 'hover:bg-teal-50 hover:border-teal-300', mapBtn: 'hover:bg-teal-600',
   },
   {
     glow: 'bg-[radial-gradient(ellipse_at_top_right,rgba(56,189,248,0.55),transparent_60%)]',
+    mapBg: 'from-sky-50 via-blue-50 to-indigo-100', accent: '#0ea5e9', soft: '#bae6fd',
     pin: 'from-sky-300 to-sky-500 text-[#0e2c4e] shadow-sky-500/40', ping: 'bg-sky-400/40', city: 'text-sky-200',
     bar: 'bg-sky-500', icon: 'text-sky-600', border: 'hover:border-sky-300', phone: 'hover:bg-sky-50 hover:border-sky-300', mapBtn: 'hover:bg-sky-600',
   },
   {
     glow: 'bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.5),transparent_60%)]',
+    mapBg: 'from-amber-50 via-orange-50 to-yellow-100', accent: '#f59e0b', soft: '#fde68a',
     pin: 'from-amber-300 to-amber-500 text-[#0e2c4e] shadow-amber-500/40', ping: 'bg-amber-400/40', city: 'text-amber-200',
     bar: 'bg-amber-500', icon: 'text-amber-600', border: 'hover:border-amber-300', phone: 'hover:bg-amber-50 hover:border-amber-300', mapBtn: 'hover:bg-amber-600',
   },
   {
     glow: 'bg-[radial-gradient(ellipse_at_top_right,rgba(244,63,94,0.5),transparent_60%)]',
+    mapBg: 'from-rose-50 via-pink-50 to-red-100', accent: '#f43f5e', soft: '#fecdd3',
     pin: 'from-rose-400 to-red-600 text-white shadow-rose-500/40', ping: 'bg-rose-400/40', city: 'text-rose-200',
     bar: 'bg-rose-500', icon: 'text-rose-600', border: 'hover:border-rose-300', phone: 'hover:bg-rose-50 hover:border-rose-300', mapBtn: 'hover:bg-rose-600',
   },
@@ -61,39 +65,33 @@ export default function BranchesSection() {
               delay={(idx % 2) * 150 + Math.floor(idx / 2) * 100}
               className={`group flex flex-col bg-white rounded-[2rem] overflow-hidden border border-slate-200/80 ${t.border} shadow-xl shadow-slate-900/[0.05] hover:shadow-2xl hover:-translate-y-1.5`}
             >
-              {/* Map-style header */}
-              <div className="dw-shine relative h-36 bg-[#0e2c4e] overflow-hidden">
-                <div className={`absolute inset-0 ${t.glow} group-hover:scale-110 transition-transform duration-700`} />
-                <div
-                  className="absolute inset-0 opacity-[0.12]"
-                  style={{
-                    backgroundImage: 'linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)',
-                    backgroundSize: '28px 28px',
-                  }}
-                />
-                <div className="absolute top-0 inset-x-0 h-1 flex">
-                  <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+              {/* Illustrated map header */}
+              <div className={`dw-shine relative h-44 bg-gradient-to-br ${t.mapBg} overflow-hidden`}>
+                <MapArt accent={t.accent} soft={t.soft} seed={idx} />
+                <div className="absolute top-0 inset-x-0 h-1 flex" dir="ltr">
+                  <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
                 </div>
-                <span className="absolute -bottom-6 left-5 text-[6.5rem] font-black leading-none text-transparent [-webkit-text-stroke:2px_rgba(255,255,255,0.12)] select-none" dir="ltr">
-                  {String(idx + 1).padStart(2, '0')}
-                </span>
 
                 {/* Pin */}
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <span className="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2">
                   <span className="dw-float block relative" style={{ animationDelay: `${idx * 0.4}s` }}>
+                    <span className={`absolute left-1/2 top-full -translate-x-1/2 mt-1 w-10 h-3 rounded-[50%] ${t.ping} blur-[2px]`} />
                     <span className={`absolute inset-0 rounded-full ${t.ping} animate-ping`} />
-                    <span className={`relative w-14 h-14 rounded-full bg-gradient-to-br ${t.pin} flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform`}>
+                    <span className={`relative w-14 h-14 rounded-full bg-gradient-to-br ${t.pin} ring-4 ring-white flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform`}>
                       <MapPin className="w-7 h-7" />
                     </span>
                   </span>
                 </span>
 
-                <span className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/15 backdrop-blur border border-white/20 text-white text-[11px] font-black">
+                <span className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[#0e2c4e] text-[11px] font-black">
                   {branch.badge}
                 </span>
                 {branch.city !== branch.badge && (
-                  <span className={`absolute bottom-4 right-4 ${t.city} text-xs font-black`}>{branch.city}</span>
+                  <span className="absolute bottom-4 right-4 px-3 py-1 rounded-full bg-white/80 backdrop-blur text-[#0e2c4e] text-[11px] font-black">{branch.city}</span>
                 )}
+                <span className="absolute bottom-3 left-4 text-5xl font-black leading-none select-none" style={{ color: t.accent, opacity: 0.18 }} dir="ltr">
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
               </div>
 
               <div className="flex-1 flex flex-col p-6 sm:p-7 gap-5">
@@ -132,5 +130,47 @@ export default function BranchesSection() {
 
       </div>
     </section>
+  );
+}
+
+/** Soft illustrated city map (streets, blocks, park, river, dotted route to the pin). */
+function MapArt({ accent, soft, seed }) {
+  const flip = seed % 2 === 1;
+  return (
+    <svg
+      className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-[1200ms] ease-out"
+      viewBox="0 0 400 176"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden
+    >
+      <g transform={flip ? 'translate(400 0) scale(-1 1)' : undefined}>
+      {/* river */}
+      <path d="M-10 150 C 70 120, 120 170, 200 140 S 330 110, 410 135 L 410 190 L -10 190 Z" fill={soft} opacity="0.9" />
+      <path d="M-10 150 C 70 120, 120 170, 200 140 S 330 110, 410 135" fill="none" stroke={accent} strokeOpacity="0.25" strokeWidth="2" />
+      {/* park */}
+      <ellipse cx="320" cy="48" rx="48" ry="26" fill="#bbf7d0" opacity="0.8" />
+      <circle cx="304" cy="44" r="6" fill="#86efac" /><circle cx="330" cy="54" r="7" fill="#86efac" /><circle cx="340" cy="38" r="5" fill="#86efac" />
+      {/* blocks */}
+      {[
+        [20, 18, 60, 34], [92, 18, 54, 34], [20, 64, 44, 40], [76, 64, 70, 40],
+        [236, 20, 38, 30], [236, 62, 60, 36], [306, 86, 78, 22], [158, 64, 60, 24],
+      ].map(([x, y, w, h], i) => (
+        <rect key={i} x={x} y={y} width={w} height={h} rx="6" fill="#ffffff" opacity="0.85" />
+      ))}
+      {/* streets */}
+      <g fill="none" stroke="#ffffff" strokeWidth="9" strokeLinecap="round" opacity="0.95">
+        <path d="M-10 58 H 410" />
+        <path d="M152 -10 V 190" />
+        <path d="M228 -10 C 230 60, 250 110, 300 190" />
+      </g>
+      <g fill="none" stroke={accent} strokeOpacity="0.18" strokeWidth="1.5" strokeDasharray="6 6">
+        <path d="M-10 58 H 410" />
+        <path d="M152 -10 V 190" />
+      </g>
+      {/* dotted route to the pin */}
+      <path d="M40 150 C 90 110, 130 110, 200 80" fill="none" stroke={accent} strokeWidth="3" strokeLinecap="round" strokeDasharray="1 9" />
+      <circle cx="40" cy="150" r="6" fill="#ffffff" stroke={accent} strokeWidth="3" />
+      </g>
+    </svg>
   );
 }
