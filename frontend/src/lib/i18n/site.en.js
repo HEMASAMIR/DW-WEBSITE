@@ -234,8 +234,6 @@ const EN = {
   'عرض السيرة الذاتية الرسمية والشهادات المعتمدة 📄✨': 'View the official CV and certificates 📄✨',
 
   // ---- Home: reviews
-  'رأي الطالب الموثق رقم {n}': 'Verified student review #{n}',
-  'تأسيس A1/A2': 'A1/A2 foundation',
   'محمد عبدالرحمن': 'Mohamed Abdelrahman',
   'بدأت مع هير خالد من الصفر في A1، أسلوبه في تبسيط الجرامر وربطه بسوق العمل والكول سنتر خلاني أتقبل في Concentrix من أول إنترفيو بعد كورس B1، وحالياً بقيت Team Leader بفضل ربنا ثم هير خالد!':
     'I started from zero at A1 with Herr Khaled. The way he simplifies grammar and ties it to the job market got me hired at Concentrix in my first interview after B1 — and now I’m a Team Leader, thanks to God and Herr Khaled!',
@@ -254,10 +252,8 @@ const EN = {
   'نسبة نجاح جوته & تلـك': 'Goethe & telc pass rate',
   'شات موثق بالصور': 'screenshotted chats',
   'سنوات خبرة بالمجال': 'years in the field',
-  'سلايدر محادثات الطلاب (+74 شات)': 'Student chats (74+)',
   'فيديو النجاح وتجارب خريجي الكورسات': 'Graduate success videos',
   'تجارب العمل بـ Concentrix & Vodafone': 'Working at Concentrix & Vodafone',
-  'معرض محادثات ورسائل شكر طلاب الأكاديمية (74 صورة)': 'Chats and thank-you messages from our students (74 images)',
   'تصفح آراء الطلاب الحقيقية من شات وواتساب هير خالد': 'Real student feedback from Herr Khaled’s chats and WhatsApp',
   'اضغط على أي صورة لتكبيرها وقراءة التفاصيل بوضوح كامل.': 'Tap any image to enlarge it and read the details.',
   'صفحة {p} من {n}': 'Page {p} of {n}',
@@ -587,6 +583,79 @@ const EN = {
   'وردي': 'Pink',
   'بنفسجي': 'Violet',
   'أخضر': 'Green',
+
+  // ---- Reviews: student feedback (constants/studentFeedback.js)
+  'رسالة واتساب من طالب — {n}': 'WhatsApp message from a student — {n}',
+  'آراء الطلاب ({n})': 'Student reviews ({n})',
+  'معرض المحادثات ({n} صورة)': 'Chat gallery ({n} images)',
+  'آراء عامة': 'General',
+  'رسائل الطلاب بعد السيشنات': 'What students say after their sessions',
+  'كلام الطلاب بنفسهم بعد المحاضرات، ومع كل رأي صورة الرسالة زي ما وصلت على واتساب.': 'In the students’ own words after class — each one with a screenshot of the message as it arrived on WhatsApp.',
+  'عرض المزيد ({n})': 'Show more ({n})',
+  'طالب في الأكاديمية': 'Academy student',
+  'أوفلاين — فرع المنصورة': 'In class — Mansoura branch',
+  'رسالة حقيقية على واتساب': 'Real WhatsApp message',
+  'الرسالة الأصلية': 'Original message',
+  'مترجمة من العربية': 'Translated from Arabic',
+  'أعلى تقييم': 'Top rated',
+  'ماشاء الله هير خالد الحلواني ممتاز وأقيمه 10/10 وطريقة شرحه بسيطه حتى لو مش فاهمين نقطه فبنقوله فبيقعد يعيد ويزيد كذا مره من غير حتى مايضايق ولا مره وأنا بالفعل رشحته في بوستات كتير على الفيسبوك اما بشوف حد بيسأل على كورسات ألماني. شغالين ألماني ألماني من أول يوم، في البدايه الدنيا كانت تقيله شويه بس بعد كدا اتعودنا واحنا اللي طلبنا منه يكمل ألماني ألماني من غير عربي ودا فرق مع المجموعة ككل':
+    'Herr Khaled El-Halawany is excellent — I rate him 10/10. He explains simply, and if we don’t get a point he repeats it again and again without ever getting annoyed. I’ve actually recommended him in lots of Facebook posts whenever someone asks about German courses. We’ve been German-only from day one; it was a bit heavy at first, but we got used to it, and we were the ones who asked him to keep going in German without Arabic — and it made a real difference for the whole group.',
+  'هوا اول حد ابدا معاه اللغة وشايفه راجل مجتهد وبيتعب معانا جدا وشغله كويس كشرح وطريقة تدريس ومبيبخلش علي حد بمعلومة لدرجة انه بيدلنا سيشن اونلاين زيادة علي الكورس كل جمعة من غير اي رسوم وامتحانات دورية والـ4 مهارات فاللغة مخلينا مش محتاجين حاجة فيها. ربنا يباركله بجد ومن نجاح لنجاح':
+    'He’s the first teacher I started the language with, and he’s a hard-working man who really puts in effort with us. His explanations and teaching are great and he never holds back any information — he even gives us an extra online session every Friday at no cost, plus regular exams and all 4 language skills, so we don’t need anything else. God bless him, from success to success.',
+  'أنا اول مره اخد مع هير خالد والصراحه أول سيشن عجبني وعجبني جدا طريقه شرحه والاهم أن الشرح كله Deutsch، دا يجبرني أن أفكر بـ Deutsch، والماتريال كويسه.. اتمني أنه يفضل كدا عطول بنفس الطريقه ودي متكونش مجرد بدايه 🙏😊':
+    'It’s my first time with Herr Khaled and honestly I loved the first session and his way of explaining — and most of all that the whole lesson is in Deutsch, which forces me to think in Deutsch. The material is good too. I hope it stays like this, the same way, and that it’s not just a good start 🙏😊',
+  'السيشن كانت حلوة جدا، الهير شرح كل حاجة بالتفصيل واتكلم في مشكلة الـ sprechen وكان حلها أن هيكون في سيشن مخصص بعد كل درسين ف دا حل كويس جدا، ويارب باقي الكورس يفضل في نفس مستوى شرح امبارح ❤️':
+    'The session was really nice — Herr explained everything in detail and talked about the Sprechen problem; his solution is a dedicated session after every two lessons, which is a great fix. I hope the rest of the course stays at the level of yesterday’s class ❤️',
+  'مبدئيا شكرا كتير الكم إنكم بتجننو ما شاء الله من انضباط و احترام و ما شاء الله عن هير خالد. انا من المستوى التاني A2 وأنا بحضر عنده على اليوتيوب بكتب كل اشي بحكيه وكل اشي بيعملو، انا حبيت انه بهاد المستوى عم يركّز على الامتحان المعتمد':
+    'First of all, thank you so much — you’re amazing: discipline, respect, and Herr Khaled is great. I’m in the second level, A2, and I also follow him on YouTube, writing down everything he says and does. I love that at this level he focuses on the certified exam.',
+  'احب اشكر هير خالد علي مجهوده 💗 وبتمني يكون ليفيل A2 مرحلة التقدم الحقيقية 😍 وبتمني اننا نستمر بنفس المستوى منذ البداية 🤍':
+    'I’d like to thank Herr Khaled for his effort 💗 and I hope level A2 is where the real progress happens 😍 and that we keep the same standard as from the start 🤍',
+  'انا رأيى ان الهير خالد راجل محترم وبيبذل مجهود جامد معانا بصراحه وبيراعى ربنا ف شغله، ربنا يوفقه ان شاء الله ويكتبله الخير. وبالنسبه للكورس فالامور ماشيه تمام الحمدلله':
+    'In my opinion Herr Khaled is a respectful man who honestly puts a lot of effort into us and is conscientious in his work — may God grant him success. As for the course, things are going well, thank God.',
+  'هير خالد كويس جدا وشرحه كويس جدا ما شاء الله 🤍🤍':
+    'Herr Khaled is very good and his explanations are very good 🤍🤍',
+  'بصراحه السيشن كانت كويسه جدا وده اللي احنا عايزينه ع طول، وهير خالد كان شرحه كويس جدا وحل كتير معانا، فبجد من تقدم لتقدم ❤️':
+    'Honestly the session was very good — exactly what we want all the time. Herr Khaled explained really well and solved a lot with us, so really, from progress to progress ❤️',
+  'اكيد مافيش احسن من هير خالد، انا كنت في معهد ADK وفاهم كويس وتابعت كذا مدرس بس مافيش زي هير خالد':
+    'There’s definitely no one better than Herr Khaled. I was at ADK institute and understood well, and I followed several teachers, but there’s no one like Herr Khaled.',
+  'الحمد لله السيشن كانت كويسة جدًا واستفدت منها. شرح هير خالد كان واضح ومنظم وطريقة التعامل ممتازة والكورس بشكل عام ما شاء الله مبشر بالخير، وإن شاء الله مع الاستمرار والممارسة نقدر نستفيد ونتطور اكتر. شكرا على اهتمامكم':
+    'Thank God, the session was very good and I benefited from it. Herr Khaled’s explanation was clear and organised, the way he deals with us is excellent, and the course overall looks very promising. With continuity and practice we’ll benefit and improve even more. Thank you for your care.',
+  'هير خالد شاطر جدا ما شاء الله وفوق الممتاز وتجربه جميله معاه، معنديش اي ملاحظات لأن هير خالد بيطور من نفسه ما شاء الله':
+    'Herr Khaled is very skilled and beyond excellent — a lovely experience with him. I have no notes, because Herr Khaled keeps improving himself.',
+  'تحفه والله بجد، حتي الهير كل محاضره لازم يخلينا نتكلم أو نعمل Disskution oder presentation، وبيتقبل وجهات النظر ف كل حاجة. بصراحه مش مقصر معانا ف حاجه الحمدلله':
+    'Honestly amazing — in every lecture Herr makes us speak or do a Diskussion or Präsentation, and he’s open to everyone’s point of view. He truly doesn’t fall short with us in anything, thank God.',
+  'السيشن كانت ممتازة شكرا لكم، في ملاحظات بسيطة بس مثل انه كان أحيان في تقطيع بالصوت والصورة ممكن بسبب الانترنت، والشيء الثاني أقترح لو المستر يخصص بعد كل نقطة وقت للأسئلة بدل ما يكون المجال مفتوح طول الوقت وتحصل عشوائية ويروح تسلسل الأفكار. مرة ثانية شكرا لاهتمامكم 💐':
+    'The session was excellent, thank you. Just a couple of small notes: the sound and picture sometimes cut out, maybe because of the internet; and I’d suggest the teacher sets aside time for questions after each point instead of leaving it open the whole time, which gets messy and breaks the flow. Thanks again for your care 💐',
+  'بصراحه كانت حلوه والتفاعل في السيشن واسئلته لينا وللناس بصراحه حاجه حلوه، هو بس موضوع ان المحاضرة كلها الماني الماني ده اللي ممكن يكون في كلمات مش فاهمنها في نص الكلام، بس الواحد استفاد والله وان شاء الله نتعود باذن الله':
+    'Honestly it was nice — the interaction in the session and his questions to us are really good. The only thing is that the whole lecture is German-only, so there may be words we don’t get mid-sentence, but I really benefited and, God willing, we’ll get used to it.',
+  'الحمد لله المكان كويس وهير خالد شرحه بسيط وجميل، وربنا يكمل على خير معاه ان شاء الله':
+    'Thank God, the place is good and Herr Khaled explains simply and beautifully. May it go on well with him.',
+  'السيشن كان جميل والحمد لله، بستفاد كل مره حاجات جديده عن السيشن اللي قبله':
+    'The session was lovely, thank God — every time I learn new things compared to the session before.',
+  'هير خالد ما شاء الله عليه ممتاز طبعا وشخص محترم والشرح كويس جداً':
+    'Herr Khaled is excellent of course, a respectful person, and the explanations are very good.',
+  'هير خالد حد محترم جدا وشرحه كويس جدا، وبجد الكورس كويس جدا':
+    'Herr Khaled is a very respectful person and explains very well — honestly the course is very good.',
+  'كانت سيشن ممتازه واستفدنا منها، شكرا لكم، وطبعاً الأستاذ برضو ممتاز':
+    'It was an excellent session and we benefited from it — thank you, and of course the teacher is excellent too.',
+  'شرح ممتاز، ومكان جيد':
+    'Excellent explanation, and a good place.',
+  'هير خالد ممتاز وانا استفدت منه':
+    'Herr Khaled is excellent and I benefited from him.',
+  'شرح هير خالد تمام والدنيا كويسه خالص':
+    'Herr Khaled’s explanation is great and everything is going really well.',
+  'الحمد لله تمام، فهمت منه كويس':
+    'All good, thank God — I understood him well.',
+  'كانت بداية ممتازة':
+    'It was an excellent start.',
+  'الشرح رائع، شكرا جدا لحضراتكم':
+    'The explanation is wonderful — thank you so much.',
+  'ماشاء الله عليه ربنا يباركلو ان شاء الله':
+    'God bless him.',
+  'الدنيا كويسه وكلو تمام، نكمل على كده':
+    'Everything is good and fine — let’s keep going like this.',
+  'الدنيا تمام الحمد لله':
+    'All good, thank God.',
 };
 
 export default EN;

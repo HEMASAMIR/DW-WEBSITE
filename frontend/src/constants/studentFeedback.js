@@ -1,0 +1,67 @@
+// Real feedback students sent the academy on WhatsApp after their sessions (screenshots in
+// public/assets/reviews/feedback). `text` is the student's own words (greetings dropped, nothing
+// reworded — keep it that way; the screenshot is the proof) — translated
+// on the site like any other Arabic text (lib/i18n/site.*.js); German messages stay as they are.
+//
+// level: the level the student wrote about, or null when the message doesn't say.
+// place: 'mansoura' when the message is from the offline class at the Mansoura branch.
+// featured: shown large at the top of the reviews section.
+
+const shot = (n) => `/assets/reviews/feedback/fb-${String(n).padStart(2, '0')}.jpg`;
+
+export const STUDENT_FEEDBACK = [
+  { id: 20, image: shot(20), level: null, featured: true, score: '10/10',
+    text: 'ماشاء الله هير خالد الحلواني ممتاز وأقيمه 10/10 وطريقة شرحه بسيطه حتى لو مش فاهمين نقطه فبنقوله فبيقعد يعيد ويزيد كذا مره من غير حتى مايضايق ولا مره وأنا بالفعل رشحته في بوستات كتير على الفيسبوك اما بشوف حد بيسأل على كورسات ألماني. شغالين ألماني ألماني من أول يوم، في البدايه الدنيا كانت تقيله شويه بس بعد كدا اتعودنا واحنا اللي طلبنا منه يكمل ألماني ألماني من غير عربي ودا فرق مع المجموعة ككل' },
+  { id: 18, image: shot(18), level: null, featured: true,
+    text: 'هوا اول حد ابدا معاه اللغة وشايفه راجل مجتهد وبيتعب معانا جدا وشغله كويس كشرح وطريقة تدريس ومبيبخلش علي حد بمعلومة لدرجة انه بيدلنا سيشن اونلاين زيادة علي الكورس كل جمعة من غير اي رسوم وامتحانات دورية والـ4 مهارات فاللغة مخلينا مش محتاجين حاجة فيها. ربنا يباركله بجد ومن نجاح لنجاح' },
+  { id: 7, image: shot(7), level: null, featured: true,
+    text: 'أنا اول مره اخد مع هير خالد والصراحه أول سيشن عجبني وعجبني جدا طريقه شرحه والاهم أن الشرح كله Deutsch، دا يجبرني أن أفكر بـ Deutsch، والماتريال كويسه.. اتمني أنه يفضل كدا عطول بنفس الطريقه ودي متكونش مجرد بدايه 🙏😊' },
+  { id: 8, image: shot(8), level: 'A2',
+    text: 'السيشن كانت حلوة جدا، الهير شرح كل حاجة بالتفصيل واتكلم في مشكلة الـ sprechen وكان حلها أن هيكون في سيشن مخصص بعد كل درسين ف دا حل كويس جدا، ويارب باقي الكورس يفضل في نفس مستوى شرح امبارح ❤️' },
+  { id: 13, image: shot(13), level: 'A2',
+    text: 'مبدئيا شكرا كتير الكم إنكم بتجننو ما شاء الله من انضباط و احترام و ما شاء الله عن هير خالد. انا من المستوى التاني A2 وأنا بحضر عنده على اليوتيوب بكتب كل اشي بحكيه وكل اشي بيعملو، انا حبيت انه بهاد المستوى عم يركّز على الامتحان المعتمد' },
+  { id: 24, image: shot(24), level: 'A2',
+    text: 'احب اشكر هير خالد علي مجهوده 💗 وبتمني يكون ليفيل A2 مرحلة التقدم الحقيقية 😍 وبتمني اننا نستمر بنفس المستوى منذ البداية 🤍' },
+  { id: 27, image: shot(27), level: 'A1', place: 'mansoura',
+    text: 'انا رأيى ان الهير خالد راجل محترم وبيبذل مجهود جامد معانا بصراحه وبيراعى ربنا ف شغله، ربنا يوفقه ان شاء الله ويكتبله الخير. وبالنسبه للكورس فالامور ماشيه تمام الحمدلله' },
+  { id: 30, image: shot(30), level: 'B1', place: 'mansoura',
+    text: 'هير خالد كويس جدا وشرحه كويس جدا ما شاء الله 🤍🤍' },
+  { id: 5, image: shot(5), level: null,
+    text: 'بصراحه السيشن كانت كويسه جدا وده اللي احنا عايزينه ع طول، وهير خالد كان شرحه كويس جدا وحل كتير معانا، فبجد من تقدم لتقدم ❤️' },
+  { id: 6, image: shot(6), level: null,
+    text: 'اكيد مافيش احسن من هير خالد، انا كنت في معهد ADK وفاهم كويس وتابعت كذا مدرس بس مافيش زي هير خالد' },
+  { id: 11, image: shot(11), level: null,
+    text: 'الحمد لله السيشن كانت كويسة جدًا واستفدت منها. شرح هير خالد كان واضح ومنظم وطريقة التعامل ممتازة والكورس بشكل عام ما شاء الله مبشر بالخير، وإن شاء الله مع الاستمرار والممارسة نقدر نستفيد ونتطور اكتر. شكرا على اهتمامكم' },
+  { id: 9, image: shot(9), level: null,
+    text: 'هير خالد شاطر جدا ما شاء الله وفوق الممتاز وتجربه جميله معاه، معنديش اي ملاحظات لأن هير خالد بيطور من نفسه ما شاء الله' },
+  { id: 28, image: shot(28), level: null,
+    text: 'تحفه والله بجد، حتي الهير كل محاضره لازم يخلينا نتكلم أو نعمل Disskution oder presentation، وبيتقبل وجهات النظر ف كل حاجة. بصراحه مش مقصر معانا ف حاجه الحمدلله' },
+  { id: 17, image: shot(17), level: null,
+    text: 'السيشن كانت ممتازة شكرا لكم، في ملاحظات بسيطة بس مثل انه كان أحيان في تقطيع بالصوت والصورة ممكن بسبب الانترنت، والشيء الثاني أقترح لو المستر يخصص بعد كل نقطة وقت للأسئلة بدل ما يكون المجال مفتوح طول الوقت وتحصل عشوائية ويروح تسلسل الأفكار. مرة ثانية شكرا لاهتمامكم 💐' },
+  { id: 25, image: shot(25), level: null,
+    text: 'بصراحه كانت حلوه والتفاعل في السيشن واسئلته لينا وللناس بصراحه حاجه حلوه، هو بس موضوع ان المحاضرة كلها الماني الماني ده اللي ممكن يكون في كلمات مش فاهمنها في نص الكلام، بس الواحد استفاد والله وان شاء الله نتعود باذن الله' },
+  { id: 26, image: shot(26), level: null,
+    text: 'Vielen Dank, Herr Khaled. Ihre Erklärung war ausgezeichnet, und Sie sind eine sehr respektvolle und nette Person. Vielen Dank!' },
+  { id: 1, image: shot(1), level: null,
+    text: 'الحمد لله المكان كويس وهير خالد شرحه بسيط وجميل، وربنا يكمل على خير معاه ان شاء الله' },
+  { id: 2, image: shot(2), level: null,
+    text: 'السيشن كان جميل والحمد لله، بستفاد كل مره حاجات جديده عن السيشن اللي قبله' },
+  { id: 12, image: shot(12), level: null,
+    text: 'هير خالد ما شاء الله عليه ممتاز طبعا وشخص محترم والشرح كويس جداً' },
+  { id: 23, image: shot(23), level: null,
+    text: 'هير خالد حد محترم جدا وشرحه كويس جدا، وبجد الكورس كويس جدا' },
+  { id: 21, image: shot(21), level: null,
+    text: 'كانت سيشن ممتازه واستفدنا منها، شكرا لكم، وطبعاً الأستاذ برضو ممتاز' },
+  { id: 3, image: shot(3), level: null, text: 'شرح ممتاز، ومكان جيد' },
+  { id: 22, image: shot(22), level: null, text: 'هير خالد ممتاز وانا استفدت منه' },
+  { id: 14, image: shot(14), level: null, text: 'شرح هير خالد تمام والدنيا كويسه خالص' },
+  { id: 15, image: shot(15), level: null, text: 'الحمد لله تمام، فهمت منه كويس' },
+  { id: 16, image: shot(16), level: null, text: 'كانت بداية ممتازة' },
+  { id: 29, image: shot(29), level: null, text: 'الشرح رائع، شكرا جدا لحضراتكم' },
+  { id: 19, image: shot(19), level: null, text: 'ماشاء الله عليه ربنا يباركلو ان شاء الله' },
+  { id: 4, image: shot(4), level: null, text: 'الدنيا كويسه وكلو تمام، نكمل على كده' },
+  { id: 10, image: shot(10), level: null, text: 'الدنيا تمام الحمد لله' },
+];
+
+/** Levels that have feedback, in course order. */
+export const FEEDBACK_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'].filter((c) => STUDENT_FEEDBACK.some((f) => f.level === c));

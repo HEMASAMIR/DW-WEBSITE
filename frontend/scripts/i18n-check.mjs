@@ -25,7 +25,7 @@ const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) =
 const keys = new Set();
 const problems = [];
 // Texts kept in constants and translated where they render (t(item.title) …)
-const DATA_FILES = ['src/constants/siteContent.js', 'src/constants/branchTones.js', 'src/constants/levelTones.js'];
+const DATA_FILES = ['src/constants/siteContent.js', 'src/constants/branchTones.js', 'src/constants/levelTones.js', 'src/constants/studentFeedback.js'];
 
 for (const file of walk(ROOT).filter((f) => !SKIP.some((re) => re.test(f)))) {
   const code = fs.readFileSync(file, 'utf8');
