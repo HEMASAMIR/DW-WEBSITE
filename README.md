@@ -111,6 +111,18 @@ npm run start        # بورت 3000 — أو: npm run start -- -p 80
 
 شاشة الدخول كلها في [`AuthModal.jsx`](frontend/src/components/modals/AuthModal.jsx).
 
+### تفعيل الدخول بجوجل
+
+زرار جوجل بيظهر في «تسجيل الدخول» و«حساب جديد» أول ما `NEXT_PUBLIC_GOOGLE_CLIENT_ID` يتحط.
+لو الحساب جديد ومفيهوش رقم موبايل، الموقع بيطلبه في خطوة سريعة بعد الدخول، والطالب يقدر يأجّلها.
+
+1. من [Google Cloud Console](https://console.cloud.google.com/apis/credentials) هات الـ **Web Client ID** اللي الباك إند شغال بيه. لازم يكون **نفس** قيمة `GOOGLE_CLIENT_ID` على الباك إند، لأن الباك إند بيرفض أي توكن متعمل لـ Client ID تاني.
+2. في نفس الـ Client، ضيف دومين الموقع في **Authorized JavaScript origins**، مثلاً `https://deutschewelt.academy` و `http://localhost:3000`.
+3. حط القيمة في `frontend/.env.local` واعمل `npm run build` من جديد، لأن القيمة بتدخل في الـ build:
+   ```env
+   NEXT_PUBLIC_GOOGLE_CLIENT_ID=xxxxxxxx.apps.googleusercontent.com
+   ```
+
 ---
 
 ## هيكل المشروع

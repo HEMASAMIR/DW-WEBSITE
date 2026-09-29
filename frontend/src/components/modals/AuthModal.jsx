@@ -21,6 +21,8 @@ const PHONE_RE = /^01\d{9}$/;
 
 // The backend answers in English — show these in Arabic.
 const ERROR_TRANSLATIONS = [
+  [/google_client_id|not configured|library not installed/i, 'الدخول بجوجل مش متاح حالياً، سجّل بالإيميل.'],
+  [/google token/i, 'تعذّر التحقق من حساب جوجل، حاول مرة أخرى.'],
   [/no active account|credentials/i, 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'],
   [/invalid email or otp|invalid otp|otp.*invalid/i, 'الكود غير صحيح. راجع الكود اللي وصلك على الإيميل.'],
   [/expired/i, 'انتهت صلاحية الكود. اطلب كود جديد.'],
@@ -44,6 +46,7 @@ const BRAND_COPY = {
   login: { title: 'أهلاً بيك تاني', text: 'كمّل رحلتك في الألماني من مكان ما وقفت.' },
   register: { title: 'ابدأ رحلتك للألماني', text: 'حساب واحد لكل المستويات من A1 لحد B2، ومعاه الكتب والمذكرات.' },
   forgot: { title: 'ولا يهمك', text: 'هنرجّعلك حسابك في أقل من دقيقة، خطوة بخطوة.' },
+  phone: { title: 'أهلاً بيك معانا', text: 'فاضل خطوة صغيرة ونبدأ.' },
 };
 
 const FEATURES = [
@@ -60,7 +63,7 @@ export default function AuthModal() {
 }
 
 function AuthDialog({ initialMode, onClose }) {
-  const { login, register, loginWithGoogle } = useAuth();
+  const { login, register, loginWithGoogle, updateProfile } = useAuth();
 
   // 'login' | 'register' | 'forgot'
   const [mode, setMode] = useState(initialMode === 'reset' ? 'forgot' : initialMode);
@@ -163,9 +166,24 @@ function AuthDialog({ initialMode, onClose }) {
 
   const handleGoogleCredential = (credential) =>
     run(async () => {
-      await loginWithGoogle(credential);
-      onClose();
+      const data = await loginWithGoogle(credential);
+      // Google accounts arrive without a phone number — ask for it once.
+      if (data?.user && !data.user.phone_number) {
+        setFirstName(data.user.first_name || '');
+        setMode('phone');
+      } else {
+        onClose();
+      }
     }, 'فشل تسجيل الدخول بحساب جوجل.');
+
+  const handleSavePhone = (e) => {
+    e.preventDefault();
+    if (!PHONE_RE.test(phone)) return showError('رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.');
+    run(async () => {
+      await updateProfile({ phone_number: phone });
+      onClose();
+    }, 'تعذّر حفظ رقم الموبايل.');
+  };
 
   /* ---------- Forgot password ---------- */
 
@@ -241,7 +259,7 @@ function AuthDialog({ initialMode, onClose }) {
       aria-modal="true"
       aria-labelledby="auth-title"
     >
-      <div className="dw-auth-in relative w-full sm:max-w-[940px] max-h-[96vh] sm:max-h-[92vh] bg-white rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden flex">
+      <div className="dw-auth-in relative w-full sm:max-w-[940px] max-h-[96vh] sm:max-h-[92vh] md:min-h-[600px] bg-white rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden flex">
 
         {/* ---------- Form side ---------- */}
         <div className="flex-1 min-w-0 flex flex-col max-h-[96vh] sm:max-h-[92vh] overflow-y-auto">
@@ -271,6 +289,11 @@ function AuthDialog({ initialMode, onClose }) {
                 />
                 <Tabs mode={mode} onChange={switchMode} disabled={loading} />
               </>
+            ) : mode === 'phone' ? (
+              <Heading
+                title={`أهلاً${firstName ? ` يا ${firstName}` : ''} 👋`}
+                subtitle="دخلت بحساب جوجل بنجاح. فاضل رقم موبايلك عشان نقدر نتواصل معاك في الاشتراكات."
+              />
             ) : (
               <ForgotHeader step={step} onBack={() => switchMode('login')} disabled={loading} />
             )}
@@ -431,6 +454,36 @@ function AuthDialog({ initialMode, onClose }) {
                   <PrimaryButton type="button" onClick={onClose} icon={Sparkles} label="يلا بينا" />
                 </div>
               )}
+
+              {mode === 'phone' && (
+                <form onSubmit={handleSavePhone} className="space-y-4">
+                  <TextField
+                    label="رقم الموبايل"
+                    icon={Phone}
+                    hint={phone && !PHONE_RE.test(phone) ? `${phone.length}/11 — لازم يبدأ بـ 01` : null}
+                    valid={PHONE_RE.test(phone)}
+                  >
+                    {(cls) => (
+                      <input
+                        type="tel"
+                        required
+                        autoFocus
+                        inputMode="numeric"
+                        autoComplete="tel"
+                        dir="ltr"
+                        value={phone}
+                        onChange={(e) => setPhone(toLatinDigits(e.target.value).replace(/\D/g, '').slice(0, 11))}
+                        placeholder="01xxxxxxxxx"
+                        className={cls}
+                      />
+                    )}
+                  </TextField>
+                  <PrimaryButton loading={loading} icon={CheckCircle2} label="حفظ ومتابعة" loadingLabel="بنحفظ…" />
+                  <button type="button" onClick={onClose} disabled={loading} className="w-full text-xs font-bold text-slate-500 hover:text-[#0e2c4e]">
+                    بعدين — هضيفه من صفحة حسابي
+                  </button>
+                </form>
+              )}
             </div>
 
             {isTabMode && GOOGLE_CLIENT_ID && (
@@ -440,7 +493,7 @@ function AuthDialog({ initialMode, onClose }) {
                   <span>أو كمّل بـ</span>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
-                <GoogleButton onCredential={handleGoogleCredential} />
+                <GoogleButton onCredential={handleGoogleCredential} text={mode === 'register' ? 'signup_with' : 'continue_with'} />
               </div>
             )}
 
@@ -847,37 +900,52 @@ function CodeTimers({ expiresAt, resendAt, onResend, loading }) {
 /* ---------- Google ---------- */
 
 /** Google Identity Services button → sends the ID token to /api/users/auth/google/. */
-function GoogleButton({ onCredential }) {
+// GIS must be initialized once per page; the active dialog's handler is swapped in via this ref.
+const googleCallback = { current: null };
+let googleInitialized = false;
+
+function GoogleButton({ onCredential, text = 'continue_with' }) {
   const ref = useRef(null);
-  const callbackRef = useRef(onCredential);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    callbackRef.current = onCredential;
+    googleCallback.current = onCredential;
   }, [onCredential]);
 
   useEffect(() => {
     let cancelled = false;
 
     const render = () => {
-      if (cancelled || !window.google?.accounts?.id || !ref.current) return;
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: (res) => res?.credential && callbackRef.current(res.credential),
-      });
-      window.google.accounts.id.renderButton(ref.current, {
+      const gis = window.google?.accounts?.id;
+      if (cancelled || !gis || !ref.current) return;
+      if (!googleInitialized) {
+        gis.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: (res) => res?.credential && googleCallback.current?.(res.credential),
+          ux_mode: 'popup',
+          context: 'signin',
+          itp_support: true,
+        });
+        googleInitialized = true;
+      }
+      ref.current.innerHTML = '';
+      gis.renderButton(ref.current, {
         theme: 'outline',
         size: 'large',
         shape: 'pill',
-        text: 'continue_with',
+        text,
+        logo_alignment: 'center',
         locale: 'ar',
         width: Math.min(ref.current.offsetWidth || 320, 400),
       });
     };
+    const onFail = () => !cancelled && setFailed(true);
 
+    let script = null;
     if (window.google?.accounts?.id) {
       render();
     } else {
-      let script = document.getElementById('google-gsi');
+      script = document.getElementById('google-gsi');
       if (!script) {
         script = document.createElement('script');
         script.id = 'google-gsi';
@@ -886,12 +954,18 @@ function GoogleButton({ onCredential }) {
         document.head.appendChild(script);
       }
       script.addEventListener('load', render);
+      script.addEventListener('error', onFail);
     }
     return () => {
       cancelled = true;
+      script?.removeEventListener('load', render);
+      script?.removeEventListener('error', onFail);
     };
-  }, []);
+  }, [text]);
 
+  if (failed) {
+    return <p className="text-center text-[11px] font-semibold text-slate-400">تعذّر تحميل زرار جوجل — سجّل بالإيميل أو جرّب تاني.</p>;
+  }
   return <div ref={ref} className="w-full flex justify-center min-h-[44px]" />;
 }
 
