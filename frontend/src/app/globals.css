@@ -3,6 +3,17 @@
 /* Light-only design: stop browsers from force-darkening (Chrome/Edge auto dark mode). */
 :root { color-scheme: only light; }
 
+/* Hide Next.js Dev Indicator / Dev Tools badge */
+nextjs-portal,
+[data-nextjs-dev-tools-button],
+[data-nextjs-toast],
+[data-nextjs-dev-indicator] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

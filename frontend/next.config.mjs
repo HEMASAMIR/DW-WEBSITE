@@ -10,6 +10,9 @@ const nextConfig = {
   // Django URLs end with "/" — don't let Next.js redirect them to the slash-less form.
   skipTrailingSlashRedirect: true,
 
+  // Disable Next.js dev indicator badge in the corner
+  devIndicators: false,
+
   // next/image: resize + serve AVIF/WebP for the site's own pictures (logos, photos, reviews).
   images: {
     localPatterns: [{ pathname: '/assets/**', search: '' }],

@@ -81,6 +81,7 @@
 :root[data-admin-theme="dark"] .from-white:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-from: #111b2e; }
 :root[data-admin-theme="dark"] .group:hover .group-hover\:text-slate-500:not(.dw-keep-light, .dw-keep-light *) { color: #94a3b8; }
 :root[data-admin-theme="dark"] .group:hover .group-hover\:text-slate-600:not(.dw-keep-light, .dw-keep-light *) { color: #aab6c8; }
+:root[data-admin-theme="dark"] .group:hover .group-hover\:text-teal-700:not(.dw-keep-light, .dw-keep-light *) { color: #5eead4; }
 :root[data-admin-theme="dark"] .hover\:bg-amber-200:not(.dw-keep-light, .dw-keep-light *):hover { background-color: color-mix(in oklab, #f59e0b 32%, #111b2e); }
 :root[data-admin-theme="dark"] .hover\:bg-amber-50:not(.dw-keep-light, .dw-keep-light *):hover { background-color: color-mix(in oklab, #f59e0b 14%, #111b2e); }
 :root[data-admin-theme="dark"] .hover\:bg-emerald-100:not(.dw-keep-light, .dw-keep-light *):hover { background-color: color-mix(in oklab, #10b981 22%, #111b2e); }
@@ -117,6 +118,7 @@
 :root[data-admin-theme="dark"] .hover\:text-teal-700:not(.dw-keep-light, .dw-keep-light *):hover { color: #5eead4; }
 :root[data-admin-theme="dark"] .hover\:text-teal-900:not(.dw-keep-light, .dw-keep-light *):hover { color: #99f6e4; }
 :root[data-admin-theme="dark"] .ring-amber-200\/50:not(.dw-keep-light, .dw-keep-light *) { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #f59e0b 36%, #111b2e) 50%, transparent); }
+:root[data-admin-theme="dark"] .ring-amber-300\/70:not(.dw-keep-light, .dw-keep-light *) { --tw-ring-color: color-mix(in oklab, color-mix(in oklab, #f59e0b 50%, #111b2e) 70%, transparent); }
 :root[data-admin-theme="dark"] .ring-white:not(.dw-keep-light, .dw-keep-light *) { --tw-ring-color: #111b2e; }
 :root[data-admin-theme="dark"] .stroke-slate-100:not(.dw-keep-light, .dw-keep-light *) { stroke: #1c2942; }
 :root[data-admin-theme="dark"] .text-\[\#0e2c4e\]:not(.dw-keep-light, .dw-keep-light *) { color: #e2e8f0; }
@@ -142,6 +144,7 @@
 :root[data-admin-theme="dark"] .text-slate-700:not(.dw-keep-light, .dw-keep-light *) { color: #cbd5e1; }
 :root[data-admin-theme="dark"] .text-slate-800:not(.dw-keep-light, .dw-keep-light *) { color: #e2e8f0; }
 :root[data-admin-theme="dark"] .text-slate-900:not(.dw-keep-light, .dw-keep-light *) { color: #f1f5f9; }
+:root[data-admin-theme="dark"] .text-slate-900\/70:not(.dw-keep-light, .dw-keep-light *) { color: color-mix(in oklab, #f1f5f9 70%, transparent); }
 :root[data-admin-theme="dark"] .text-slate-900\/\[0\.04\]:not(.dw-keep-light, .dw-keep-light *) { color: color-mix(in oklab, #f1f5f9 4%, transparent); }
 :root[data-admin-theme="dark"] .text-teal-600:not(.dw-keep-light, .dw-keep-light *) { color: #2dd4bf; }
 :root[data-admin-theme="dark"] .text-teal-700:not(.dw-keep-light, .dw-keep-light *) { color: #5eead4; }
