@@ -137,6 +137,10 @@ export const adminService = {
     await patch(API_ENDPOINTS.ADMIN_BRANCH(b.id), { order: i + 1 });
   }, (id, dir) => legacyAdmin.moveBranch(id, dir)),
 
+  // ---- Contact numbers & payment methods (stored by the website: src/app/site-data/contact) ----
+  getContact: async () => (await apiClient.get('/site-data/contact')).data,
+  saveContact: async (fields) => (await apiClient.put('/site-data/contact', fields)).data,
+
   // ---- Announcement banner ----
   getAnnouncement: pick(() => get(API_ENDPOINTS.ANNOUNCEMENT), legacyAdmin.getAnnouncement),
   saveAnnouncement: pick((fields) => post(API_ENDPOINTS.ANNOUNCEMENT, fields), legacyAdmin.saveAnnouncement),

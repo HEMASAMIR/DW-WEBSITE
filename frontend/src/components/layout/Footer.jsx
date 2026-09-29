@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
-import { ACADEMY_INFO, whatsappLink } from '@/constants/siteContent';
+import { ACADEMY_INFO } from '@/constants/siteContent';
+import { useContactInfo, whatsappHref, primaryPhone } from '@/lib/contactInfo';
 import { useBranches } from '@/hooks/useBranches';
 import { branchTone } from '@/constants/branchTones';
 import Reveal from '@/components/common/Reveal';
@@ -47,6 +48,8 @@ export default function Footer() {
   const { openAdminDashboard } = useModal();
   const { isAdmin } = useAuth();
   const branches = useBranches();
+  const contact = useContactInfo();
+  const phone = primaryPhone(contact);
   const [devModalOpen, setDevModalOpen] = useState(false);
   const [copiedText, setCopiedText] = useState(null);
 
@@ -113,7 +116,7 @@ export default function Footer() {
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 shrink-0">
                   <a
-                    href={whatsappLink('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية والاشتراك')}
+                    href={whatsappHref(contact, 'السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية والاشتراك')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-7 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/25 hover:-translate-y-0.5 transition-all"
@@ -122,11 +125,11 @@ export default function Footer() {
                     <span>محادثة واتساب سريعة</span>
                   </a>
                   <a
-                    href={`tel:${ACADEMY_INFO.phonePrimary}`}
+                    href={`tel:${phone}`}
                     className="px-7 py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-black text-sm flex items-center justify-center gap-2.5 transition-colors"
                   >
                     <Phone className="w-4 h-4 text-amber-300" />
-                    <span dir="ltr">{ACADEMY_INFO.phonePrimary}</span>
+                    <span dir="ltr">{phone}</span>
                   </a>
                 </div>
               </>
@@ -156,8 +159,8 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-3 pt-1">
               {[
-                { href: whatsappLink(), title: 'محادثة واتساب الأكاديمية', icon: MessageCircle, cls: 'hover:bg-emerald-500 hover:border-emerald-400', external: true, fill: true },
-                { href: `tel:${ACADEMY_INFO.phonePrimary}`, title: 'الاتصال الهاتفي المباشر', icon: Phone, cls: 'hover:bg-teal-500 hover:border-teal-400' },
+                { href: whatsappHref(contact), title: 'محادثة واتساب الأكاديمية', icon: MessageCircle, cls: 'hover:bg-emerald-500 hover:border-emerald-400', external: true, fill: true },
+                { href: `tel:${phone}`, title: 'الاتصال الهاتفي المباشر', icon: Phone, cls: 'hover:bg-teal-500 hover:border-teal-400' },
                 { href: '/#branches', title: 'مواقع الفروع على الخريطة', icon: MapPin, cls: 'hover:bg-amber-500 hover:border-amber-400' },
               ].map(({ href, title, icon: Icon, cls, external, fill }) => (
                 <a

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import RequestsSection from './RequestsSection';
 import SubscriptionsSection from './SubscriptionsSection';
 import { Inbox, Users2, BookMarked, Sparkles, CheckCircle2 } from 'lucide-react';
+import { translate as t } from './prefs';
 
 /**
  * Modern switcher between incoming purchase requests and current active subscribers
@@ -26,7 +27,7 @@ export default function CombinedRequestsSection({ kind, onChanged }) {
           }`}
         >
           <Inbox className={`w-4 h-4 ${view === 'requests' ? 'text-amber-400' : 'text-slate-400'}`} />
-          <span>طلبات الانتظار والتفعيل</span>
+          <span>{t('طلبات الانتظار والتفعيل')}</span>
           {view === 'requests' && (
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
           )}
@@ -46,7 +47,7 @@ export default function CombinedRequestsSection({ kind, onChanged }) {
           ) : (
             <BookMarked className={`w-4 h-4 ${view === 'subscribers' ? 'text-emerald-300' : 'text-slate-400'}`} />
           )}
-          <span>{isLevel ? 'المشتركون الحاليون' : 'حاملو الكتب الحاليون'}</span>
+          <span>{isLevel ? t('المشتركون الحاليون') : t('حاملو الكتب الحاليون')}</span>
         </button>
       </div>
 

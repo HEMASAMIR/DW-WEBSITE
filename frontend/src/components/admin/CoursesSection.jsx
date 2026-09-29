@@ -12,6 +12,7 @@ import {
 import {
   Layers, Plus, Pencil, Trash2, Users, PlayCircle, FileText, Clock3, RefreshCw, ArrowUp, ArrowDown, Upload, Eye, Film, Save,
 } from 'lucide-react';
+import { translate as t } from './prefs';
 
 export default function CoursesSection({ onChanged, legacy }) {
   const toast = useToast();
@@ -23,7 +24,7 @@ export default function CoursesSection({ onChanged, legacy }) {
 
   const load = useCallback(() => {
     setError('');
-    adminService.getLevels().then(setLevels).catch((e) => setError(getErrorMessage(e, 'تعذر تحميل المستويات.')));
+    adminService.getLevels().then(setLevels).catch((e) => setError(getErrorMessage(e, t('تعذر تحميل المستويات.'))));
   }, []);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(load, [load]);
@@ -31,7 +32,7 @@ export default function CoursesSection({ onChanged, legacy }) {
   const togglePublish = async (l) => {
     try {
       await adminService.updateLevel(l.id, { is_active: !l.is_active });
-      toast('ok', l.is_active ? `تم إخفاء ${l.name} من الموقع.` : `تم نشر ${l.name} على الموقع.`);
+      toast('ok', l.is_active ? t('تم إخفاء {name} من الموقع.', { name: l.name }) : t('تم نشر {name} على الموقع.', { name: l.name }));
       load();
     } catch (e) {
       toast('err', getErrorMessage(e));
@@ -40,9 +41,9 @@ export default function CoursesSection({ onChanged, legacy }) {
 
   const remove = async (l) => {
     if (!(await confirm({
-      title: `حذف المستوى ${l.name}؟`,
-      text: `هيتمسح المستوى ومحتواه واشتراكات ${l.subscribers} طالب. لو عايز تخفيه بس استخدم «إخفاء».`,
-      confirmText: 'حذف نهائي',
+      title: t('حذف المستوى {name}؟', { name: l.name }),
+      text: t('هيتمسح المستوى ومحتواه واشتراكات {n} طالب. لو عايز تخفيه بس استخدم «إخفاء».', { n: l.subscribers }),
+      confirmText: t('حذف نهائي'),
     }))) return;
     try {
       toast('ok', (await adminService.deleteLevel(l.id)).detail);
@@ -67,9 +68,9 @@ export default function CoursesSection({ onChanged, legacy }) {
     <div>
       <SectionHeader
         icon={Layers}
-        title="الكورسات والمحاضرات"
-        subtitle="المستويات وأسعارها ومحاضراتها وملفاتها — أي تعديل بيظهر في الموقع على طول"
-        actions={<Btn variant="gold" icon={Plus} onClick={() => setEditing({})}>مستوى جديد</Btn>}
+        title={t('الكورسات والمحاضرات')}
+        subtitle={t('المستويات وأسعارها ومحاضراتها وملفاتها — أي تعديل بيظهر في الموقع على طول')}
+        actions={<Btn variant="gold" icon={Plus} onClick={() => setEditing({})}>{t('مستوى جديد')}</Btn>}
       />
 
       {error ? (
@@ -77,20 +78,20 @@ export default function CoursesSection({ onChanged, legacy }) {
       ) : !levels ? (
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-72 !rounded-3xl" />)}</div>
       ) : levels.length === 0 ? (
-        <Card><Empty icon={Layers} title="مفيش مستويات لسه" action={<Btn icon={Plus} onClick={() => setEditing({})}>أضف أول مستوى</Btn>} /></Card>
+        <Card><Empty icon={Layers} title={t('مفيش مستويات لسه')} action={<Btn icon={Plus} onClick={() => setEditing({})}>{t('أضف أول مستوى')}</Btn>} /></Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
           {levels.map((l) => (
             <Card key={l.id} className={`relative overflow-hidden flex flex-col ${!l.is_active ? 'opacity-80' : ''}`}>
               <div className="relative overflow-hidden p-5 pb-4 bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
-                <span className="absolute -left-3 -bottom-6 text-8xl font-black text-slate-900/[0.04] select-none" dir="ltr">{l.name}</span>
+                <span className="absolute -end-3 -bottom-6 text-8xl font-black text-slate-900/[0.04] select-none" dir="ltr">{l.name}</span>
                 <div className="relative flex items-start gap-3">
                   <LevelChip code={l.name} size="lg" />
                   <div className="min-w-0 flex-1">
                     <h3 className="text-base font-black text-slate-900 leading-snug" dir="auto">{l.title}</h3>
                     <div className="flex items-baseline gap-2 mt-1">
                       <span className="text-xl font-black text-teal-700" dir="ltr">{money(l.price)}</span>
-                      <span className="text-xs font-black text-slate-400">ج.م</span>
+                      <span className="text-xs font-black text-slate-400">{t('ج.م')}</span>
                       {l.old_price && Number(l.old_price) > Number(l.price) && (
                         <span className="text-xs font-bold text-slate-400 line-through" dir="ltr">{money(l.old_price)}</span>
                       )}
@@ -104,25 +105,25 @@ export default function CoursesSection({ onChanged, legacy }) {
                 <SubscribersStrip level={l} total={totalSubs} />
               ) : (
                 <div className="grid grid-cols-4 divide-x divide-x-reverse divide-slate-100 border-b border-slate-100">
-                  <Stat icon={Users} value={l.subscribers} label="مشترك" />
-                  <Stat icon={PlayCircle} value={l.videos_count} label="محاضرة" />
-                  <Stat icon={FileText} value={l.files_count} label="ملف" />
-                  <Stat icon={Clock3} value={l.pending} label="طلب" highlight={l.pending > 0} />
+                  <Stat icon={Users} value={l.subscribers} label={t('مشترك')} />
+                  <Stat icon={PlayCircle} value={l.videos_count} label={t('محاضرة')} />
+                  <Stat icon={FileText} value={l.files_count} label={t('ملف')} />
+                  <Stat icon={Clock3} value={l.pending} label={t('طلب')} highlight={l.pending > 0} />
                 </div>
               )}
 
               {l.description && <p className="px-5 pt-4 text-xs text-slate-500 leading-relaxed line-clamp-2">{l.description}</p>}
 
               <div className="mt-auto p-4 flex flex-wrap gap-2">
-                {!legacy && <Btn size="sm" icon={Film} onClick={() => setContentOf(l)}>المحاضرات والملفات</Btn>}
+                {!legacy && <Btn size="sm" icon={Film} onClick={() => setContentOf(l)}>{t('المحاضرات والملفات')}</Btn>}
                 <Link href={`/courses/${l.id}`} target="_blank" className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white border border-slate-200 text-xs font-black text-slate-700 hover:bg-slate-50">
-                  <PlayCircle className="w-4 h-4" /> افتح المحاضرات
+                  <PlayCircle className="w-4 h-4" /> {t('افتح المحاضرات')}
                 </Link>
-                <Btn size="sm" variant="ghost" icon={Pencil} onClick={() => setEditing(l)}>تعديل</Btn>
-                <Btn size="sm" variant="ghost" icon={Eye} onClick={() => togglePublish(l)}>{l.is_active ? 'إخفاء' : 'نشر'}</Btn>
-                <div className="mr-auto flex gap-1">
-                  <Btn size="icon" variant="ghost" title="تحديث كاش الفيديوهات" onClick={() => refreshCache(l)}><RefreshCw className="w-4 h-4" /></Btn>
-                  <Btn size="icon" variant="ghost" title="حذف" onClick={() => remove(l)}><Trash2 className="w-4 h-4 text-rose-500" /></Btn>
+                <Btn size="sm" variant="ghost" icon={Pencil} onClick={() => setEditing(l)}>{t('تعديل')}</Btn>
+                <Btn size="sm" variant="ghost" icon={Eye} onClick={() => togglePublish(l)}>{l.is_active ? t('إخفاء') : t('نشر')}</Btn>
+                <div className="ms-auto flex gap-1">
+                  <Btn size="icon" variant="ghost" title={t('تحديث كاش الفيديوهات')} onClick={() => refreshCache(l)}><RefreshCw className="w-4 h-4" /></Btn>
+                  <Btn size="icon" variant="ghost" title={t('حذف')} onClick={() => remove(l)}><Trash2 className="w-4 h-4 text-rose-500" /></Btn>
                 </div>
               </div>
             </Card>
@@ -155,12 +156,12 @@ function SubscribersStrip({ level, total }) {
           </div>
           <div>
             <p className="text-lg font-black text-slate-900 leading-none">{level.subscribers}</p>
-            <p className="text-[10px] font-bold text-slate-400">مشترك مفعّل</p>
+            <p className="text-[10px] font-bold text-slate-400">{t('مشترك مفعّل')}</p>
           </div>
         </div>
-        <div className="text-left">
+        <div className="text-end">
           <p className="text-lg font-black text-teal-700 leading-none">{share}%</p>
-          <p className="text-[10px] font-bold text-slate-400">من كل الاشتراكات</p>
+          <p className="text-[10px] font-bold text-slate-400">{t('من كل الاشتراكات')}</p>
         </div>
       </div>
       <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
@@ -168,7 +169,7 @@ function SubscribersStrip({ level, total }) {
       </div>
       {recent[0] && (
         <p className="text-[11px] font-bold text-slate-500 truncate">
-          آخر اشتراك: <span className="text-slate-800">{recent[0].name}</span>{recent[0].granted_at ? ` • ${timeAgo(recent[0].granted_at)}` : ''}
+          {t('آخر اشتراك:')} <span className="text-slate-800">{recent[0].name}</span>{recent[0].granted_at ? ` • ${timeAgo(recent[0].granted_at)}` : ''}
         </p>
       )}
     </div>
@@ -204,7 +205,7 @@ function LevelForm({ level, onClose, onSaved }) {
     try {
       if (isNew) await adminService.createLevel(fields);
       else await adminService.updateLevel(level.id, fields);
-      toast('ok', isNew ? 'تم إضافة المستوى.' : 'تم حفظ التعديلات.');
+      toast('ok', isNew ? t('تم إضافة المستوى.') : t('تم حفظ التعديلات.'));
       onSaved();
     } catch (err) {
       toast('err', getErrorMessage(err));
@@ -214,23 +215,23 @@ function LevelForm({ level, onClose, onSaved }) {
   };
 
   return (
-    <Modal open onClose={onClose} title={isNew ? 'مستوى جديد' : `تعديل ${level.name}`} icon={Layers} size="lg">
+    <Modal open onClose={onClose} title={isNew ? t('مستوى جديد') : t('تعديل {name}', { name: level.name })} icon={Layers} size="lg">
       <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-6 gap-4">
-        <Field label="كود المستوى" hint="مثلاً A1 أو B2" className="sm:col-span-2">
+        <Field label={t('كود المستوى')} hint={t('مثلاً A1 أو B2')} className="sm:col-span-2">
           <Input required dir="ltr" value={form.name} onChange={set('name')} maxLength={10} className="uppercase" />
         </Field>
-        <Field label="العنوان" className="sm:col-span-4"><Input required dir="auto" value={form.title} onChange={set('title')} /></Field>
-        <Field label="الوصف" className="sm:col-span-6"><Textarea rows={3} value={form.description} onChange={set('description')} /></Field>
-        <Field label="السعر (ج.م)" className="sm:col-span-2"><Input required type="number" min="0" step="0.01" dir="ltr" value={form.price} onChange={set('price')} /></Field>
-        <Field label="السعر قبل الخصم" hint="اختياري" className="sm:col-span-2"><Input type="number" min="0" step="0.01" dir="ltr" value={form.old_price} onChange={set('old_price')} /></Field>
-        <Field label="ترتيب العرض" className="sm:col-span-2"><Input type="number" min="1" dir="ltr" value={form.order} onChange={set('order')} /></Field>
-        <Field label="Bunny Collection ID" hint="اختياري — معرّف مجموعة الفيديوهات على Bunny Stream" className="sm:col-span-6">
+        <Field label={t('العنوان')} className="sm:col-span-4"><Input required dir="auto" value={form.title} onChange={set('title')} /></Field>
+        <Field label={t('الوصف')} className="sm:col-span-6"><Textarea rows={3} value={form.description} onChange={set('description')} /></Field>
+        <Field label={t('السعر (ج.م)')} className="sm:col-span-2"><Input required type="number" min="0" step="0.01" dir="ltr" value={form.price} onChange={set('price')} /></Field>
+        <Field label={t('السعر قبل الخصم')} hint={t('اختياري')} className="sm:col-span-2"><Input type="number" min="0" step="0.01" dir="ltr" value={form.old_price} onChange={set('old_price')} /></Field>
+        <Field label={t('ترتيب العرض')} className="sm:col-span-2"><Input type="number" min="1" dir="ltr" value={form.order} onChange={set('order')} /></Field>
+        <Field label="Bunny Collection ID" hint={t('اختياري — معرّف مجموعة الفيديوهات على Bunny Stream')} className="sm:col-span-6">
           <Input dir="ltr" value={form.bunny_collection_id} onChange={set('bunny_collection_id')} />
         </Field>
-        <div className="sm:col-span-6"><Switch checked={form.is_active} onChange={(v) => setForm({ ...form, is_active: v })} label="منشور وظاهر في الموقع" /></div>
+        <div className="sm:col-span-6"><Switch checked={form.is_active} onChange={(v) => setForm({ ...form, is_active: v })} label={t('منشور وظاهر في الموقع')} /></div>
         <div className="sm:col-span-6 flex justify-end gap-2 pt-2">
-          <Btn type="button" variant="ghost" onClick={onClose}>إلغاء</Btn>
-          <Btn type="submit" icon={Save} loading={saving}>{isNew ? 'إضافة المستوى' : 'حفظ'}</Btn>
+          <Btn type="button" variant="ghost" onClick={onClose}>{t('إلغاء')}</Btn>
+          <Btn type="submit" icon={Save} loading={saving}>{isNew ? t('إضافة المستوى') : t('حفظ')}</Btn>
         </div>
       </form>
     </Modal>
@@ -256,7 +257,7 @@ function ContentDrawer({ level, onClose }) {
   const run = async (promise, okText) => {
     try {
       const res = await promise;
-      toast('ok', okText || res?.detail || 'تم.');
+      toast('ok', okText || res?.detail || t('تم.'));
       load();
     } catch (e) {
       toast('err', getErrorMessage(e));
@@ -267,21 +268,21 @@ function ContentDrawer({ level, onClose }) {
     const list = content.videos;
     const idx = list.findIndex((x) => x.id === v.id);
     const other = list[idx + dir];
-    if (other) run(adminService.updateVideo(v.id, { order: other.order }), 'تم تغيير الترتيب.');
+    if (other) run(adminService.updateVideo(v.id, { order: other.order }), t('تم تغيير الترتيب.'));
   };
 
   const videos = content?.videos || [];
   const files = content?.files || [];
 
   return (
-    <Drawer open onClose={onClose} title={`محتوى ${level.name}`} subtitle={level.title}>
+    <Drawer open onClose={onClose} title={t('محتوى {name}', { name: level.name })} subtitle={level.title}>
       <div className="flex items-center justify-between gap-3">
         <Segmented
           value={tab}
           onChange={setTab}
-          options={[{ value: 'videos', label: `المحاضرات (${videos.length})` }, { value: 'files', label: `الملفات (${files.length})` }]}
+          options={[{ value: 'videos', label: t('المحاضرات ({n})', { n: videos.length }) }, { value: 'files', label: t('الملفات ({n})', { n: files.length }) }]}
         />
-        <Link href={`/courses/${level.id}`} target="_blank" className="text-xs font-black text-teal-700 hover:underline">افتح المستوى في الموقع</Link>
+        <Link href={`/courses/${level.id}`} target="_blank" className="text-xs font-black text-teal-700 hover:underline">{t('افتح المستوى في الموقع')}</Link>
       </div>
 
       {!content ? (
@@ -289,7 +290,7 @@ function ContentDrawer({ level, onClose }) {
       ) : tab === 'videos' ? (
         <>
           <AddVideo levelId={level.id} onAdded={load} />
-          {videos.length === 0 ? <Card><Empty icon={PlayCircle} title="مفيش محاضرات" text="ضيف أول محاضرة بمعرّف الفيديو من Bunny Stream." /></Card> : (
+          {videos.length === 0 ? <Card><Empty icon={PlayCircle} title={t('مفيش محاضرات')} text={t('ضيف أول محاضرة بمعرّف الفيديو من Bunny Stream.')} /></Card> : (
             <Card className="divide-y divide-slate-100 overflow-hidden">
               {videos.map((v, i) => (
                 <div key={v.id} className={`flex items-center gap-3 px-4 py-3 ${!v.is_active ? 'bg-slate-50 opacity-70' : ''}`}>
@@ -299,15 +300,15 @@ function ContentDrawer({ level, onClose }) {
                     <p className="text-[10px] font-bold text-slate-400 truncate" dir="ltr">{formatDuration(v.length)} • {v.bunny_video_id}</p>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <Btn size="icon" variant="ghost" disabled={i === 0} onClick={() => move(v, -1)} title="لفوق"><ArrowUp className="w-4 h-4" /></Btn>
-                    <Btn size="icon" variant="ghost" disabled={i === videos.length - 1} onClick={() => move(v, 1)} title="لتحت"><ArrowDown className="w-4 h-4" /></Btn>
-                    <Switch checked={v.is_active} onChange={(on) => run(adminService.updateVideo(v.id, { is_active: on }), on ? 'المحاضرة ظاهرة.' : 'المحاضرة اتخفت.')} />
-                    <Btn size="icon" variant="ghost" onClick={() => setEditingVideo(v)} title="تعديل"><Pencil className="w-4 h-4" /></Btn>
+                    <Btn size="icon" variant="ghost" disabled={i === 0} onClick={() => move(v, -1)} title={t('لفوق')}><ArrowUp className="w-4 h-4" /></Btn>
+                    <Btn size="icon" variant="ghost" disabled={i === videos.length - 1} onClick={() => move(v, 1)} title={t('لتحت')}><ArrowDown className="w-4 h-4" /></Btn>
+                    <Switch checked={v.is_active} onChange={(on) => run(adminService.updateVideo(v.id, { is_active: on }), on ? t('المحاضرة ظاهرة.') : t('المحاضرة اتخفت.'))} />
+                    <Btn size="icon" variant="ghost" onClick={() => setEditingVideo(v)} title={t('تعديل')}><Pencil className="w-4 h-4" /></Btn>
                     <Btn
                       size="icon"
                       variant="ghost"
-                      title="حذف"
-                      onClick={async () => { if (await confirm({ title: 'حذف المحاضرة؟', text: v.title, confirmText: 'حذف' })) run(adminService.deleteVideo(v.id)); }}
+                      title={t('حذف')}
+                      onClick={async () => { if (await confirm({ title: t('حذف المحاضرة؟'), text: v.title, confirmText: t('حذف') })) run(adminService.deleteVideo(v.id)); }}
                     >
                       <Trash2 className="w-4 h-4 text-rose-500" />
                     </Btn>
@@ -320,7 +321,7 @@ function ContentDrawer({ level, onClose }) {
       ) : (
         <>
           <AddFile levelId={level.id} onAdded={load} />
-          {files.length === 0 ? <Card><Empty icon={FileText} title="مفيش ملفات" text="ارفع ملازم أو امتحانات PDF / Word للمستوى." /></Card> : (
+          {files.length === 0 ? <Card><Empty icon={FileText} title={t('مفيش ملفات')} text={t('ارفع ملازم أو امتحانات PDF / Word للمستوى.')} /></Card> : (
             <Card className="divide-y divide-slate-100 overflow-hidden">
               {files.map((f) => (
                 <div key={f.id} className={`flex items-center gap-3 px-4 py-3 ${!f.is_active ? 'bg-slate-50 opacity-70' : ''}`}>
@@ -329,12 +330,12 @@ function ContentDrawer({ level, onClose }) {
                     <p className="text-sm font-black text-slate-800 truncate" dir="auto">{f.name}</p>
                     <p className="text-[10px] font-bold text-slate-400 truncate" dir="ltr">{f.file_name}</p>
                   </div>
-                  <Switch checked={f.is_active} onChange={(on) => run(adminService.updateFile(f.id, { is_active: on }), on ? 'الملف ظاهر.' : 'الملف اتخفى.')} />
+                  <Switch checked={f.is_active} onChange={(on) => run(adminService.updateFile(f.id, { is_active: on }), on ? t('الملف ظاهر.') : t('الملف اتخفى.'))} />
                   <Btn
                     size="icon"
                     variant="ghost"
-                    title="حذف"
-                    onClick={async () => { if (await confirm({ title: 'حذف الملف؟', text: f.name, confirmText: 'حذف' })) run(adminService.deleteFile(f.id)); }}
+                    title={t('حذف')}
+                    onClick={async () => { if (await confirm({ title: t('حذف الملف؟'), text: f.name, confirmText: t('حذف') })) run(adminService.deleteFile(f.id)); }}
                   >
                     <Trash2 className="w-4 h-4 text-rose-500" />
                   </Btn>
@@ -370,7 +371,7 @@ function AddVideo({ levelId, onAdded }) {
     setSaving(true);
     try {
       await adminService.addVideo(levelId, { ...form, length: parseDuration(form.length) });
-      toast('ok', 'تم إضافة المحاضرة.');
+      toast('ok', t('تم إضافة المحاضرة.'));
       setForm({ title: '', bunny_video_id: '', length: '' });
       onAdded();
     } catch (err) {
@@ -383,10 +384,10 @@ function AddVideo({ levelId, onAdded }) {
   return (
     <Card className="p-4">
       <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-6 gap-3 items-end">
-        <Field label="عنوان المحاضرة" className="sm:col-span-6"><Input required dir="auto" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field>
-        <Field label="معرّف الفيديو (Bunny)" className="sm:col-span-4"><Input required dir="ltr" value={form.bunny_video_id} onChange={(e) => setForm({ ...form, bunny_video_id: e.target.value })} placeholder="xxxxxxxx-xxxx-..." /></Field>
-        <Field label="المدة" className="sm:col-span-2"><Input dir="ltr" value={form.length} onChange={(e) => setForm({ ...form, length: e.target.value })} placeholder="45:30" /></Field>
-        <Btn type="submit" icon={Plus} loading={saving} className="sm:col-span-6">إضافة محاضرة</Btn>
+        <Field label={t('عنوان المحاضرة')} className="sm:col-span-6"><Input required dir="auto" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field>
+        <Field label={t('معرّف الفيديو (Bunny)')} className="sm:col-span-4"><Input required dir="ltr" value={form.bunny_video_id} onChange={(e) => setForm({ ...form, bunny_video_id: e.target.value })} placeholder="xxxxxxxx-xxxx-..." /></Field>
+        <Field label={t('المدة')} className="sm:col-span-2"><Input dir="ltr" value={form.length} onChange={(e) => setForm({ ...form, length: e.target.value })} placeholder="45:30" /></Field>
+        <Btn type="submit" icon={Plus} loading={saving} className="sm:col-span-6">{t('إضافة محاضرة')}</Btn>
       </form>
     </Card>
   );
@@ -402,7 +403,7 @@ function EditVideo({ video, onClose, onSaved }) {
     setSaving(true);
     try {
       await adminService.updateVideo(video.id, { ...form, length: parseDuration(form.length) });
-      toast('ok', 'تم حفظ المحاضرة.');
+      toast('ok', t('تم حفظ المحاضرة.'));
       onSaved();
     } catch (err) {
       toast('err', getErrorMessage(err));
@@ -412,14 +413,14 @@ function EditVideo({ video, onClose, onSaved }) {
   };
 
   return (
-    <Modal open onClose={onClose} title="تعديل المحاضرة" icon={PlayCircle}>
+    <Modal open onClose={onClose} title={t('تعديل المحاضرة')} icon={PlayCircle}>
       <form onSubmit={submit} className="space-y-4">
-        <Field label="العنوان"><Input required dir="auto" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field>
-        <Field label="معرّف الفيديو (Bunny)"><Input required dir="ltr" value={form.bunny_video_id} onChange={(e) => setForm({ ...form, bunny_video_id: e.target.value })} /></Field>
-        <Field label="المدة"><Input dir="ltr" value={form.length} onChange={(e) => setForm({ ...form, length: e.target.value })} /></Field>
+        <Field label={t('العنوان')}><Input required dir="auto" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field>
+        <Field label={t('معرّف الفيديو (Bunny)')}><Input required dir="ltr" value={form.bunny_video_id} onChange={(e) => setForm({ ...form, bunny_video_id: e.target.value })} /></Field>
+        <Field label={t('المدة')}><Input dir="ltr" value={form.length} onChange={(e) => setForm({ ...form, length: e.target.value })} /></Field>
         <div className="flex justify-end gap-2">
-          <Btn type="button" variant="ghost" onClick={onClose}>إلغاء</Btn>
-          <Btn type="submit" icon={Save} loading={saving}>حفظ</Btn>
+          <Btn type="button" variant="ghost" onClick={onClose}>{t('إلغاء')}</Btn>
+          <Btn type="submit" icon={Save} loading={saving}>{t('حفظ')}</Btn>
         </div>
       </form>
     </Modal>
@@ -435,11 +436,11 @@ function AddFile({ levelId, onAdded }) {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!file) return toast('err', 'اختار الملف الأول.');
+    if (!file) return toast('err', t('اختار الملف الأول.'));
     setSaving(true);
     try {
       await adminService.addFile(levelId, { name: name || file.name.replace(/\.[^.]+$/, ''), file });
-      toast('ok', 'تم رفع الملف.');
+      toast('ok', t('تم رفع الملف.'));
       setName('');
       setFile(null);
       if (fileRef.current) fileRef.current.value = '';
@@ -463,11 +464,11 @@ function AddFile({ levelId, onAdded }) {
             file ? 'border-emerald-300 bg-emerald-50 text-emerald-700' : 'border-slate-300 text-slate-500 hover:border-teal-400 hover:text-teal-700'
           }`}
         >
-          <Upload className="w-5 h-5" /> <span className="truncate max-w-[16rem]" dir="auto">{file ? file.name : 'اختار ملف PDF أو Word'}</span>
+          <Upload className="w-5 h-5" /> <span className="truncate max-w-[16rem]" dir="auto">{file ? file.name : t('اختار ملف PDF أو Word')}</span>
         </button>
         <div className="flex gap-2">
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="اسم الملف اللي هيظهر للطلاب (اختياري)" dir="auto" />
-          <Btn type="submit" icon={Upload} loading={saving}>رفع</Btn>
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('اسم الملف اللي هيظهر للطلاب (اختياري)')} dir="auto" />
+          <Btn type="submit" icon={Upload} loading={saving}>{t('رفع')}</Btn>
         </div>
       </form>
     </Card>

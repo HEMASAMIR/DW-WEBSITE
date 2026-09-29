@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ACADEMY_INFO, TOPICS } from '@/constants/siteContent';
+import { TOPICS } from '@/constants/siteContent';
+import { useContactInfo, waNumber, primaryPhone } from '@/lib/contactInfo';
 import Reveal from '@/components/common/Reveal';
 import {
   Phone,
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export default function ContactSection() {
+  const contact = useContactInfo();
   const [formData, setFormData] = useState({ name: '', phone: '', level: 'A1', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,7 @@ export default function ContactSection() {
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
-      window.open(`https://wa.me/${ACADEMY_INFO.whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
+      window.open(`https://wa.me/${waNumber(contact.whatsapp)}?text=${encodeURIComponent(text)}`, '_blank');
       setTimeout(() => setSubmitted(false), 6000);
     }, 400);
   };
@@ -78,7 +80,7 @@ export default function ContactSection() {
               {/* Direct Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <a
-                  href={`https://wa.me/${ACADEMY_INFO.whatsapp}?text=${encodeURIComponent('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية مع هير خالد')}`}
+                  href={`https://wa.me/${waNumber(contact.whatsapp)}?text=${encodeURIComponent('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية مع هير خالد')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 relative py-3.5 px-6 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-teal-900/25 transition-all transform hover:scale-[1.02] active:scale-95"
@@ -88,7 +90,7 @@ export default function ContactSection() {
                 </a>
 
                 <a
-                  href={`tel:${ACADEMY_INFO.phonePrimary}`}
+                  href={`tel:${primaryPhone(contact)}`}
                   className="py-3.5 px-6 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-sm flex items-center justify-center gap-2 border border-slate-300 hover:border-teal-400 transition-all shadow-sm active:scale-95"
                 >
                   <Phone className="w-4 h-4 text-teal-600" />

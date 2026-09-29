@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
 import { adminService, getAdminMode } from '@/services/admin.service';
 import { ToastProvider, ConfirmProvider, Avatar, Btn } from './ui';
+import { AdminPrefsProvider, useAdminPrefs, translate as t } from './prefs';
 import OverviewSection from './OverviewSection';
 import CombinedRequestsSection from './CombinedRequestsSection';
 import UsersSection from './UsersSection';
@@ -13,11 +14,13 @@ import CoursesSection from './CoursesSection';
 import BooksSection from './BooksSection';
 import BranchesSection from './BranchesSection';
 import AnnouncementSection from './AnnouncementSection';
+import ContactPaySection from './ContactPaySection';
 import {
   LayoutDashboard, GraduationCap, BookMarked, Users, Layers, BookOpen, MapPin, Megaphone,
-  Menu, X, LogOut, Home, RefreshCw, ShieldAlert, Loader2, ExternalLink, ChevronLeft,
+  Menu, X, LogOut, Home, RefreshCw, ShieldAlert, Loader2, ExternalLink, ChevronLeft, Sun, Moon, Languages, PhoneCall,
 } from 'lucide-react';
 
+// Labels are translation keys; they're translated where they render.
 const NAV = [
   { group: 'الرئيسية', items: [{ key: 'overview', label: 'لوحة القيادة', icon: LayoutDashboard, tone: 'teal' }] },
   {
@@ -34,6 +37,7 @@ const NAV = [
       { key: 'courses', label: 'الكورسات والمحاضرات', icon: Layers, tone: 'amber' },
       { key: 'books', label: 'الكتب', icon: BookOpen, tone: 'rose' },
       { key: 'branches', label: 'الفروع', icon: MapPin, tone: 'cyan' },
+      { key: 'contact', label: 'التواصل والدفع', icon: PhoneCall, tone: 'emerald' },
       { key: 'announcement', label: 'إعلان الموقع', icon: Megaphone, tone: 'orange' },
     ],
   },
@@ -52,14 +56,23 @@ const NAV_TONES = {
 
 const ALL_KEYS = NAV.flatMap((g) => g.items.map((i) => i.key));
 const LABELS = Object.fromEntries(NAV.flatMap((g) => g.items.map((i) => [i.key, i.label])));
-const labelFor = (key) => LABELS[key];
+const labelFor = (key) => t(LABELS[key]);
 
 export default function AdminApp() {
+  return (
+    <AdminPrefsProvider>
+      <AdminGate />
+    </AdminPrefsProvider>
+  );
+}
+
+function AdminGate() {
   const { user, loading, isAuthenticated, isAdmin } = useAuth();
+  const { dir } = useAdminPrefs();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div dir={dir} className="min-h-screen bg-[#f3f6fa] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-teal-600 animate-spin" />
       </div>
     );
@@ -75,8 +88,54 @@ export default function AdminApp() {
   );
 }
 
+// Each language is named in itself, so it's findable whatever the current language is.
+const LANG_OPTIONS = [
+  { value: 'ar', label: 'ع', name: 'العربية' },
+  { value: 'en', label: 'EN', name: 'English' },
+  { value: 'de', label: 'DE', name: 'Deutsch' },
+];
+
+/** Light/dark + language switches for the top bar. */
+function PrefsSwitches() {
+  const { lang, setLang, theme, setTheme } = useAdminPrefs();
+  const dark = theme === 'dark';
+  return (
+    <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-100 border border-slate-200/70">
+      <button
+        type="button"
+        onClick={() => setTheme(dark ? 'light' : 'dark')}
+        title={dark ? t('الوضع الفاتح') : t('الوضع الداكن')}
+        aria-label={dark ? t('الوضع الفاتح') : t('الوضع الداكن')}
+        className="relative w-8 h-8 rounded-xl bg-white text-slate-700 hover:text-amber-500 shadow-sm flex items-center justify-center transition-colors overflow-hidden"
+      >
+        <Sun className={`absolute w-4 h-4 transition-all duration-500 ${dark ? 'opacity-0 rotate-90 scale-50' : 'opacity-100 rotate-0 scale-100'}`} />
+        <Moon className={`absolute w-4 h-4 transition-all duration-500 ${dark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-50'}`} />
+      </button>
+      <div role="radiogroup" aria-label={t('اللغة')} title={t('اللغة')} className="flex items-center gap-0.5">
+        <Languages className="hidden sm:block w-4 h-4 mx-1 text-slate-400" />
+        {LANG_OPTIONS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={lang === o.value}
+            aria-label={o.name}
+            onClick={() => setLang(o.value)}
+            className={`h-8 min-w-8 px-2 rounded-xl text-xs font-black transition-colors ${
+              lang === o.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Shell({ user }) {
   const { askLogout } = useModal();
+  const { dir } = useAdminPrefs();
   const [tab, setTabState] = useState('overview');
   const [menuOpen, setMenuOpen] = useState(false);
   const [pending, setPending] = useState({ level: 0, book: 0 });
@@ -113,7 +172,7 @@ function Shell({ user }) {
     return () => clearInterval(id);
   }, [refreshCounts]);
 
-  const name = [user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'الأدمن';
+  const name = [user?.first_name, user?.last_name].filter(Boolean).join(' ') || t('الأدمن');
   const totalPending = pending.level + pending.book;
 
   const sectionProps = { onChanged: refreshCounts, goTo: setTab, legacy };
@@ -126,14 +185,15 @@ function Shell({ user }) {
   else if (tab === 'books') section = <BooksSection {...sectionProps} />;
   else if (tab === 'branches') section = <BranchesSection {...sectionProps} />;
   else if (tab === 'announcement') section = <AnnouncementSection {...sectionProps} />;
+  else if (tab === 'contact') section = <ContactPaySection {...sectionProps} />;
   else section = <OverviewSection {...sectionProps} adminName={name} />;
 
   const sidebar = (
-    <div className="h-full flex flex-col bg-white text-slate-800 relative overflow-hidden border-l border-slate-200/80 shadow-[0_0_40px_-12px_rgba(15,23,42,0.18)]">
+    <div className="h-full flex flex-col bg-white text-slate-800 relative overflow-hidden border-e border-slate-200/80 shadow-[0_0_40px_-12px_rgba(15,23,42,0.18)]">
       {/* soft light + texture */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_90%_30%_at_100%_0%,rgba(20,184,166,0.10),transparent_70%),radial-gradient(ellipse_80%_30%_at_0%_100%,rgba(245,158,11,0.08),transparent_70%)]" />
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.35]"
+        className="dw-admin-dots absolute inset-0 pointer-events-none opacity-[0.35]"
         style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #e2e8f0 1px, transparent 0)', backgroundSize: '18px 18px' }}
       />
       <div className="absolute top-0 inset-x-0 flex h-1" dir="ltr">
@@ -141,84 +201,87 @@ function Shell({ user }) {
       </div>
 
       {/* brand */}
-      <div className="relative px-4 pt-6 pb-4">
-        <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-l from-[#0e2c4e] to-teal-800 text-white p-2.5 pl-3 shadow-lg shadow-[#0e2c4e]/20">
-          <span className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-md shrink-0">
+      <div className="relative px-4 pt-6 pb-4 [@media(max-height:760px)]:pt-4 [@media(max-height:760px)]:pb-2">
+        <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-l from-[#0e2c4e] to-teal-800 text-white p-2.5 pe-3 shadow-lg shadow-[#0e2c4e]/20">
+          <span className="dw-keep-light w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-md shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
             <img src="/assets/images/logo-mark.png" alt="Deutsche Welt" className="w-9 h-auto" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="font-black leading-tight tracking-tight text-right">deutsche welt</p>
+            <p className="font-black leading-tight tracking-tight text-start">deutsche welt</p>
             <p className="text-[11px] text-amber-300 font-black flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> لوحة تحكم الأكاديمية
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> {t('لوحة تحكم الأكاديمية')}
             </p>
           </div>
-          <button onClick={() => setMenuOpen(false)} className="lg:hidden w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center" aria-label="إغلاق القائمة">
+          <button onClick={() => setMenuOpen(false)} className="lg:hidden w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center" aria-label={t('إغلاق القائمة')}>
             <X className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* navigation */}
-      <nav className="dw-no-scrollbar relative flex-1 overflow-y-auto px-4 pb-3 space-y-4">
-        {NAV.map((g) => (
-          <div key={g.group}>
-            <p className="flex items-center gap-2 px-2 mb-1.5 text-[10px] font-black tracking-widest text-slate-400">
-              {g.group}
-              <span className="flex-1 h-px bg-gradient-to-l from-slate-200 to-transparent" />
-            </p>
-            <div className="space-y-1">
-              {g.items.map((item) => {
-                const Icon = item.icon;
-                const t = NAV_TONES[item.tone] || NAV_TONES.teal;
-                const active = tab === item.key;
-                const count = item.badge ? pending[item.badge] : 0;
-                return (
-                  <button
-                    key={item.key}
-                    onClick={() => setTab(item.key)}
-                    className={`group relative w-full flex items-center gap-3 pr-2 pl-3 h-11 rounded-2xl text-[13px] font-bold border transition-all duration-200 ${
-                      active ? `${t.soft} shadow-sm` : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-slate-900 hover:-translate-x-0.5'
-                    }`}
-                  >
-                    {active && <span className={`absolute right-0 top-2.5 bottom-2.5 w-1 rounded-l-full ${t.bar}`} />}
-                    <span className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${
-                      active ? `bg-gradient-to-br ${t.on} text-white shadow-lg` : `${t.idle} group-hover:scale-110`
-                    }`}>
-                      <Icon className="w-4 h-4" />
-                    </span>
-                    <span className="flex-1 text-right truncate">{labelFor(item.key)}</span>
-                    {count > 0 ? (
-                      <span className="min-w-5 h-5 px-1.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black flex items-center justify-center animate-pulse">
-                        {count}
+      {/* navigation — scrolls on short screens, fading out above the account card */}
+      <div className="relative flex-1 min-h-0">
+        <nav className="dw-no-scrollbar h-full overflow-y-auto px-4 pt-1 pb-6 space-y-5 [@media(max-height:760px)]:space-y-3">
+          {NAV.map((g) => (
+            <div key={g.group}>
+              <p className="flex items-center gap-2 px-2 mb-1.5 text-[10px] font-black tracking-widest text-slate-400">
+                {t(g.group)}
+                <span className="flex-1 h-px bg-gradient-to-l from-slate-200 to-transparent" />
+              </p>
+              <div className="space-y-1">
+                {g.items.map((item) => {
+                  const Icon = item.icon;
+                  const tone = NAV_TONES[item.tone] || NAV_TONES.teal;
+                  const active = tab === item.key;
+                  const count = item.badge ? pending[item.badge] : 0;
+                  return (
+                    <button
+                      key={item.key}
+                      onClick={() => setTab(item.key)}
+                      className={`group relative w-full flex items-center gap-3 ps-3 pe-3 h-11 [@media(max-height:760px)]:h-9 rounded-2xl text-[13px] font-bold border transition-all duration-200 ${
+                        active ? `${tone.soft} shadow-sm` : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-slate-900'
+                      }`}
+                    >
+                      {active && <span className={`absolute start-1 top-3 bottom-3 w-[3px] rounded-full ${tone.bar}`} />}
+                      <span className={`w-8 h-8 [@media(max-height:760px)]:w-7 [@media(max-height:760px)]:h-7 rounded-xl flex items-center justify-center transition-all ${
+                        active ? `bg-gradient-to-br ${tone.on} text-white shadow-lg` : `${tone.idle} group-hover:scale-110`
+                      }`}>
+                        <Icon className="w-4 h-4" />
                       </span>
-                    ) : active ? (
-                      <ChevronLeft className="w-4 h-4 opacity-60" />
-                    ) : null}
-                  </button>
-                );
-              })}
+                      <span className="flex-1 text-start truncate">{labelFor(item.key)}</span>
+                      {count > 0 ? (
+                        <span className="min-w-5 h-5 px-1.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black flex items-center justify-center animate-pulse">
+                          {count}
+                        </span>
+                      ) : active ? (
+                        <ChevronLeft className="w-4 h-4 opacity-60 ltr:-scale-x-100" />
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
-      </nav>
+          ))}
+        </nav>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent" />
+      </div>
 
       {/* account */}
-      <div className="relative p-4 pt-3">
+      <div className="relative px-4 pb-4 pt-3 [@media(max-height:760px)]:pb-3 border-t border-slate-100">
         <div className="relative rounded-2xl p-[1px] bg-gradient-to-l from-teal-300 via-slate-200 to-amber-300">
-          <div className="flex items-center gap-2.5 rounded-2xl bg-white p-2.5">
-            <span className="relative">
+          <div className="flex items-center gap-3 rounded-[15px] bg-white px-3 py-3 [@media(max-height:760px)]:py-2">
+            <span className="relative shrink-0">
               <Avatar name={name} size="sm" />
-              <span className="absolute -bottom-0.5 -left-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
+              <span className="absolute -top-1 -end-1 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" title="online" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-black text-slate-900 truncate">{name}</p>
-              <p className="text-[10px] font-bold text-teal-600">مدير المنصة</p>
+              <p className="text-[10px] font-bold text-teal-600">{t('مدير المنصة')}</p>
             </div>
-            <Link href="/" title="الرجوع للموقع" className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+            <Link href="/" title={t('الرجوع للموقع')} className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
               <Home className="w-4 h-4" />
             </Link>
-            <button onClick={askLogout} title="تسجيل الخروج" className="w-8 h-8 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-colors">
+            <button onClick={askLogout} title={t('تسجيل الخروج')} className="w-8 h-8 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-colors">
               <LogOut className="w-4 h-4" />
             </button>
           </div>
@@ -228,50 +291,51 @@ function Shell({ user }) {
   );
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f3f6fa] text-slate-900 bg-[radial-gradient(ellipse_60%_40%_at_100%_0%,rgba(20,184,166,0.10),transparent_70%),radial-gradient(ellipse_50%_40%_at_0%_100%,rgba(245,158,11,0.08),transparent_70%)] bg-fixed">
+    <div dir={dir} className="min-h-screen bg-[#f3f6fa] text-slate-900 bg-[radial-gradient(ellipse_60%_40%_at_100%_0%,rgba(20,184,166,0.10),transparent_70%),radial-gradient(ellipse_50%_40%_at_0%_100%,rgba(245,158,11,0.08),transparent_70%)] bg-fixed">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block fixed inset-y-0 right-0 w-72 z-30">{sidebar}</aside>
+      <aside className="hidden lg:block fixed inset-y-0 start-0 w-72 z-30">{sidebar}</aside>
 
       {/* Mobile sidebar */}
       {menuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm animate-fadeIn" onClick={(e) => e.target === e.currentTarget && setMenuOpen(false)}>
-          <aside className="absolute inset-y-0 right-0 w-[82%] max-w-xs dw-sidebar-in">{sidebar}</aside>
+          <aside className="absolute inset-y-0 start-0 w-[82%] max-w-xs dw-sidebar-in">{sidebar}</aside>
         </div>
       )}
 
-      <div className="lg:mr-72 min-h-screen flex flex-col">
+      <div className="lg:ms-72 min-h-screen flex flex-col">
         {/* Top bar */}
         <header className="sticky top-0 z-20 bg-white/70 backdrop-blur-xl border-b border-slate-200/70">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3">
-            <button onClick={() => setMenuOpen(true)} className="lg:hidden w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center" aria-label="القائمة">
+            <button onClick={() => setMenuOpen(true)} className="lg:hidden w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center" aria-label={t('القائمة')}>
               <Menu className="w-5 h-5" />
             </button>
             <div className="min-w-0">
-              <p className="text-[11px] font-bold text-slate-400">لوحة التحكم</p>
+              <p className="text-[11px] font-bold text-slate-400">{t('لوحة التحكم')}</p>
               <h1 className="text-sm sm:text-base font-black text-slate-900 truncate">{labelFor(tab)}</h1>
             </div>
 
-            <div className="mr-auto flex items-center gap-2">
+            <div className="ms-auto flex items-center gap-2">
               {totalPending > 0 && tab !== 'requests-level' && tab !== 'requests-book' && (
                 <button
                   onClick={() => setTab(pending.level ? 'requests-level' : 'requests-book')}
                   className="hidden sm:inline-flex items-center gap-2 h-10 px-4 rounded-full bg-amber-100 border border-amber-200 text-amber-800 text-xs font-black hover:bg-amber-200"
                 >
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                  {totalPending} طلب مستني موافقتك
+                  {t('{n} طلب مستني موافقتك', { n: totalPending })}
                 </button>
               )}
-              <Btn variant="ghost" size="icon" title="تحديث" onClick={() => { setReloadKey((k) => k + 1); refreshCounts(); }}>
+              <PrefsSwitches />
+              <Btn variant="ghost" size="icon" title={t('تحديث')} onClick={() => { setReloadKey((k) => k + 1); refreshCounts(); }}>
                 <RefreshCw className="w-4 h-4" />
               </Btn>
               <Link href="/courses" target="_blank" className="hidden md:inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white border border-slate-200 text-xs font-black text-slate-700 hover:bg-slate-50">
-                <ExternalLink className="w-3.5 h-3.5" /> شوف الموقع كطالب
+                <ExternalLink className="w-3.5 h-3.5" /> {t('شوف الموقع كطالب')}
               </Link>
-              <div className="flex items-center gap-2 pr-2 sm:border-r border-slate-200">
+              <div className="flex items-center gap-2 ps-2 sm:border-s border-slate-200">
                 <Avatar name={name} size="sm" />
                 <div className="hidden sm:block leading-tight">
                   <p className="text-xs font-black text-slate-800 max-w-[9rem] truncate">{name}</p>
-                  <p className="text-[10px] font-bold text-teal-600">مدير المنصة</p>
+                  <p className="text-[10px] font-bold text-teal-600">{t('مدير المنصة')}</p>
                 </div>
               </div>
             </div>
@@ -288,20 +352,21 @@ function Shell({ user }) {
 
 function NoAccess({ signedIn }) {
   const { openAuthModal } = useModal();
+  const { dir } = useAdminPrefs();
   return (
-    <div dir="rtl" className="min-h-screen bg-[#0a2340] text-white flex items-center justify-center p-6 relative overflow-hidden">
+    <div dir={dir} className="min-h-screen bg-[#0a2340] text-white flex items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(20,184,166,0.3),transparent_60%)]" />
       <div className="relative text-center max-w-md space-y-5">
         <span className="mx-auto w-20 h-20 rounded-[1.75rem] bg-white/10 border border-white/15 flex items-center justify-center">
           <ShieldAlert className="w-10 h-10 text-amber-300" />
         </span>
-        <h1 className="text-2xl font-black">{signedIn ? 'الصفحة دي للإدارة بس' : 'سجّل دخول بحساب الإدارة'}</h1>
+        <h1 className="text-2xl font-black">{signedIn ? t('الصفحة دي للإدارة بس') : t('سجّل دخول بحساب الإدارة')}</h1>
         <p className="text-sm text-slate-300 leading-relaxed">
-          {signedIn ? 'حسابك مالوش صلاحية على لوحة التحكم.' : 'لوحة التحكم متاحة لحسابات الإدارة فقط.'}
+          {signedIn ? t('حسابك مالوش صلاحية على لوحة التحكم.') : t('لوحة التحكم متاحة لحسابات الإدارة فقط.')}
         </p>
         <div className="flex justify-center gap-3">
-          {!signedIn && <Btn variant="gold" onClick={() => openAuthModal('login')}>تسجيل الدخول</Btn>}
-          <Link href="/" className="inline-flex items-center h-11 px-5 rounded-2xl bg-white/10 hover:bg-white/15 text-sm font-black">الصفحة الرئيسية</Link>
+          {!signedIn && <Btn variant="gold" onClick={() => openAuthModal('login')}>{t('تسجيل الدخول')}</Btn>}
+          <Link href="/" className="inline-flex items-center h-11 px-5 rounded-2xl bg-white/10 hover:bg-white/15 text-sm font-black">{t('الصفحة الرئيسية')}</Link>
         </div>
       </div>
     </div>

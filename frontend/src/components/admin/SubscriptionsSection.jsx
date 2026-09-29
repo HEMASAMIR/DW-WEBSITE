@@ -8,6 +8,7 @@ import {
   timeAgo, fullDate, useToast, useConfirm,
 } from './ui';
 import { GraduationCap, BookMarked, Search, UserPlus, UserMinus, Check, Loader2, StickyNote } from 'lucide-react';
+import { translate as t } from './prefs';
 
 /**
  * Live backend (no requests API): who each level / book is unlocked for, one tab per level,
@@ -26,7 +27,7 @@ export default function SubscriptionsSection({ kind, onChanged }) {
 
   const load = useCallback((force = false) => {
     setError('');
-    adminService.getAccessList(kind, force).then(setData).catch((e) => setError(getErrorMessage(e, 'تعذر تحميل الاشتراكات.')));
+    adminService.getAccessList(kind, force).then(setData).catch((e) => setError(getErrorMessage(e, t('تعذر تحميل الاشتراكات.'))));
   }, [kind]);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => load(true), [load]);
@@ -47,9 +48,9 @@ export default function SubscriptionsSection({ kind, onChanged }) {
 
   const revoke = async (r) => {
     if (!(await confirm({
-      title: `إلغاء تفعيل «${r.item_name}»؟`,
-      text: `${r.name} مش هيقدر ${isLevel ? 'يشوف محاضرات المستوى' : 'يفتح الكتاب'} تاني.`,
-      confirmText: 'إلغاء التفعيل',
+      title: t('إلغاء تفعيل «{name}»؟', { name: r.item_name }),
+      text: isLevel ? t('{name} مش هيقدر يشوف محاضرات المستوى تاني.', { name: r.name }) : t('{name} مش هيقدر يفتح الكتاب تاني.', { name: r.name }),
+      confirmText: t('إلغاء التفعيل'),
     }))) return;
     setBusy(`${r.item_id}-${r.user_id}`);
     try {
@@ -67,13 +68,13 @@ export default function SubscriptionsSection({ kind, onChanged }) {
     <div>
       <SectionHeader
         icon={isLevel ? GraduationCap : BookMarked}
-        title={isLevel ? 'اشتراكات الكورسات' : 'اشتراكات الكتب'}
-        subtitle={isLevel ? 'كل الطلاب المفعّل لهم كل مستوى — فعّل أو الغِ في ثانية' : 'كل الطلاب المفعّل لهم كل كتاب — فعّل أو الغِ في ثانية'}
-        actions={<Btn variant="gold" icon={UserPlus} onClick={() => setGranting(true)}>تفعيل لطالب</Btn>}
+        title={isLevel ? t('اشتراكات الكورسات') : t('اشتراكات الكتب')}
+        subtitle={isLevel ? t('كل الطلاب المفعّل لهم كل مستوى — فعّل أو الغِ في ثانية') : t('كل الطلاب المفعّل لهم كل كتاب — فعّل أو الغِ في ثانية')}
+        actions={<Btn variant="gold" icon={UserPlus} onClick={() => setGranting(true)}>{t('تفعيل لطالب')}</Btn>}
       />
 
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1">
-        <Tab active={level === ''} onClick={() => setLevel('')} label="كل المستويات" count={data?.rows.length || 0} />
+        <Tab active={level === ''} onClick={() => setLevel('')} label={t('كل المستويات')} count={data?.rows.length || 0} />
         {codes.map((c) => (
           <Tab key={c} active={level === c} onClick={() => setLevel(c)} code={c} count={countBy[c] || 0} />
         ))}
@@ -81,8 +82,8 @@ export default function SubscriptionsSection({ kind, onChanged }) {
 
       <Card className="p-3 sm:p-4 mb-5">
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="دوّر باسم الطالب" className="pr-10" />
+          <Search className="w-4 h-4 text-slate-400 absolute start-4 top-1/2 -translate-y-1/2" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('دوّر باسم الطالب')} className="ps-10" />
         </div>
       </Card>
 
@@ -94,9 +95,9 @@ export default function SubscriptionsSection({ kind, onChanged }) {
         <Card>
           <Empty
             icon={isLevel ? GraduationCap : BookMarked}
-            title="مفيش طلاب مفعّل لهم هنا"
-            text="لما طالب يدفع، دوس «تفعيل لطالب» واختاره وهيتفتحله فوراً."
-            action={<Btn icon={UserPlus} onClick={() => setGranting(true)}>تفعيل لطالب</Btn>}
+            title={t('مفيش طلاب مفعّل لهم هنا')}
+            text={t('لما طالب يدفع، دوس «تفعيل لطالب» واختاره وهيتفتحله فوراً.')}
+            action={<Btn icon={UserPlus} onClick={() => setGranting(true)}>{t('تفعيل لطالب')}</Btn>}
           />
         </Card>
       ) : (
@@ -112,12 +113,12 @@ export default function SubscriptionsSection({ kind, onChanged }) {
                 <LevelChip code={r.level_code} size="sm" />
                 <span className="text-xs font-bold text-slate-600 truncate" dir="auto">{r.item_name}</span>
               </div>
-              <div className="hidden md:block w-40 text-left">
-                <p className="text-xs font-bold text-slate-500" title={fullDate(r.granted_at)}>{r.granted_at ? `اتفعّل ${timeAgo(r.granted_at)}` : '—'}</p>
+              <div className="hidden md:block w-40 text-end">
+                <p className="text-xs font-bold text-slate-500" title={fullDate(r.granted_at)}>{r.granted_at ? t('اتفعّل {when}', { when: timeAgo(r.granted_at) }) : '—'}</p>
                 {r.notes && <p className="text-[10px] text-slate-400 truncate flex items-center gap-1 justify-end" title={r.notes}><StickyNote className="w-3 h-3" /> {r.notes}</p>}
               </div>
               <Btn variant="dangerSoft" size="sm" icon={UserMinus} loading={busy === `${r.item_id}-${r.user_id}`} onClick={() => revoke(r)}>
-                إلغاء
+                {t('إلغاء')}
               </Btn>
             </div>
           ))}
@@ -153,7 +154,7 @@ function Tab({ active, onClick, code, label, count }) {
       ) : (
         <span className={`w-6 h-6 rounded-lg flex items-center justify-center ${active ? 'bg-white/15 text-amber-300' : 'bg-slate-100 text-slate-500'}`}>☰</span>
       )}
-      <span className="text-xs sm:text-sm font-black">{label || (code === 'General' ? 'عام' : `مستوى ${code}`)}</span>
+      <span className="text-xs sm:text-sm font-black">{label || (code === 'General' ? t('عام') : t('مستوى {code}', { code }))}</span>
       <span className={`min-w-5 h-5 px-1.5 rounded-full text-[10px] font-black flex items-center justify-center ${active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>{count}</span>
     </button>
   );
@@ -192,7 +193,7 @@ function GrantModal({ kind, items, defaultCode, onClose, onDone }) {
     setBusy(u.id);
     try {
       await adminService.setUserAccess(u.id, kind, Number(itemId), true);
-      toast('ok', `تم تفعيل «${item?.name}» لـ ${u.name}.`);
+      toast('ok', t('تم تفعيل «{item}» لـ {name}.', { item: item?.name, name: u.name }));
       onDone();
     } catch (e) {
       toast('err', getErrorMessage(e));
@@ -202,24 +203,24 @@ function GrantModal({ kind, items, defaultCode, onClose, onDone }) {
   };
 
   return (
-    <Modal open onClose={onClose} title={kind === 'level' ? 'تفعيل مستوى لطالب' : 'تفعيل كتاب لطالب'} icon={UserPlus}>
+    <Modal open onClose={onClose} title={kind === 'level' ? t('تفعيل مستوى لطالب') : t('تفعيل كتاب لطالب')} icon={UserPlus}>
       <div className="space-y-4">
-        <Field label={kind === 'level' ? 'المستوى' : 'الكتاب'}>
+        <Field label={kind === 'level' ? t('المستوى') : t('الكتاب')}>
           <Select value={itemId} onChange={(e) => setItemId(e.target.value)}>
             {items.map((i) => <option key={i.id} value={i.id}>{i.level_code} — {i.name}</option>)}
           </Select>
         </Field>
-        <Field label="الطالب" hint="اكتب حرفين على الأقل من الاسم أو الإيميل">
+        <Field label={t('الطالب')} hint={t('اكتب حرفين على الأقل من الاسم أو الإيميل')}>
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
-            <Input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="مثلاً: أحمد أو ahmed@" className="pr-10" />
-            {searching && <Loader2 className="w-4 h-4 text-teal-600 animate-spin absolute left-4 top-1/2 -translate-y-1/2" />}
+            <Search className="w-4 h-4 text-slate-400 absolute start-4 top-1/2 -translate-y-1/2" />
+            <Input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('مثلاً: أحمد أو ahmed@')} className="ps-10" />
+            {searching && <Loader2 className="w-4 h-4 text-teal-600 animate-spin absolute end-4 top-1/2 -translate-y-1/2" />}
           </div>
         </Field>
 
         {shown && (
           shown.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-6">مفيش حساب بالبحث ده.</p>
+            <p className="text-sm text-slate-500 text-center py-6">{t('مفيش حساب بالبحث ده.')}</p>
           ) : (
             <div className="rounded-2xl border border-slate-200 divide-y divide-slate-100 max-h-80 overflow-y-auto">
               {shown.map((u) => (
@@ -230,9 +231,9 @@ function GrantModal({ kind, items, defaultCode, onClose, onDone }) {
                     <p className="text-[11px] text-slate-400 font-bold" dir="ltr">{u.email_masked}</p>
                   </div>
                   {hasIt(u) ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-black text-emerald-700"><Check className="w-4 h-4" /> مفعّل</span>
+                    <span className="inline-flex items-center gap-1 text-xs font-black text-emerald-700"><Check className="w-4 h-4" />{' '}{t('مفعّل')}</span>
                   ) : (
-                    <Btn size="sm" variant="success" icon={Check} loading={busy === u.id} disabled={!itemId} onClick={() => grant(u)}>تفعيل</Btn>
+                    <Btn size="sm" variant="success" icon={Check} loading={busy === u.id} disabled={!itemId} onClick={() => grant(u)}>{t('تفعيل')}</Btn>
                   )}
                 </div>
               ))}

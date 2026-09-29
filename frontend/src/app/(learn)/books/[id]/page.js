@@ -8,12 +8,12 @@ import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
 import { formatPrice, formatPriceLatin } from '@/services/courses.service';
 import BookCover, { toneFor, bookCoverUrl } from '@/components/book/BookCover';
-import PaymentInfo from '@/components/common/PaymentInfo';
+import PaymentInfo, { PayMethodBadges } from '@/components/common/PaymentInfo';
 import Reveal from '@/components/common/Reveal';
 import { BookCard } from '@/components/common/AccessGroups';
 import {
   ArrowRight, CheckCircle2, BookOpenText, ShoppingCart, Lock, LogIn, AlertCircle, RefreshCw, ChevronLeft, BookOpen,
-  Wallet, Zap, ShieldCheck,
+  Wallet, ShieldCheck,
 } from 'lucide-react';
 
 /** Book overview page. Reading happens on its own page: /books/<id>/read. All data from the backend. */
@@ -216,8 +216,7 @@ function BookHero({ book }) {
                   </div>
                 </div>
                 <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] sm:text-xs font-bold text-slate-400">
-                  <span className="inline-flex items-center gap-1.5"><Wallet className="w-3.5 h-3.5 text-rose-300" /> فودافون كاش</span>
-                  <span className="inline-flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-violet-300" /> إنستا باي</span>
+                  <PayMethodBadges />
                   <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-300" /> تفعيل على حسابك بعد تأكيد الدفع</span>
                 </div>
               </div>

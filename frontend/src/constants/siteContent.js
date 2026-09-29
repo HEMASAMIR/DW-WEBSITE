@@ -4,34 +4,35 @@
 export const ACADEMY_INFO = {
   name: 'Deutsche Welt - هير خالد الحلواني',
   subtitle: 'أكاديمية اللغة الألمانية المتخصصة للمرحلتين الثانوية والجامعية والراغبين للسفر',
-  // International format without "+" (used for wa.me links). Override via NEXT_PUBLIC_WHATSAPP_NUMBER.
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '2010552287454',
-  phonePrimary: '010552287454',
-  phoneSecondary: '01144151673',
 };
 
-// Payment details shown in the subscribe / order flows.
-export const PAYMENT_INFO = {
-  number: '01010169369',
-  methods: [
-    { id: 'wallet', label: 'فودافون كاش', hint: 'Vodafone Cash — تحويل على الرقم' },
-    { id: 'instapay', label: 'إنستا باي', hint: 'InstaPay — تحويل على رقم الموبايل' },
+/**
+ * Contact numbers, payment methods and the WhatsApp group per level. The admin edits them from
+ * the dashboard (/admin#contact → site-data/contact); these are only the defaults until then.
+ * Read them on the site with useContactInfo() from '@/lib/contactInfo'.
+ */
+export const DEFAULT_CONTACT = {
+  // Local (010…) or international (2010…) — wa.me links are built from either.
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '010552287454',
+  phones: [
+    { id: 'p1', label: 'الخط الرئيسي', number: '010552287454' },
+    { id: 'p2', label: 'خط تاني', number: '01144151673' },
+  ],
+  payment: {
+    methods: [
+      { id: 'wallet', type: 'wallet', label: 'فودافون كاش', number: '01010169369', hint: 'Vodafone Cash — تحويل على الرقم', is_active: true },
+      { id: 'instapay', type: 'instapay', label: 'إنستا باي', number: '01010169369', hint: 'InstaPay — تحويل على رقم الموبايل', is_active: true },
+    ],
+    cash_at_branch: true,
+  },
+  // Shown only to students the level is unlocked for.
+  groups: [
+    { code: 'A1', url: 'https://chat.whatsapp.com/JPLSf99guLQ8zXlFvDsE7Z' },
+    { code: 'A2', url: 'https://chat.whatsapp.com/LRvGNwMDDQmEoM6ZXYlTl5' },
+    { code: 'B1', url: 'https://chat.whatsapp.com/IGEot5E1QYBH1zf9Q4AAZs' },
+    { code: 'B2', url: 'https://chat.whatsapp.com/LpLRjlH1oyq6QWas1VvhAs' },
   ],
 };
-
-// WhatsApp group per level — shown only to students the level is unlocked for.
-export const LEVEL_WHATSAPP_GROUPS = {
-  A1: 'https://chat.whatsapp.com/JPLSf99guLQ8zXlFvDsE7Z',
-  A2: 'https://chat.whatsapp.com/LRvGNwMDDQmEoM6ZXYlTl5',
-  B1: 'https://chat.whatsapp.com/IGEot5E1QYBH1zf9Q4AAZs',
-  B2: 'https://chat.whatsapp.com/LpLRjlH1oyq6QWas1VvhAs',
-};
-export const levelGroupLink = (code) => LEVEL_WHATSAPP_GROUPS[String(code || '').toUpperCase()] || null;
-
-export function whatsappLink(message = '') {
-  const text = message ? `?text=${encodeURIComponent(message)}` : '';
-  return `https://wa.me/${ACADEMY_INFO.whatsapp}${text}`;
-}
 
 // Contact-form topics (value → label)
 export const TOPICS = {

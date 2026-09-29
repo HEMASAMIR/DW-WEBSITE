@@ -1,4 +1,5 @@
-// SERVER-ONLY. Site content the live backend has no endpoints for (branches, announcement banner),
+// SERVER-ONLY. Site content the live backend has no endpoints for (branches, announcement banner,
+// contact numbers & payment methods),
 // stored as JSON files next to the website and edited from the admin dashboard.
 //
 // Files live in SITE_DATA_DIR (default: <project>/data). Needs a normal Node server with a
@@ -11,7 +12,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import axios from 'axios';
-import { BRANCHES_DATA } from '@/constants/siteContent';
+import { BRANCHES_DATA, DEFAULT_CONTACT } from '@/constants/siteContent';
 
 const BACKEND_URL = (process.env.BACKEND_URL || 'https://py.deutschewelt.academy').replace(/\/+$/, '');
 const DATA_DIR = process.env.SITE_DATA_DIR || path.join(process.cwd(), 'data');
@@ -35,6 +36,7 @@ const DEFAULTS = {
     order: i + 1,
   })),
   announcement: () => null,
+  contact: () => DEFAULT_CONTACT,
   requests: () => [],
 };
 
@@ -140,6 +142,40 @@ export function cleanAnnouncement(a) {
     discount_percent: str(a.discount_percent, 20),
     cta_text: str(a.cta_text, 60),
     cta_link: safeUrl(a.cta_link) || '/#online-courses',
+    updated_at: new Date().toISOString(),
+  };
+}
+
+export const PAYMENT_TYPES = ['wallet', 'instapay', 'bank', 'other'];
+const phoneDigits = (v) => str(v, 20).replace(/[^\d+]/g, '');
+
+/** Cleans the contact numbers / payment methods coming from the dashboard. */
+export function cleanContact(c) {
+  if (!c || typeof c !== 'object') return null;
+  const list = (v) => (Array.isArray(v) ? v.slice(0, 12) : []);
+  const id = (v, prefix, i) => str(v, 40) || `${prefix}-${Date.now().toString(36)}-${i}`;
+  return {
+    whatsapp: phoneDigits(c.whatsapp),
+    phones: list(c.phones)
+      .map((p, i) => ({ id: id(p?.id, 'p', i), label: str(p?.label, 60), number: phoneDigits(p?.number) }))
+      .filter((p) => p.number),
+    payment: {
+      methods: list(c.payment?.methods)
+        .map((m, i) => ({
+          id: id(m?.id, 'm', i),
+          type: PAYMENT_TYPES.includes(m?.type) ? m.type : 'other',
+          label: str(m?.label, 60),
+          // Bank accounts / IBANs may contain letters and spaces.
+          number: m?.type === 'bank' ? str(m?.number, 60) : phoneDigits(m?.number),
+          hint: str(m?.hint, 160),
+          is_active: m?.is_active !== false,
+        }))
+        .filter((m) => m.label && m.number),
+      cash_at_branch: c.payment?.cash_at_branch !== false,
+    },
+    groups: list(c.groups)
+      .map((g) => ({ code: str(g?.code, 10).toUpperCase(), url: safeUrl(g?.url) }))
+      .filter((g) => g.code && /^https:\/\//i.test(g.url)),
     updated_at: new Date().toISOString(),
   };
 }

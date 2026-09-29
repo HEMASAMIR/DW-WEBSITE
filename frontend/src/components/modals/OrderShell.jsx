@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { PAYMENT_INFO } from '@/constants/siteContent';
-import { X, CheckCircle2, Wallet, Zap, Store } from 'lucide-react';
+import { useContactInfo, activeMethods, CASH_METHOD } from '@/lib/contactInfo';
+import { X, CheckCircle2, Wallet, Zap, Landmark, CreditCard, Store } from 'lucide-react';
 
 /** Shared frame for the subscribe / book-order modals: navy header + two-column body. */
 export function OrderShell({ icon: Icon, title, subtitle, onClose, children }) {
@@ -40,18 +40,30 @@ export function OrderShell({ icon: Icon, title, subtitle, onClose, children }) {
   );
 }
 
-export const PAY_OPTIONS = [
-  { value: 'فودافون كاش', label: 'فودافون كاش', icon: Wallet, on: 'border-rose-400 bg-rose-50 text-rose-700' },
-  { value: 'إنستا باي', label: 'إنستا باي', icon: Zap, on: 'border-violet-400 bg-violet-50 text-violet-700' },
-  { value: 'دفع نقدي بالفرع', label: 'نقدي بالفرع', icon: Store, on: 'border-amber-400 bg-amber-50 text-amber-700' },
-];
+const PICKER_STYLE = {
+  wallet: { icon: Wallet, on: 'border-rose-400 bg-rose-50 text-rose-700' },
+  instapay: { icon: Zap, on: 'border-violet-400 bg-violet-50 text-violet-700' },
+  bank: { icon: Landmark, on: 'border-sky-400 bg-sky-50 text-sky-700' },
+  other: { icon: CreditCard, on: 'border-teal-400 bg-teal-50 text-teal-700' },
+};
+
+/** Payment choices from the admin's contact & payment settings (+ cash at a branch when allowed). */
+export function usePayOptions() {
+  const info = useContactInfo();
+  const options = activeMethods(info).map((m) => ({ value: m.label, label: m.label, ...(PICKER_STYLE[m.type] || PICKER_STYLE.other) }));
+  if (info.payment?.cash_at_branch !== false) {
+    options.push({ value: CASH_METHOD, label: 'نقدي بالفرع', icon: Store, on: 'border-amber-400 bg-amber-50 text-amber-700' });
+  }
+  return options;
+}
 
 export function PayMethodPicker({ value, onChange }) {
+  const options = usePayOptions();
   return (
     <div>
       <label className="block text-xs font-black text-slate-600 mb-2">طريقة الدفع</label>
-      <div className="grid grid-cols-3 gap-2">
-        {PAY_OPTIONS.map((o) => {
+      <div className={`grid gap-2 ${options.length >= 3 ? 'grid-cols-3' : options.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+        {options.map((o) => {
           const Icon = o.icon;
           const active = value === o.value;
           return (
@@ -85,7 +97,9 @@ export function Field({ label, children }) {
 export const inputCls =
   'w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-teal-500 transition-colors';
 
-export function SentState({ text, onClose, title = 'تم تجهيز طلبك على واتساب', showNumber = true }) {
+export function SentState({ text, onClose, title = 'تم تجهيز طلبك على واتساب', showNumber = true, number }) {
+  const info = useContactInfo();
+  const transferNumber = number || activeMethods(info)[0]?.number;
   return (
     <div className="text-center py-10 space-y-4 max-w-md mx-auto">
       <span className="relative inline-flex">
@@ -94,9 +108,9 @@ export function SentState({ text, onClose, title = 'تم تجهيز طلبك ع�
       </span>
       <h4 className="text-2xl font-black text-[#0e2c4e]">{title}</h4>
       <p className="text-sm text-slate-600 leading-relaxed">{text}</p>
-      {showNumber && (
+      {showNumber && transferNumber && (
         <p className="text-sm text-slate-600">
-          رقم التحويل: <strong className="text-[#0e2c4e]" dir="ltr">{PAYMENT_INFO.number}</strong>
+          رقم التحويل: <strong className="text-[#0e2c4e]" dir="ltr">{transferNumber}</strong>
         </p>
       )}
       <button onClick={onClose} className="mt-2 bg-[#0e2c4e] hover:bg-teal-700 text-white font-black text-sm px-8 py-3 rounded-2xl transition-colors">

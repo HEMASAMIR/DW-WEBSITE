@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { requestsService } from '@/services/requests.service';
 import { getErrorMessage, isMissingEndpoint } from '@/services/api';
-import { whatsappLink, PAYMENT_INFO } from '@/constants/siteContent';
+import { useContactInfo, whatsappHref, numberForMethod, CASH_METHOD } from '@/lib/contactInfo';
 import PaymentInfo from '@/components/common/PaymentInfo';
-import { PayMethodPicker, Field, inputCls, SentState, PAY_OPTIONS } from './OrderShell';
+import { PayMethodPicker, Field, inputCls, SentState, usePayOptions } from './OrderShell';
 import { Send, Loader2, ImagePlus, X, Clock3, AlertCircle } from 'lucide-react';
 
 /**
@@ -22,7 +22,11 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
   const { user } = useAuth();
   const [name, setName] = useState([user?.first_name, user?.last_name].filter(Boolean).join(' '));
   const [phone, setPhone] = useState(user?.phone_number || '');
-  const [paymentMethod, setPaymentMethod] = useState(PAY_OPTIONS[0].value);
+  const contact = useContactInfo();
+  const payOptions = usePayOptions();
+  const [chosenMethod, setPaymentMethod] = useState('');
+  // The admin's methods load after the first render — fall back to the first one offered.
+  const paymentMethod = payOptions.some((o) => o.value === chosenMethod) ? chosenMethod : payOptions[0]?.value || '';
   const [receipt, setReceipt] = useState(null);
   const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
@@ -73,10 +77,10 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
       `📱 الهاتف: ${phone}`,
       user?.id ? `🆔 رقم الحساب: ${user.id}` : null,
       `💳 طريقة الدفع: ${paymentMethod}`,
-      paymentMethod !== 'دفع نقدي بالفرع' ? `🔢 تم التحويل على رقم: ${PAYMENT_INFO.number} (مرفق صورة التحويل)` : null,
+      paymentMethod !== CASH_METHOD ? `🔢 تم التحويل على رقم: ${numberForMethod(contact, paymentMethod)} (مرفق صورة التحويل)` : null,
       note ? `📝 ${note}` : null,
     ].filter((l) => l !== null && l !== undefined);
-    window.open(whatsappLink(lines.join('\n')), '_blank', 'noopener,noreferrer');
+    window.open(whatsappHref(contact, lines.join('\n')), '_blank', 'noopener,noreferrer');
     setSent('whatsapp');
   };
 
@@ -87,6 +91,8 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
     return (
       <SentState
         onClose={onClose}
+        number={paymentMethod !== CASH_METHOD ? numberForMethod(contact, paymentMethod) : null}
+        showNumber={paymentMethod !== CASH_METHOD}
         text="ابعت الرسالة على واتساب ومعاها صورة التحويل. بعد تأكيد الدفع هيتفعّل على حسابك في الموقع."
       />
     );
@@ -133,7 +139,7 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         </Field>
         <PayMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
 
-        {paymentMethod !== 'دفع نقدي بالفرع' && (
+        {paymentMethod !== CASH_METHOD && (
           <Field label="صورة التحويل (بتسرّع التفعيل)">
             <input
               ref={fileRef}

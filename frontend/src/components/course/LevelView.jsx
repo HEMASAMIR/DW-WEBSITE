@@ -8,7 +8,7 @@ import { coursesService, formatDuration, formatPrice, formatPriceLatin } from '@
 import { useLevelContent, formatTotal, totalSeconds } from './useLevelContent';
 import Reveal from '@/components/common/Reveal';
 import PaymentInfo from '@/components/common/PaymentInfo';
-import { levelGroupLink } from '@/constants/siteContent';
+import { useContactInfo, groupLink } from '@/lib/contactInfo';
 import {
   PlayCircle, Play, FileText, AlertCircle, RefreshCw, Lock, LogIn, MessageCircle, Clock, ListVideo,
   Eye, CheckCircle2, ChevronLeft, FileType2, Sparkles,
@@ -147,7 +147,8 @@ function UnlockedLevel({ level }) {
   const files = content?.files || [];
   const total = totalSeconds(videos);
   const first = videos[0];
-  const group = levelGroupLink(level.code);
+  const contact = useContactInfo();
+  const group = groupLink(contact, level.code);
 
   const viewFile = (file) =>
     openFileViewer({ title: file.name, load: (onProgress) => coursesService.viewFile(level.id, file, onProgress) });
@@ -385,6 +386,7 @@ function FileRow({ file, onOpen }) {
 function LockedLevel({ level }) {
   const { isAuthenticated } = useAuth();
   const { openEnrollModal, openLoginPromptModal } = useModal();
+  const contact = useContactInfo();
   const price = formatPrice(level.price);
   const oldPrice = level.oldPrice && level.oldPrice > (level.price || 0) ? formatPrice(level.oldPrice) : null;
 
@@ -457,7 +459,7 @@ function LockedLevel({ level }) {
               ? 'اشترك في المستوى وبعد تأكيد الدفع هيتفعّل على حسابك وتقدر تشوف كل المحاضرات والملفات وتشارك في المناقشة.'
               : 'للاشتراك لازم تسجّل الدخول أو تعمل حساب جديد الأول، وبعد تأكيد الدفع هيتفعّل المستوى على حسابك.'}
           </p>
-          {levelGroupLink(level.code) && (
+          {groupLink(contact, level.code) && (
             <p className="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2">
               <MessageCircle className="w-4 h-4" />
               بعد التفعيل هيظهرلك رابط جروب الواتساب الخاص بالمستوى

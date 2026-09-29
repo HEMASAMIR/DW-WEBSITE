@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { toneFor } from '@/constants/levelTones';
+import { translate as t, getAdminLang, useAdminPrefs } from './prefs';
 import { X, Loader2, CheckCircle2, AlertCircle, AlertTriangle, Inbox, Phone, MessageCircle } from 'lucide-react';
 
 /* ------------------------------------------------------------------ */
@@ -15,19 +16,22 @@ export function money(value) {
   return n.toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
 
+const DATE_LOCALES = { ar: 'ar-EG', en: 'en-GB', de: 'de-DE' };
+export const dateLocale = () => DATE_LOCALES[getAdminLang()] || 'ar-EG';
+
 export function timeAgo(iso) {
   if (!iso) return '';
   const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (diff < 60) return 'دلوقتي';
-  if (diff < 3600) return `من ${Math.floor(diff / 60)} دقيقة`;
-  if (diff < 86400) return `من ${Math.floor(diff / 3600)} ساعة`;
-  if (diff < 86400 * 30) return `من ${Math.floor(diff / 86400)} يوم`;
-  return new Date(iso).toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' });
+  if (diff < 60) return t('دلوقتي');
+  if (diff < 3600) return t('من {n} دقيقة', { n: Math.floor(diff / 60) });
+  if (diff < 86400) return t('من {n} ساعة', { n: Math.floor(diff / 3600) });
+  if (diff < 86400 * 30) return t('من {n} يوم', { n: Math.floor(diff / 86400) });
+  return new Date(iso).toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function fullDate(iso) {
   if (!iso) return '—';
-  return new Date(iso).toLocaleString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return new Date(iso).toLocaleString(dateLocale(), { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
 /** Egyptian mobile → wa.me international form. */
@@ -51,7 +55,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={push}>
       {children}
-      <div className="fixed bottom-5 left-5 right-5 sm:right-auto z-[80] flex flex-col gap-2 items-stretch sm:items-start pointer-events-none">
+      <div className="fixed bottom-5 end-5 start-5 sm:start-auto z-[80] flex flex-col gap-2 items-stretch sm:items-start pointer-events-none">
         {toasts.map((t) => (
           <div
             key={t.id}
@@ -81,7 +85,7 @@ export function ConfirmProvider({ children }) {
 
   const confirm = useCallback((opts) => new Promise((resolve) => {
     resolver.current = resolve;
-    setState({ title: 'متأكد؟', confirmText: 'تأكيد', danger: true, input: false, ...opts, value: '' });
+    setState({ title: t('متأكد؟'), confirmText: t('تأكيد'), danger: true, input: false, ...opts, value: '' });
   }), []);
 
   const close = (result) => {
@@ -110,7 +114,7 @@ export function ConfirmProvider({ children }) {
               />
             )}
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <Btn variant="ghost" onClick={() => close(false)}>إلغاء</Btn>
+              <Btn variant="ghost" onClick={() => close(false)}>{t('إلغاء')}</Btn>
               <Btn variant={state.danger ? 'danger' : 'primary'} onClick={() => close(state.input ? { value: state.value } : true)}>
                 {state.confirmText}
               </Btn>
@@ -163,7 +167,7 @@ export function Textarea({ className = '', ...props }) {
 
 export function Select({ className = '', children, ...props }) {
   return (
-    <select {...props} className={`${fieldCls} appearance-none bg-[length:12px] bg-no-repeat bg-[left_1rem_center] pl-9 ${className}`}
+    <select {...props} className={`${fieldCls} appearance-none bg-[length:12px] bg-no-repeat rtl:bg-[left_1rem_center] ltr:bg-[right_1rem_center] pe-9 ${className}`}
       style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")" }}>
       {children}
     </select>
@@ -241,6 +245,7 @@ export function SectionHeader({ title, subtitle, icon: Icon, actions }) {
 }
 
 export function Modal({ open, onClose, title, subtitle, icon: Icon, children, footer, size = 'md', hideHeader }) {
+  const { dir } = useAdminPrefs();
   const [mounted, setMounted] = useState(false);
   // Portal target exists only after hydration.
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -256,7 +261,7 @@ export function Modal({ open, onClose, title, subtitle, icon: Icon, children, fo
   const width = { sm: 'max-w-md', md: 'max-w-2xl', lg: 'max-w-4xl' }[size];
   return createPortal(
     <div
-      dir="rtl"
+      dir={dir}
       className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn text-slate-900"
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
@@ -270,7 +275,7 @@ export function Modal({ open, onClose, title, subtitle, icon: Icon, children, fo
               <h3 className="text-lg font-black text-slate-900 truncate">{title}</h3>
               {subtitle && <p className="text-xs text-slate-500 font-medium truncate">{subtitle}</p>}
             </div>
-            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center" aria-label="إغلاق">
+            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center" aria-label={t('إغلاق')}>
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -283,8 +288,9 @@ export function Modal({ open, onClose, title, subtitle, icon: Icon, children, fo
   );
 }
 
-/** Side panel sliding in from the left (RTL layout). */
+/** Side panel sliding in from the end side (left in Arabic, right in English). */
 export function Drawer({ open, onClose, title, subtitle, children, footer, header }) {
+  const { dir } = useAdminPrefs();
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
@@ -297,15 +303,15 @@ export function Drawer({ open, onClose, title, subtitle, children, footer, heade
   if (!open || !mounted) return null;
 
   return createPortal(
-    <div dir="rtl" className="fixed inset-0 z-[60] bg-slate-950/50 backdrop-blur-sm animate-fadeIn text-slate-900" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <aside className="absolute inset-y-0 left-0 w-full max-w-xl bg-slate-50 shadow-2xl flex flex-col dw-drawer-in">
+    <div dir={dir} className="fixed inset-0 z-[60] bg-slate-950/50 backdrop-blur-sm animate-fadeIn text-slate-900" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <aside className="absolute inset-y-0 end-0 w-full max-w-xl bg-slate-50 shadow-2xl flex flex-col dw-drawer-in">
         {header || (
           <div className="flex items-center gap-3 px-6 py-5 bg-white border-b border-slate-200">
             <div className="min-w-0 flex-1">
               <h3 className="text-lg font-black text-slate-900 truncate">{title}</h3>
               {subtitle && <p className="text-xs text-slate-500 truncate">{subtitle}</p>}
             </div>
-            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center" aria-label="إغلاق">
+            <button onClick={onClose} className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center" aria-label={t('إغلاق')}>
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -327,7 +333,7 @@ export function LevelChip({ code, size = 'md' }) {
   const cls = size === 'lg' ? 'w-12 h-12 text-base rounded-2xl' : size === 'sm' ? 'px-2 h-6 text-[11px] rounded-lg' : 'w-10 h-10 text-sm rounded-xl';
   return (
     <span dir="ltr" className={`inline-flex items-center justify-center shrink-0 font-black text-white bg-gradient-to-br ${tone?.badge || 'from-slate-500 to-slate-700'} shadow-md ${cls}`}>
-      {code === 'General' ? 'عام' : code}
+      {code === 'General' ? t('عام') : code}
     </span>
   );
 }
@@ -347,7 +353,7 @@ export function StatusBadge({ status, label }) {
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-black whitespace-nowrap ${s.cls}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
-      {label || s.label}
+      {label || t(s.label)}
     </span>
   );
 }
@@ -374,7 +380,7 @@ export function ErrorBox({ message, onRetry }) {
     <Card className="p-8 text-center space-y-3">
       <AlertCircle className="w-10 h-10 mx-auto text-rose-500" />
       <p className="text-sm font-bold text-slate-700">{message}</p>
-      {onRetry && <Btn variant="ghost" size="sm" onClick={onRetry}>إعادة المحاولة</Btn>}
+      {onRetry && <Btn variant="ghost" size="sm" onClick={onRetry}>{t('إعادة المحاولة')}</Btn>}
     </Card>
   );
 }
@@ -383,10 +389,10 @@ export function PhoneActions({ phone }) {
   if (!phone) return null;
   return (
     <span className="inline-flex items-center gap-1.5">
-      <a href={`tel:${phone}`} className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-sky-100 text-slate-600 hover:text-sky-700 flex items-center justify-center" title="اتصال">
+      <a href={`tel:${phone}`} className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-sky-100 text-slate-600 hover:text-sky-700 flex items-center justify-center" title={t('اتصال')}>
         <Phone className="w-3.5 h-3.5" />
       </a>
-      <a href={waLink(phone)} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center" title="واتساب">
+      <a href={waLink(phone)} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center" title={t('واتساب')}>
         <MessageCircle className="w-3.5 h-3.5" />
       </a>
     </span>

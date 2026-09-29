@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useModal } from '@/context/ModalContext';
-import { TEACHER_CV_DATA, whatsappLink } from '@/constants/siteContent';
+import { TEACHER_CV_DATA } from '@/constants/siteContent';
+import { useContactInfo, whatsappHref } from '@/lib/contactInfo';
 import { 
   X, 
   Award, 
@@ -18,6 +19,7 @@ import {
 
 export default function CvModal() {
   const { activeModal, modalData, closeModal } = useModal();
+  const contact = useContactInfo();
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
@@ -198,7 +200,7 @@ export default function CvModal() {
             Deutsche Welt Academy • Herr Khaled
           </span>
           <a
-            href={whatsappLink('مرحباً هير خالد، أريد الاستفسار عن الكورسات')}
+            href={whatsappHref(contact, 'مرحباً هير خالد، أريد الاستفسار عن الكورسات')}
             target="_blank"
             rel="noopener noreferrer"
             className="glass-pill-gold px-5 py-2.5 rounded-full text-xs font-black flex items-center gap-1.5 shadow-md hover:scale-105 transition-transform"

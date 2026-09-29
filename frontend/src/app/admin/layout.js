@@ -1,3 +1,5 @@
+import './admin-theme.css';
+
 export const metadata = {
   title: 'لوحة التحكم | Deutsche Welt Academy',
   robots: { index: false, follow: false },

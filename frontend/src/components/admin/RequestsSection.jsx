@@ -13,6 +13,7 @@ import {
   UserRound, RotateCcw, Clock, Sparkles, ShieldCheck, CheckCircle2, ChevronLeft, Zap,
   Layers, Inbox, Phone, MessageCircle, Eye, AlertTriangle, ArrowUpDown
 } from 'lucide-react';
+import { translate as t } from './prefs';
 
 const BOOK_LEVELS = ['A1', 'A2', 'B1', 'B2', 'General'];
 
@@ -57,9 +58,10 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
     adminService
       .getRequests({ kind, status: status === 'all' ? undefined : status, level: level || undefined, search: query || undefined })
       .then(setData)
-      .catch((e) => setError(getErrorMessage(e, 'تعذر تحميل الطلبات.')));
+      .catch((e) => setError(getErrorMessage(e, t('تعذر تحميل الطلبات.'))));
   }, [kind, status, level, query]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(load, [load]);
 
   const counts = data?.counts || { by_status: {}, pending_by_level: {} };
@@ -75,7 +77,7 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
     setBusy(r.id);
     try {
       const res = await adminService.approveRequest(r.id, '', r);
-      toast('ok', res.detail || 'تم تفعيل الصلاحية للطالب فوراً بنجاح ✨');
+      toast('ok', res.detail || t('تم تفعيل الصلاحية للطالب فوراً بنجاح ✨'));
       load();
       onChanged?.();
     } catch (e) {
@@ -87,18 +89,18 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
 
   const reject = async (r) => {
     const res = await confirm({
-      title: `رفض طلب ${r.full_name}؟`,
-      text: 'اكتب سبب الرفض ليظهر للطالب (اختياري).',
+      title: t('رفض طلب {name}؟', { name: r.full_name }),
+      text: t('اكتب سبب الرفض ليظهر للطالب (اختياري).'),
       input: true,
-      inputPlaceholder: 'مثلاً: تحويل غير مكتمل، أو رقم الهاتف غير مطابق',
-      confirmText: 'رفض الطلب',
+      inputPlaceholder: t('مثلاً: تحويل غير مكتمل، أو رقم الهاتف غير مطابق'),
+      confirmText: t('رفض الطلب'),
       danger: true,
     });
     if (!res) return;
     setBusy(r.id);
     try {
       const resReject = await adminService.rejectRequest(r.id, res.value);
-      toast('ok', resReject.detail || 'تم رفض الطلب');
+      toast('ok', resReject.detail || t('تم رفض الطلب'));
       load();
       onChanged?.();
     } catch (e) {
@@ -111,16 +113,16 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
   const remove = async (r) => {
     if (
       !(await confirm({
-        title: 'حذف الطلب نهائياً؟',
-        text: 'سيتم مسح هذا الطلب من السجل. الصلاحية المفعّلة للطالب (إن وُجدت) لن تتأثر.',
-        confirmText: 'تأكيد الحذف',
+        title: t('حذف الطلب نهائياً؟'),
+        text: t('سيتم مسح هذا الطلب من السجل. الصلاحية المفعّلة للطالب (إن وُجدت) لن تتأثر.'),
+        confirmText: t('تأكيد الحذف'),
         danger: true,
       }))
     )
       return;
     try {
       const resDel = await adminService.deleteRequest(r.id);
-      toast('ok', resDel.detail || 'تم حذف الطلب.');
+      toast('ok', resDel.detail || t('تم حذف الطلب.'));
       load();
       onChanged?.();
     } catch (e) {
@@ -130,7 +132,7 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
 
   const showReceipt = (r) =>
     openFileViewer({
-      title: `إيصال التحويل البنكي — ${r.full_name}`,
+      title: t('إيصال التحويل البنكي — {name}', { name: r.full_name }),
       load: (onProgress) => adminService.viewReceipt(r.id, onProgress),
     });
 
@@ -139,8 +141,8 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
       {/* 1. Hero Showcase Banner */}
       <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#07192e] via-[#0c2847] to-[#0e3b68] text-white p-6 sm:p-8 shadow-2xl shadow-[#07192e]/25 border border-white/10">
         {/* Glow ambient background lights */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-teal-500/20 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute top-0 start-0 -ms-20 -mt-20 w-80 h-80 rounded-full bg-teal-500/20 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 end-0 -me-20 -mb-20 w-80 h-80 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
         <div
           className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
@@ -164,15 +166,15 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-black text-amber-300 mb-2">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                تفعيل فوري وتلقائي عند الموافقة
+                {t('تفعيل فوري وتلقائي عند الموافقة')}
               </div>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
-                {isLevel ? 'طلبات اشتراكات الكورسات' : 'طلبات شراء الكتب'}
+                {isLevel ? t('طلبات اشتراكات الكورسات') : t('طلبات شراء الكتب')}
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1 max-w-xl leading-relaxed">
                 {isLevel
-                  ? 'أي طالب يطلب اشتراك، موافقتك بتفتح له المحتوى والمحاضرات على حسابه بالسيرفر فوراً.'
-                  : 'موافقتك بتتيح الكتاب وقراءته وملفاته على حساب الطالب فوراً.'}
+                  ? t('أي طالب يطلب اشتراك، موافقتك بتفتح له المحتوى والمحاضرات على حسابه بالسيرفر فوراً.')
+                  : t('موافقتك بتتيح الكتاب وقراءته وملفاته على حساب الطالب فوراً.')}
               </p>
             </div>
           </div>
@@ -183,13 +185,13 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
               <span className="block text-2xl font-black text-amber-300" dir="ltr">
                 {totalPending}
               </span>
-              <span className="text-[11px] font-bold text-slate-300">بانتظار المراجعة</span>
+              <span className="text-[11px] font-bold text-slate-300">{t('بانتظار المراجعة')}</span>
             </div>
             <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 px-4 py-3 text-center min-w-[95px] shadow-inner">
               <span className="block text-2xl font-black text-emerald-400" dir="ltr">
                 {totalApproved}
               </span>
-              <span className="text-[11px] font-bold text-slate-300">مقبول ومفعّل</span>
+              <span className="text-[11px] font-bold text-slate-300">{t('مقبول ومفعّل')}</span>
             </div>
           </div>
         </div>
@@ -201,7 +203,7 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
           <LevelPill
             active={level === ''}
             onClick={() => setLevel('')}
-            label="جميع المستويات"
+            label={t('جميع المستويات')}
             count={totalPending}
             icon={Layers}
           />
@@ -213,7 +215,7 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
                 active={level === code}
                 onClick={() => setLevel(code)}
                 code={code}
-                label={code === 'General' ? 'عام' : `مستوى ${code}`}
+                label={code === 'General' ? t('عام') : t('مستوى {code}', { code })}
                 count={pendingInLevel}
               />
             );
@@ -229,46 +231,46 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
             <FilterTab
               active={status === 'pending'}
               onClick={() => setStatus('pending')}
-              label="بانتظار الموافقة"
+              label={t('بانتظار الموافقة')}
               count={counts.by_status?.pending || 0}
               tone="amber"
             />
             <FilterTab
               active={status === 'approved'}
               onClick={() => setStatus('approved')}
-              label="تم القبول والتفعيل"
+              label={t('تم القبول والتفعيل')}
               count={counts.by_status?.approved || 0}
               tone="emerald"
             />
             <FilterTab
               active={status === 'rejected'}
               onClick={() => setStatus('rejected')}
-              label="المرفوضة"
+              label={t('المرفوضة')}
               count={counts.by_status?.rejected || 0}
               tone="rose"
             />
             <FilterTab
               active={status === 'all'}
               onClick={() => setStatus('all')}
-              label="الكل"
+              label={t('الكل')}
               tone="slate"
             />
           </div>
 
           {/* Quick Search Input */}
           <div className="relative flex-1 min-w-[15rem] max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-400 absolute start-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="ابحث باسم الطالب أو رقم الهاتف..."
-              className="w-full h-10 pr-10 pl-8 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all"
+              placeholder={t('ابحث باسم الطالب أو رقم الهاتف...')}
+              className="w-full h-10 ps-10 pe-8 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-[10px] hover:bg-slate-400"
+                className="absolute end-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-[10px] hover:bg-slate-400"
               >
                 ✕
               </button>
@@ -297,29 +299,29 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
               ) : (
                 <BookMarked className="w-12 h-12 text-teal-600" />
               )}
-              <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-xs font-black shadow-md">
+              <span className="absolute -top-1 -start-1 w-6 h-6 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-xs font-black shadow-md">
                 ✓
               </span>
             </div>
 
             <h3 className="text-xl font-black text-slate-900">
-              {status === 'pending' ? 'لا توجد طلبات معلقة حالياً 🎉' : 'لم يتم العثور على طلبات'}
+              {status === 'pending' ? t('لا توجد طلبات معلقة حالياً 🎉') : t('لم يتم العثور على طلبات')}
             </h3>
             <p className="text-sm text-slate-500 font-medium leading-relaxed">
               {status === 'pending'
-                ? 'تمت مراجعة كل طلبات الطلاب بالكامل. بمجرد أن يرسل أي طالب طلباً جديداً، سيظهر هنا فوراً مع إمكانية التفعيل بضغطة واحدة.'
-                : 'جرّب تغيير كلمات البحث أو الانتقال لمستوى آخر أو عرض الطلبات المعتمدة.'}
+                ? t('تمت مراجعة كل طلبات الطلاب بالكامل. بمجرد أن يرسل أي طالب طلباً جديداً، سيظهر هنا فوراً مع إمكانية التفعيل بضغطة واحدة.')
+                : t('جرّب تغيير كلمات البحث أو الانتقال لمستوى آخر أو عرض الطلبات المعتمدة.')}
             </p>
 
             <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
               {level && (
                 <Btn variant="soft" size="sm" onClick={() => setLevel('')}>
-                  عرض كل المستويات
+                  {t('عرض كل المستويات')}
                 </Btn>
               )}
               {status !== 'all' && (
                 <Btn variant="ghost" size="sm" onClick={() => setStatus('all')}>
-                  عرض سجل كل الطلبات
+                  {t('عرض سجل كل الطلبات')}
                 </Btn>
               )}
             </div>
@@ -437,17 +439,17 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
               <StatusBadge status={r.status} />
             </div>
             <p className="text-xs text-slate-500 font-bold mt-0.5" title={fullDate(r.created_at)}>
-              طلب #{r.id} • {timeAgo(r.created_at)}
+              {t('طلب #{id}', { id: r.id })} • {timeAgo(r.created_at)}
             </p>
           </div>
         </div>
 
         {/* Amount Badge */}
-        <div className="text-left shrink-0 bg-slate-50 border border-slate-100 rounded-2xl px-3 py-1.5 shadow-sm">
+        <div className="text-end shrink-0 bg-slate-50 border border-slate-100 rounded-2xl px-3 py-1.5 shadow-sm">
           <p className="text-lg font-black text-[#0e2c4e]" dir="ltr">
-            {money(r.amount)} <span className="text-[10px] font-black text-slate-500">ج.م</span>
+            {money(r.amount)} <span className="text-[10px] font-black text-slate-500">{t('ج.م')}</span>
           </p>
-          <p className="text-[10px] font-bold text-slate-400 text-center">المبلغ</p>
+          <p className="text-[10px] font-bold text-slate-400 text-center">{t('المبلغ')}</p>
         </div>
       </div>
 
@@ -459,7 +461,7 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
             {r.item_name}
           </p>
           <p className="text-[10px] font-bold text-teal-600">
-            {r.kind === 'level' ? 'اشتراك كورس ومحاضرات' : 'شراء كتاب'}
+            {r.kind === 'level' ? t('اشتراك كورس ومحاضرات') : t('شراء كتاب')}
           </p>
         </div>
       </div>
@@ -478,7 +480,7 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
 
         <div className="rounded-2xl bg-white border border-slate-100 p-3 flex items-center gap-2 text-slate-700">
           <Wallet className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-          <span className="font-bold truncate">{r.payment_method || 'طريقة دفع غير محددة'}</span>
+          <span className="font-bold truncate">{r.payment_method || t('طريقة دفع غير محددة')}</span>
         </div>
       </div>
 
@@ -493,10 +495,10 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
       {/* Rejection / Approval Note if already processed */}
       {!pending && (
         <div className="text-[11px] font-bold text-slate-500 bg-slate-50 rounded-xl p-2.5">
-          {r.status === 'approved' ? '✓ تم القبول والتفعيل' : '✕ تم الرفض'}{' '}
-          {r.reviewed_by ? `بواسطة ${r.reviewed_by}` : ''} • {fullDate(r.reviewed_at)}
+          {r.status === 'approved' ? t('✓ تم القبول والتفعيل') : t('✕ تم الرفض')}{' '}
+          {r.reviewed_by ? t('بواسطة {name}', { name: r.reviewed_by }) : ''} • {fullDate(r.reviewed_at)}
           {r.admin_note && (
-            <span className="block mt-1 text-rose-600 font-black">السبب: {r.admin_note}</span>
+            <span className="block mt-1 text-rose-600 font-black">{t('السبب:')}{' '}{r.admin_note}</span>
           )}
         </div>
       )}
@@ -509,13 +511,13 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
             className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-xs font-black transition-all active:scale-95"
           >
             <Receipt className="w-3.5 h-3.5" />
-            <span>عرض إيصال التحويل</span>
+            <span>{t('عرض إيصال التحويل')}</span>
           </button>
         ) : (
-          <span className="text-[11px] font-bold text-slate-400">بدون إيصال مرفق</span>
+          <span className="text-[11px] font-bold text-slate-400">{t('بدون إيصال مرفق')}</span>
         )}
 
-        <div className="flex items-center gap-2 mr-auto">
+        <div className="flex items-center gap-2 ms-auto">
           {pending ? (
             <>
               <button
@@ -524,7 +526,7 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
                 className="h-10 px-3.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-black transition-all disabled:opacity-50 active:scale-95 flex items-center gap-1.5"
               >
                 <X className="w-4 h-4" />
-                <span>رفض</span>
+                <span>{t('رفض')}</span>
               </button>
               <button
                 disabled={busy}
@@ -536,7 +538,7 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
                 ) : (
                   <Zap className="w-4 h-4 text-amber-300" />
                 )}
-                <span>قبول وتفعيل فوري</span>
+                <span>{t('قبول وتفعيل فوري')}</span>
               </button>
             </>
           ) : (
@@ -548,13 +550,13 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
                   className="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>تفعيل رغم الرفض</span>
+                  <span>{t('تفعيل رغم الرفض')}</span>
                 </button>
               )}
               <button
                 onClick={() => onDelete(r)}
                 className="w-9 h-9 rounded-xl hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition-colors"
-                title="حذف الطلب نهائياً"
+                title={t('حذف الطلب نهائياً')}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
