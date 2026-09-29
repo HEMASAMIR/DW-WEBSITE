@@ -4,7 +4,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
-import { ACADEMY_INFO, BRANCHES_DATA, whatsappLink } from '@/constants/siteContent';
+import { ACADEMY_INFO, whatsappLink } from '@/constants/siteContent';
+import { useBranches } from '@/hooks/useBranches';
+import { branchTone } from '@/constants/branchTones';
 import Reveal from '@/components/common/Reveal';
 import {
   Phone,
@@ -32,12 +34,6 @@ const QUICK_LINKS = [
   { href: '/#about-teacher', label: 'عن هير خالد الحلواني', tone: 'text-violet-400 group-hover:bg-violet-500/20' },
   { href: '/#reviews', label: 'آراء وتجارب الطلاب', tone: 'text-emerald-400 group-hover:bg-emerald-500/20' },
 ];
-const BRANCH_TONES = [
-  'bg-teal-400/10 text-teal-400 group-hover:bg-teal-400 hover:border-teal-400/40',
-  'bg-sky-400/10 text-sky-400 group-hover:bg-sky-400 hover:border-sky-400/40',
-  'bg-amber-400/10 text-amber-400 group-hover:bg-amber-400 hover:border-amber-400/40',
-  'bg-rose-400/10 text-rose-400 group-hover:bg-rose-400 hover:border-rose-400/40',
-];
 
 function FlagStripe({ className = '' }) {
   return (
@@ -50,6 +46,7 @@ function FlagStripe({ className = '' }) {
 export default function Footer() {
   const { openAdminDashboard } = useModal();
   const { isAdmin } = useAuth();
+  const branches = useBranches();
   const [devModalOpen, setDevModalOpen] = useState(false);
   const [copiedText, setCopiedText] = useState(null);
 
@@ -154,7 +151,7 @@ export default function Footer() {
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white/[0.05] text-slate-300 border border-white/10">
                 <Globe2 className="w-3.5 h-3.5 text-teal-400" />
-                <span>{BRANCHES_DATA.length} فروع + أونلاين</span>
+                <span>{branches.length} فروع + أونلاين</span>
               </span>
             </div>
             <div className="flex items-center gap-3 pt-1">
@@ -203,7 +200,7 @@ export default function Footer() {
               <span>فروعنا بالحضور</span>
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
-              {BRANCHES_DATA.map((b, i) => (
+              {branches.map((b, i) => (
                 <Reveal
                   as="a"
                   key={b.id}
@@ -212,9 +209,9 @@ export default function Footer() {
                   href={b.mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] ${BRANCH_TONES[i % BRANCH_TONES.length].split(' ').pop()}`}
+                  className={`group flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] ${branchTone(b.color, i).footer.split(' ').pop()}`}
                 >
-                  <span className={`w-10 h-10 rounded-xl ${BRANCH_TONES[i % BRANCH_TONES.length]} group-hover:text-[#0e2c4e] flex items-center justify-center shrink-0 transition-colors`}>
+                  <span className={`w-10 h-10 rounded-xl ${branchTone(b.color, i).footer} group-hover:text-[#0e2c4e] flex items-center justify-center shrink-0 transition-colors`}>
                     <MapPin className="w-4 h-4" />
                   </span>
                   <span className="flex-1 min-w-0">

@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Site content saved from the admin dashboard (branches, announcement)
+/data/

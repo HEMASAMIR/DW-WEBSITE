@@ -1,5 +1,6 @@
 import apiClient, { saveBlob, filenameFromResponse } from './api';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
+import { withAdminAccess } from './adminAccess';
 const toNumber = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
 
 /** Normalizes an API level. Only backend data — no hard-coded text. */
@@ -73,7 +74,7 @@ export const coursesService = {
 
   /** Returns { level, videos, files }. Throws 403 if the user has no access. */
   getLevelContent: async (levelId) => {
-    const { data } = await apiClient.get(API_ENDPOINTS.LEVEL_VIDEOS(levelId));
+    const { data } = await withAdminAccess('level', levelId, () => apiClient.get(API_ENDPOINTS.LEVEL_VIDEOS(levelId)));
     return {
       level: data.level ? normalizeLevel(data.level) : null,
       videos: [...(data.videos || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
@@ -82,7 +83,7 @@ export const coursesService = {
   },
 
   viewFile: (levelId, file, onProgress) =>
-    fetchFile(API_ENDPOINTS.COURSE_FILE_VIEW(levelId, file.id), file.name || 'file', onProgress),
+    withAdminAccess('level', levelId, () => fetchFile(API_ENDPOINTS.COURSE_FILE_VIEW(levelId, file.id), file.name || 'file', onProgress)),
 };
 
 export function formatDuration(seconds) {

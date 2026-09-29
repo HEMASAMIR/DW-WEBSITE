@@ -98,6 +98,28 @@ urlpatterns = [
     # 9. Site Announcement Banner (Admin & Public)
     path('api/announcements/', api.AnnouncementAPIView.as_view(), name='api-announcements'),
 
+    # 10. Access requests (student → admin approval)
+    path('api/requests/', api.AccessRequestCreateAPIView.as_view(), name='api-requests-create'),
+    path('api/requests/mine/', api.MyAccessRequestsAPIView.as_view(), name='api-requests-mine'),
+
+    # 11. Admin dashboard
+    path('api/admin/overview/', api.dashboard.AdminOverviewAPIView.as_view(), name='api-admin-overview'),
+    path('api/admin/pending-count/', api.dashboard.AdminPendingCountAPIView.as_view(), name='api-admin-pending-count'),
+    path('api/admin/requests/', api.dashboard.AdminRequestsAPIView.as_view(), name='api-admin-requests'),
+    path('api/admin/requests/<int:request_id>/', api.dashboard.AdminRequestDetailAPIView.as_view(), name='api-admin-request-detail'),
+    path('api/admin/requests/<int:request_id>/receipt/', api.dashboard.AdminRequestReceiptAPIView.as_view(), name='api-admin-request-receipt'),
+    path('api/admin/requests/<int:request_id>/<str:action>/', api.dashboard.AdminRequestActionAPIView.as_view(), name='api-admin-request-action'),
+    path('api/admin/users/', api.dashboard.AdminUsersAPIView.as_view(), name='api-admin-users'),
+    path('api/admin/users/<int:user_id>/', api.dashboard.AdminUserDetailAPIView.as_view(), name='api-admin-user-detail'),
+    path('api/admin/users/<int:user_id>/access/', api.dashboard.AdminUserAccessAPIView.as_view(), name='api-admin-user-access'),
+    path('api/admin/levels/', api.dashboard.AdminLevelsCrudAPIView.as_view(), name='api-admin-levels-crud'),
+    path('api/admin/levels/<int:level_id>/', api.dashboard.AdminLevelCrudDetailAPIView.as_view(), name='api-admin-level-crud'),
+    path('api/admin/levels/<int:level_id>/content/', api.dashboard.AdminLevelContentAPIView.as_view(), name='api-admin-level-content'),
+    path('api/admin/videos/<int:video_id>/', api.dashboard.AdminVideoDetailAPIView.as_view(), name='api-admin-video'),
+    path('api/admin/files/<int:file_id>/', api.dashboard.AdminFileDetailAPIView.as_view(), name='api-admin-file'),
+    path('api/admin/branches/', api.dashboard.AdminBranchesAPIView.as_view(), name='api-admin-branches'),
+    path('api/admin/branches/<int:branch_id>/', api.dashboard.AdminBranchDetailAPIView.as_view(), name='api-admin-branch'),
+
     # Default Router URLs
     path('api/', include(router.urls)),
 ]

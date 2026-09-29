@@ -42,7 +42,7 @@ class CourseLevel(models.Model):
         ('C1', 'C1 - قمة الطلاقة اللغوية والأكاديمية (قريباً)'),
     ]
 
-    name = models.CharField(max_length=10, choices=LEVEL_CHOICES, unique=True, verbose_name="رمز المستوى")
+    name = models.CharField(max_length=10, unique=True, verbose_name="رمز المستوى")
     title = models.CharField(max_length=300, verbose_name="العنوان الكامل")
     description = models.TextField(verbose_name="الوصف")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="السعر")
@@ -502,15 +502,64 @@ class Branch(models.Model):
     map_url = models.TextField(verbose_name="رابط الخريطة أو الواتساب")
     badge = models.CharField(max_length=100, blank=True, default='', verbose_name="الشارة الترويجية")
     phone = models.CharField(max_length=20, default='010552287454', verbose_name="هاتف الفرع")
+    order = models.PositiveSmallIntegerField(default=1, verbose_name="ترتيب العرض")
+    is_active = models.BooleanField(default=True, verbose_name="ظاهر في الموقع")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "فرع الأكاديمية"
         verbose_name_plural = "فروع دويتشه فيلت"
-        ordering = ['id']
+        ordering = ['order', 'id']
 
     def __str__(self):
         return f"{self.name} - {self.city}"
+
+
+class AccessRequest(models.Model):
+    """
+    A student's request to unlock a course level or a digital book, sent from the site.
+    Approving it grants LevelAccess / BookAccess immediately.
+    """
+    KIND_LEVEL = 'level'
+    KIND_BOOK = 'book'
+    KIND_CHOICES = [(KIND_LEVEL, 'مستوى / كورس'), (KIND_BOOK, 'كتاب')]
+    STATUS_CHOICES = [
+        ('pending', 'قيد المراجعة'),
+        ('approved', 'مقبول ومفعّل'),
+        ('rejected', 'مرفوض'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='access_requests', verbose_name="الطالب")
+    kind = models.CharField(max_length=10, choices=KIND_CHOICES, verbose_name="النوع")
+    level = models.ForeignKey(CourseLevel, on_delete=models.CASCADE, null=True, blank=True, related_name='requests', verbose_name="المستوى")
+    book = models.ForeignKey(DigitalBook, on_delete=models.CASCADE, null=True, blank=True, related_name='requests', verbose_name="الكتاب")
+    # Level code the request belongs to (the level's code, or the book's level) — used to group requests.
+    level_code = models.CharField(max_length=10, db_index=True, verbose_name="المستوى")
+    full_name = models.CharField(max_length=255, verbose_name="الاسم")
+    phone = models.CharField(max_length=20, verbose_name="الهاتف")
+    payment_method = models.CharField(max_length=50, blank=True, default='', verbose_name="طريقة الدفع")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="المبلغ")
+    note = models.TextField(blank=True, default='', verbose_name="ملاحظة الطالب")
+    receipt = models.FileField(upload_to='receipts/', storage=get_protected_storage, blank=True, verbose_name="صورة التحويل")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending', db_index=True, verbose_name="الحالة")
+    admin_note = models.TextField(blank=True, default='', verbose_name="ملاحظة الإدارة")
+    reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_requests', verbose_name="راجعه")
+    reviewed_at = models.DateTimeField(null=True, blank=True, verbose_name="تاريخ المراجعة")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ الطلب")
+
+    class Meta:
+        verbose_name = "طلب تفعيل"
+        verbose_name_plural = "طلبات التفعيل (كورسات وكتب)"
+        ordering = ['-created_at']
+
+    @property
+    def item_name(self):
+        if self.kind == self.KIND_LEVEL:
+            return self.level.title if self.level else self.level_code
+        return self.book.name if self.book else ''
+
+    def __str__(self):
+        return f"{self.full_name} → {self.item_name} ({self.status})"
 
 
 class SiteAnnouncement(models.Model):

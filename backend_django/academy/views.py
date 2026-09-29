@@ -9,6 +9,7 @@ from .models import (
     PlacementQuizSubmission, AcademyStudent, LessonComment,
     LevelEnrollmentRequest, Branch
 )
+from .api_views.admin_views import IsStaffUser
 from .serializers import (
     CourseSerializer, 
     StudentRegistrationSerializer, 
@@ -21,14 +22,19 @@ from .serializers import (
     BranchSerializer
 )
 
+def _admin_only_except(view, public_actions):
+    """Students' names/phones/emails in these legacy tables are admin-only; `public_actions` stay open."""
+    if view.action in public_actions:
+        return [AllowAny()]
+    return [IsAuthenticated(), IsStaffUser()]
+
+
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            return [AllowAny()]
-        return [IsAuthenticated()]
+        return _admin_only_except(self, ('list', 'retrieve'))
 
 
 class StudentRegistrationViewSet(viewsets.ModelViewSet):
@@ -36,9 +42,7 @@ class StudentRegistrationViewSet(viewsets.ModelViewSet):
     serializer_class = StudentRegistrationSerializer
 
     def get_permissions(self):
-        if self.action in ['create', 'list', 'retrieve']:
-            return [AllowAny()]
-        return [AllowAny()]  # Permissive for admin portal smooth testing & student submission
+        return _admin_only_except(self, ('create',))
 
     def create(self, request, *args, **kwargs):
         # Support optional course matching by name
@@ -64,9 +68,7 @@ class BookViewSet(viewsets.ModelViewSet):
     serializer_class = BookSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            return [AllowAny()]
-        return [AllowAny()]
+        return _admin_only_except(self, ('list', 'retrieve'))
 
 
 class BookOrderViewSet(viewsets.ModelViewSet):
@@ -74,7 +76,7 @@ class BookOrderViewSet(viewsets.ModelViewSet):
     serializer_class = BookOrderSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        return _admin_only_except(self, ('create',))
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
@@ -99,7 +101,7 @@ class PlacementQuizSubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = PlacementQuizSubmissionSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        return _admin_only_except(self, ('create',))
 
 
 class AcademyStudentViewSet(viewsets.ModelViewSet):
@@ -107,7 +109,7 @@ class AcademyStudentViewSet(viewsets.ModelViewSet):
     serializer_class = AcademyStudentSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        return _admin_only_except(self, ())
 
     @action(detail=True, methods=['post', 'patch'])
     def toggle_status(self, request, pk=None):
@@ -127,7 +129,7 @@ class LessonCommentViewSet(viewsets.ModelViewSet):
     serializer_class = LessonCommentSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        return _admin_only_except(self, ())
 
     @action(detail=True, methods=['post', 'patch'])
     def approve(self, request, pk=None):
@@ -157,7 +159,7 @@ class LevelEnrollmentRequestViewSet(viewsets.ModelViewSet):
     serializer_class = LevelEnrollmentRequestSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        return _admin_only_except(self, ())
 
     @action(detail=True, methods=['post', 'patch'])
     def approve(self, request, pk=None):
@@ -183,11 +185,12 @@ class LevelEnrollmentRequestViewSet(viewsets.ModelViewSet):
 
 
 class BranchViewSet(viewsets.ModelViewSet):
-    queryset = Branch.objects.all().order_by('id')
+    """Public: visible branches only. Changes go through /api/admin/branches/."""
+    queryset = Branch.objects.filter(is_active=True).order_by('order', 'id')
     serializer_class = BranchSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        return _admin_only_except(self, ('list', 'retrieve'))
 
 
 class AnalyticsSummaryView(APIView):
@@ -195,7 +198,7 @@ class AnalyticsSummaryView(APIView):
     Returns live KPI analytics for Herr Khaled Admin Dashboard.
     Directly calculated from real database records.
     """
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsStaffUser]
 
     def get(self, request):
         active_students = AcademyStudent.objects.filter(status='active').count() + StudentRegistration.objects.filter(status__in=['confirmed', 'paid']).count()

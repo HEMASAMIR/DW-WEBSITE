@@ -226,7 +226,11 @@ class AdminRefreshVideoCacheAPIView(AdminRequiredMixin, APIView):
 
 class AdminBooksAPIView(AdminRequiredMixin, APIView):
     def get(self, request):
-        books = DigitalBook.objects.all().order_by('level', 'name')
+        from django.db.models import Count, Q
+        books = DigitalBook.objects.annotate(
+            readers=Count('user_accesses', filter=Q(user_accesses__is_active=True), distinct=True),
+            pending=Count('requests', filter=Q(requests__status='pending'), distinct=True),
+        ).order_by('level', 'name')
         # No file URLs — even for admins. Files are only served by the access-checked /view/ endpoint.
         data = [{
             'id': b.id,
@@ -237,6 +241,8 @@ class AdminBooksAPIView(AdminRequiredMixin, APIView):
             'has_file': bool(b.file),
             'file_name': b.file.name.rsplit('/', 1)[-1] if b.file else None,
             'created_at': b.created_at.isoformat(),
+            'readers': b.readers,
+            'pending': b.pending,
         } for b in books]
         return Response(data)
 

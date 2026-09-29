@@ -85,18 +85,20 @@ export function Field({ label, children }) {
 export const inputCls =
   'w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-teal-500 transition-colors';
 
-export function SentState({ text, onClose }) {
+export function SentState({ text, onClose, title = 'تم تجهيز طلبك على واتساب', showNumber = true }) {
   return (
     <div className="text-center py-10 space-y-4 max-w-md mx-auto">
       <span className="relative inline-flex">
         <span className="absolute inset-0 rounded-full bg-emerald-400/40 animate-ping" />
         <CheckCircle2 className="relative w-20 h-20 text-emerald-500" />
       </span>
-      <h4 className="text-2xl font-black text-[#0e2c4e]">تم تجهيز طلبك على واتساب</h4>
+      <h4 className="text-2xl font-black text-[#0e2c4e]">{title}</h4>
       <p className="text-sm text-slate-600 leading-relaxed">{text}</p>
-      <p className="text-sm text-slate-600">
-        رقم التحويل: <strong className="text-[#0e2c4e]" dir="ltr">{PAYMENT_INFO.number}</strong>
-      </p>
+      {showNumber && (
+        <p className="text-sm text-slate-600">
+          رقم التحويل: <strong className="text-[#0e2c4e]" dir="ltr">{PAYMENT_INFO.number}</strong>
+        </p>
+      )}
       <button onClick={onClose} className="mt-2 bg-[#0e2c4e] hover:bg-teal-700 text-white font-black text-sm px-8 py-3 rounded-2xl transition-colors">
         تمام
       </button>

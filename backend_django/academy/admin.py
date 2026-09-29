@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import (
+    AccessRequest,
     # New production models
     CourseLevel, LevelAccess, Video, CourseFile,
     DigitalBook, BookAccess,
@@ -152,3 +153,10 @@ class BookOrderAdmin(admin.ModelAdmin):
 class PlacementQuizSubmissionAdmin(admin.ModelAdmin):
     list_display = ('student_name', 'phone', 'score_percentage', 'recommended_level', 'created_at')
     list_filter = ('recommended_level',)
+
+
+@admin.register(AccessRequest)
+class AccessRequestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'full_name', 'phone', 'kind', 'level_code', 'amount', 'status', 'created_at')
+    list_filter = ('status', 'kind', 'level_code')
+    search_fields = ('full_name', 'phone')

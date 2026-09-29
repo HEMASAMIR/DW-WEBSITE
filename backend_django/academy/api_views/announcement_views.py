@@ -11,10 +11,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from academy.models import SiteAnnouncement
+from .admin_views import IsStaffUser
 
 
 class AnnouncementAPIView(APIView):
-    permission_classes = [AllowAny]
+    def get_permissions(self):
+        # Anyone can read the banner; only admins can change it.
+        return [AllowAny()] if self.request.method == 'GET' else [IsStaffUser()]
 
     def _get_or_create_announcement(self):
         announcement = SiteAnnouncement.objects.first()

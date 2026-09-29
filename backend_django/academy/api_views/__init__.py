@@ -51,3 +51,10 @@ from .admin_views import (
 from .announcement_views import (
     AnnouncementAPIView,
 )
+
+from .requests_views import (
+    AccessRequestCreateAPIView,
+    MyAccessRequestsAPIView,
+)
+
+from . import dashboard_views as dashboard

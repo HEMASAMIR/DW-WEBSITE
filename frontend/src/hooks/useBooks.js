@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 // Real data only: names, prices and access always come from the backend.
 // Never add hard-coded fallback books here — they show wrong names/prices to the client.
 export function useBooks() {
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, isAdmin, loading: authLoading } = useAuth();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -33,7 +33,8 @@ export function useBooks() {
     load
       .then((data) => {
         if (cancelled) return;
-        setBooks(data);
+        // Admins see everything unlocked (content requests unlock it for them if the backend hasn't).
+        setBooks(isAdmin ? data.map((item) => ({ ...item, hasAccess: true })) : data);
         setError('');
         setRequiresLogin(false);
       })
@@ -49,7 +50,7 @@ export function useBooks() {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, isAuthenticated, reloadKey]);
+  }, [authLoading, isAuthenticated, isAdmin, reloadKey]);
 
   return { books, loading, error, requiresLogin, isGuest: !isAuthenticated, reload };
 }

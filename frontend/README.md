@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# موقع أكاديمية Deutsche Welt — هير خالد الحلواني
 
-## Getting Started
+موقع الأكاديمية ومعاه لوحة تحكم الإدارة. متعمل بـ **Next.js 16 + React 19 + Tailwind CSS 4**.
+الموقع بيشتغل على الباك إند الحالي `https://py.deutschewelt.academy`، ومفيش أي بيانات
+(أسعار، كورسات، طلاب، صلاحيات) مكتوبة جوه الكود.
 
-First, run the development server:
+---
+
+## التشغيل
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd frontend
+npm install
+npm run dev          # للتطوير على http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+للتشغيل على السيرفر:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start        # بورت 3000 — أو: npm run start -- -p 80
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> الموقع لازم يشتغل **كسيرفر Node** على VPS أو ما شابه، مش ملفات static ولا Vercel.
+> التفاصيل في [DEPLOY.md](DEPLOY.md).
 
-## Learn More
+### الإعدادات (`frontend/.env.local`)
 
-To learn more about Next.js, take a look at the following resources:
+| المتغيّر | لازم؟ | الاستخدام |
+|---|---|---|
+| `CATALOG_ACCOUNT_EMAIL` / `CATALOG_ACCOUNT_PASSWORD` | أيوه | حساب طالب **من غير اشتراكات**. بيخلّي الزوار يشوفوا المستويات والكتب بأسعارها. |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | لا | رقم واتساب الاشتراكات بالصيغة الدولية من غير `+`. |
+| `BACKEND_URL` | لا | الافتراضي `https://py.deutschewelt.academy`. غيّره بس لو الباك إند اتغيّر. |
+| `SITE_DATA_DIR` | مهم على السيرفر | مكان حفظ الفروع والإعلان. شاور بيه على فولدر ثابت مايتمسحش مع الرفع. |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | لا | زرار الدخول بجوجل. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> ماتحطش `NEXT_PUBLIC_API_URL`. المتصفح بيكلّم `/api/*` على نفس الموقع، والموقع بيوصّلها للباك إند (مفيش مشاكل CORS).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## لوحة التحكم — `/admin`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+بتظهر لحسابات الأدمن بس (جروب `Admin` أو staff على الباك إند)، وأي حد تاني بيشوف صفحة «للإدارة بس».
+والباك إند بيتأكد من الصلاحية تاني في كل عملية.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| القسم | اللي بيعمله |
+|---|---|
+| **لوحة القيادة** | الأرقام الأساسية، وأزرار سريعة، وآخر التفعيلات، وتوزيع المشتركين على المستويات، وآخر المسجلين. |
+| **اشتراكات الكورسات** | تاب لكل مستوى فيه الطلاب المفعّل لهم. «تفعيل لطالب» (بحث بالاسم أو الإيميل) و«إلغاء». |
+| **اشتراكات الكتب** | نفس الفكرة لكل كتاب. |
+| **الطلاب والحسابات** | بحث وفلاتر. صفحة لكل طالب فيها: تعديل البيانات، وإيقاف الحساب، وصلاحية الأدمن، وتفعيل أو إلغاء أي مستوى أو كتاب بزرار. |
+| **الكورسات** | الأسعار والسعر قبل الخصم، والنشر والإخفاء، وعدد المشتركين وصورهم، وآخر اشتراك. |
+| **الكتب** | إضافة كتاب (PDF)، والتعديل، والحذف، والنشر والإخفاء، وعدد الطلاب المفعّل لهم كل كتاب. |
+| **الفروع** | إضافة وتعديل وحذف وترتيب وإخفاء، و**لون لكل فرع**، ومعاينة حية. بتظهر في الصفحة الرئيسية وفي الفوتر. |
+| **إعلان الموقع** | الشريط اللي فوق الصفحة الرئيسية، مع معاينة. |
+
+### الخصوصية
+- الإيميلات بتظهر متخفية في كل القوايم (`sa***@gmail.com`). الإيميل الكامل بيظهر بس جوه صفحة الطالب للأدمن.
+- الطالب مايقدرش يشوف أي بيانات عن طالب تاني.
+
+### الأدمن بيشوف كل المحتوى
+حسابات الأدمن بتلاقي كل المستويات والكتب مفتوحة في الموقع. لو الباك إند رفض (403)، الموقع بيفعّل
+المستوى أو الكتاب لحساب الأدمن نفسه ويعيد المحاولة مرة واحدة (`src/services/adminAccess.js`).
+
+---
+
+## الباك إند الحالي والجديد
+
+اللوحة بتكتشف لوحدها الباك إند اللي بتكلّمه (`src/services/admin.service.js` ← `getAdminMode()`):
+
+- **الباك إند الحالي** (`py.deutschewelt.academy`): اللوحة شغالة على الـ endpoints الموجودة عليه:
+  `users/manage`، ومشتركين المستويات مع التفعيل والإلغاء، وإدارة الكتب، والـ groups (`src/services/adminLegacy.js`).
+  طلبات الاشتراك من الطلاب بتروح **واتساب**، والأدمن بيفعّل من «اشتراكات الكورسات».
+- **الباك إند الجديد** (`backend_django/` في نفس الريبو): فيه نظام طلبات كامل. الطالب بيبعت الطلب
+  ومعاه صورة التحويل من الموقع، والأدمن بيقبل فيتفعّل فوراً، مع تاب لكل مستوى لطلبات الكورسات وتاب لطلبات الكتب.
+  أول ما يترفع، اللوحة بتتحوّل لوحدها ومفيش أي تعديل مطلوب في الموقع.
+  خطوات رفعه في [backend_django/DEPLOY_ADMIN_DASHBOARD.md](../backend_django/DEPLOY_ADMIN_DASHBOARD.md).
+
+### الفروع والإعلان
+الباك إند الحالي مفيهوش مكان ليهم، فالموقع بيحفظهم بنفسه كـ JSON في `SITE_DATA_DIR`
+(الافتراضي `frontend/data/`، وهو متجاهل في git). الكود في `src/app/site-data/` و `src/lib/siteStore.js`.
+أي تعديل بيتأكد إن الشخص أدمن عن طريق الباك إند، وأي حد تاني بيترفض (403).
+
+---
+
+## هيكل المشروع
+
+```
+src/
+├─ app/
+│  ├─ (site)/          الصفحة الرئيسية
+│  ├─ (learn)/         /courses و /books وصفحات المحاضرات والقراءة
+│  ├─ admin/           لوحة التحكم
+│  ├─ public-data/     كتالوج المستويات والكتب للزوار
+│  └─ site-data/       حفظ الفروع والإعلان
+├─ components/
+│  ├─ admin/           أقسام لوحة التحكم + ui.jsx (الأزرار والنوافذ والكروت المشتركة)
+│  ├─ home/ layout/ course/ book/ modals/ common/
+├─ services/           الاتصال بالـ API (auth, courses, books, admin, requests)
+├─ hooks/ context/ constants/ lib/
+```
+
+## قبل التسليم — لازم تتراجع
+
+- البيانات دي مكتوبة ثابتة في الموقع، ولازم هير خالد يأكّدها: «+15,000 طالب»، و«98.4% نسبة نجاح»،
+  و«10+ سنوات»، والخبرة والشهادات في `src/constants/siteContent.js` (`TEACHER_CV_DATA`)،
+  و`HeroSection` و`ReviewsSection` و`AboutTeacherSection` و`CvModal`.
+- أرقام التواصل والتحويل ولينكات جروبات الواتساب في `src/constants/siteContent.js`.

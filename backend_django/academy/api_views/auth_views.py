@@ -53,8 +53,8 @@ def _user_data(user):
     profile_photo = None
     if hasattr(user, 'profile') and user.profile.profile_photo:
         profile_photo = user.profile.profile_photo.url
-    is_admin = bool(user.is_staff or user.is_superuser or user.username == 'admin')
     groups = list(user.groups.values_list('name', flat=True)) if hasattr(user, 'groups') else []
+    is_admin = bool(user.is_staff or user.is_superuser or user.username == 'admin' or 'Admin' in groups)
     if is_admin and 'Admin' not in groups:
         groups.append('Admin')
     return {

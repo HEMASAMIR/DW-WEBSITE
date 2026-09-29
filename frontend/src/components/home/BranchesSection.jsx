@@ -1,39 +1,13 @@
 'use client';
 
 import React from 'react';
-import { BRANCHES_DATA } from '@/constants/siteContent';
+import { useBranches } from '@/hooks/useBranches';
+import { branchTone } from '@/constants/branchTones';
 import { MapPin, Phone, Navigation, Sparkles } from 'lucide-react';
 import Reveal from '@/components/common/Reveal';
 
-// One colour per branch (full class names so Tailwind generates them).
-const TONES = [
-  {
-    glow: 'bg-[radial-gradient(ellipse_at_top_right,rgba(20,184,166,0.55),transparent_60%)]',
-    mapBg: 'from-teal-50 via-emerald-50 to-cyan-100', accent: '#14b8a6', soft: '#99f6e4',
-    pin: 'from-teal-300 to-teal-500 text-[#0e2c4e] shadow-teal-500/40', ping: 'bg-teal-400/40', city: 'text-teal-200',
-    bar: 'bg-teal-500', icon: 'text-teal-600', border: 'hover:border-teal-300', phone: 'hover:bg-teal-50 hover:border-teal-300', mapBtn: 'hover:bg-teal-600',
-  },
-  {
-    glow: 'bg-[radial-gradient(ellipse_at_top_right,rgba(56,189,248,0.55),transparent_60%)]',
-    mapBg: 'from-sky-50 via-blue-50 to-indigo-100', accent: '#0ea5e9', soft: '#bae6fd',
-    pin: 'from-sky-300 to-sky-500 text-[#0e2c4e] shadow-sky-500/40', ping: 'bg-sky-400/40', city: 'text-sky-200',
-    bar: 'bg-sky-500', icon: 'text-sky-600', border: 'hover:border-sky-300', phone: 'hover:bg-sky-50 hover:border-sky-300', mapBtn: 'hover:bg-sky-600',
-  },
-  {
-    glow: 'bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.5),transparent_60%)]',
-    mapBg: 'from-amber-50 via-orange-50 to-yellow-100', accent: '#f59e0b', soft: '#fde68a',
-    pin: 'from-amber-300 to-amber-500 text-[#0e2c4e] shadow-amber-500/40', ping: 'bg-amber-400/40', city: 'text-amber-200',
-    bar: 'bg-amber-500', icon: 'text-amber-600', border: 'hover:border-amber-300', phone: 'hover:bg-amber-50 hover:border-amber-300', mapBtn: 'hover:bg-amber-600',
-  },
-  {
-    glow: 'bg-[radial-gradient(ellipse_at_top_right,rgba(244,63,94,0.5),transparent_60%)]',
-    mapBg: 'from-rose-50 via-pink-50 to-red-100', accent: '#f43f5e', soft: '#fecdd3',
-    pin: 'from-rose-400 to-red-600 text-white shadow-rose-500/40', ping: 'bg-rose-400/40', city: 'text-rose-200',
-    bar: 'bg-rose-500', icon: 'text-rose-600', border: 'hover:border-rose-300', phone: 'hover:bg-rose-50 hover:border-rose-300', mapBtn: 'hover:bg-rose-600',
-  },
-];
-
 export default function BranchesSection() {
+  const branches = useBranches();
   return (
     <section id="branches" className="py-24 bg-gradient-to-b from-slate-50 to-white border-t border-slate-200 relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,8 +29,8 @@ export default function BranchesSection() {
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7 max-w-6xl mx-auto">
-          {BRANCHES_DATA.map((branch, idx) => {
-            const t = TONES[idx % TONES.length];
+          {branches.map((branch, idx) => {
+            const t = branchTone(branch.color, idx);
             return (
             <Reveal
               as="article"
@@ -134,7 +108,7 @@ export default function BranchesSection() {
 }
 
 /** Soft illustrated city map (streets, blocks, park, river, dotted route to the pin). */
-function MapArt({ accent, soft, seed }) {
+export function MapArt({ accent, soft, seed }) {
   const flip = seed % 2 === 1;
   return (
     <svg

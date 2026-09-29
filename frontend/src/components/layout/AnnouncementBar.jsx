@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Megaphone } from 'lucide-react';
 import apiClient from '@/services/api';
 
-// Shows ONLY the announcement returned by the backend (GET /api/announcements/).
+// Shows ONLY the announcement from the backend (GET /api/announcements/) or saved from the dashboard (/site-data/announcement).
 // No hard-coded offers/discounts: if the backend has no announcement (404) or it is
 // disabled, the bar is not rendered at all.
 export default function AnnouncementBar() {
@@ -13,8 +13,10 @@ export default function AnnouncementBar() {
 
   useEffect(() => {
     let cancelled = false;
+    // The backend's banner if it has one, otherwise the one saved from the dashboard on this site.
     apiClient
       .get('/api/announcements/')
+      .catch(() => apiClient.get('/site-data/announcement'))
       .then(({ data: a }) => {
         if (!cancelled && a && a.is_active !== false && (a.title || a.desc)) setData(a);
       })

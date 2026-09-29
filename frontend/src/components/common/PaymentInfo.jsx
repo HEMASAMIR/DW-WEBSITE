@@ -81,8 +81,8 @@ export default function PaymentInfo({ amount, compact = false, className = '' })
           <ol className="space-y-2.5">
             {[
               'حوّل المبلغ على الرقم بفودافون كاش أو إنستا باي.',
-              'ابعت طلبك وصورة التحويل على واتساب من الزرار اللي تحت.',
-              'بعد تأكيد الدفع هيتفعّل على حسابك في الموقع.',
+              'ابعت طلب الاشتراك من الموقع وارفع معاه صورة التحويل.',
+              'أول ما الإدارة تقبل الطلب هيتفعّل على حسابك فوراً.',
             ].map((step, i) => (
               <li key={step} className="flex items-start gap-3 text-sm text-slate-600 font-semibold">
                 <span className="w-6 h-6 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-black flex items-center justify-center shrink-0">
@@ -97,13 +97,13 @@ export default function PaymentInfo({ amount, compact = false, className = '' })
         {compact && (
           <p className="flex items-center gap-2 text-xs text-slate-500 font-semibold">
             <Send className="w-3.5 h-3.5 text-emerald-600" />
-            بعد التحويل ابعت صورة التحويل على واتساب لتفعيل حسابك.
+            بعد التحويل ابعت الطلب وارفع صورة التحويل من الفورم.
           </p>
         )}
 
         <p className="flex items-center gap-1.5 text-[11px] text-slate-400 font-semibold">
           <ShieldCheck className="w-3.5 h-3.5" />
-          التفعيل بيتم يدوياً من الإدارة بعد مراجعة التحويل.
+          التفعيل بيتم من الإدارة بعد مراجعة التحويل، وبيظهرلك على طول.
         </p>
       </div>
     </div>

@@ -113,6 +113,17 @@ export function getErrorMessage(error, fallback = 'حدث خطأ غير متوق
   return STATUS_MESSAGES[status] || fallback;
 }
 
+/**
+ * True when the backend doesn't have this endpoint at all (an older deployment answers with
+ * Django's HTML "Not Found" page), as opposed to a JSON 404 like "level not found".
+ */
+export function isMissingEndpoint(error) {
+  const res = error?.response;
+  if (!res || res.status !== 404) return false;
+  const data = res.data;
+  return !(data && typeof data === 'object' && !(data instanceof Blob));
+}
+
 /** Saves a Blob response as a file in the browser. */
 export function saveBlob(blob, filename) {
   const url = URL.createObjectURL(blob);

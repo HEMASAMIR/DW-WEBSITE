@@ -155,12 +155,12 @@ function AuthDialog({ initialMode, onClose }) {
         )}
 
         {mode === 'login' && (
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4" autoComplete="off">
             <Field label="البريد الإلكتروني" icon={Mail}>
-              <input type="email" required autoComplete="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className={`${inputClass} pl-10 text-right`} />
+              <NoFillInput type="email" required dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className={`${inputClass} pl-10 text-right`} />
             </Field>
             <Field label="كلمة المرور" icon={Lock}>
-              <input type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={`${inputClass} pl-10`} />
+              <NoFillInput type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={`${inputClass} pl-10`} />
             </Field>
 
             <div className="flex justify-start">
@@ -345,4 +345,27 @@ function GoogleButton({ onCredential }) {
   }, []);
 
   return <div ref={ref} className="w-full flex justify-center min-h-[44px]" />;
+}
+
+/**
+ * Login fields must never show someone else's saved email/password (shared devices):
+ * read-only until focused (browsers only autofill editable fields on load), autocomplete off,
+ * and a random name so saved credentials are not matched.
+ */
+function NoFillInput({ type, ...props }) {
+  const [locked, setLocked] = useState(true);
+  const [name] = useState(() => `f_${Math.random().toString(36).slice(2, 10)}`);
+  return (
+    <input
+      {...props}
+      type={type}
+      name={name}
+      autoComplete={type === 'password' ? 'new-password' : 'off'}
+      data-lpignore="true"
+      data-1p-ignore="true"
+      readOnly={locked}
+      onFocus={() => setLocked(false)}
+      onTouchStart={() => setLocked(false)}
+    />
+  );
 }

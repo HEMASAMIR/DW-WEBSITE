@@ -1,11 +1,13 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const ModalContext = createContext();
 
 export function ModalProvider({ children }) {
-  const [activeModal, setActiveModal] = useState(null); // 'auth' | 'enroll' | 'bookOrder' | 'profile' | 'adminDashboard' | 'lightbox' | 'cv' | 'loginPrompt'
+  const router = useRouter();
+  const [activeModal, setActiveModal] = useState(null); // 'auth' | 'enroll' | 'bookOrder' | 'profile' | 'lightbox' | 'cv' | 'loginPrompt'
   const [modalData, setModalData] = useState(null);
   // Separate flag so the confirm dialog can sit on top of another open modal
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
@@ -38,9 +40,11 @@ export function ModalProvider({ children }) {
     setActiveModal('profile');
   };
 
+  // The dashboard is a full page (/admin), not a modal.
   const openAdminDashboard = () => {
+    setActiveModal(null);
     setModalData(null);
-    setActiveModal('adminDashboard');
+    router.push('/admin');
   };
 
   const openLightboxModal = (imageSrc, counterText) => {

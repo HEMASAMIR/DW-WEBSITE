@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 // Real data only: names, prices and access always come from the backend.
 // Never add hard-coded fallback levels here — they show wrong names/prices to the client.
 export function useCourses() {
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, isAdmin, loading: authLoading } = useAuth();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -34,7 +34,8 @@ export function useCourses() {
     load
       .then((data) => {
         if (cancelled) return;
-        setCourses(data);
+        // Admins see everything unlocked (content requests unlock it for them if the backend hasn't).
+        setCourses(isAdmin ? data.map((item) => ({ ...item, hasAccess: true })) : data);
         setError('');
         setRequiresLogin(false);
       })
@@ -50,7 +51,7 @@ export function useCourses() {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, isAuthenticated, reloadKey]);
+  }, [authLoading, isAuthenticated, isAdmin, reloadKey]);
 
   const filteredCourses = activeTab === 'ALL' ? courses : courses.filter((c) => c.code === activeTab);
 
