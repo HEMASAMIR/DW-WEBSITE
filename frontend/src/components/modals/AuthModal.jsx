@@ -381,9 +381,9 @@ function AuthDialog({ initialMode, onClose }) {
                     title="شوف الإيميل بتاعك"
                     text={
                       <>
-                        لو الحساب موجود، هيوصلك كود على{' '}
-                        <span dir="ltr" className="font-black text-[#0e2c4e] break-all">{email.trim()}</span>
-                        {' '}— بص كمان في الـ Spam.
+                        لو الحساب موجود، هيوصلك كود على:
+                        <span dir="ltr" className="block my-0.5 font-black text-[#0e2c4e] text-right truncate">{email.trim()}</span>
+                        بص كمان في الـ Spam.
                       </>
                     }
                   />
@@ -727,11 +727,25 @@ function OtpInput({ value, onChange, onComplete, invalid }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Focus moves after the new value renders — otherwise onFocus sees the old value and bounces back.
+  const pendingFocus = useRef(null);
+  useEffect(() => {
+    if (pendingFocus.current === null) return;
+    focusAt(pendingFocus.current);
+    pendingFocus.current = null;
+  }, [value]);
+
   const commit = (next, focusIndex) => {
     const clean = next.slice(0, OTP_LENGTH);
-    onChange(clean);
-    if (clean.length === OTP_LENGTH && clean !== value) onComplete?.(clean);
-    else focusAt(focusIndex);
+    if (clean.length === OTP_LENGTH && clean !== value) {
+      onChange(clean);
+      onComplete?.(clean);
+    } else if (clean === value) {
+      focusAt(focusIndex);
+    } else {
+      pendingFocus.current = focusIndex;
+      onChange(clean);
+    }
   };
 
   const insert = (i, digits) => {
