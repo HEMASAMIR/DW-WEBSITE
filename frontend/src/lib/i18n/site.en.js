@@ -585,13 +585,14 @@ const EN = {
   'أخضر': 'Green',
 
   // ---- Reviews: student feedback (constants/studentFeedback.js)
+  '{n} رسالة من الطلاب': '{n} messages from students',
+  'الدنيا تمام بس هير خالد معظم كلامه الماني فكنت حاسه اني تايهه خالص':
+    'All good — but Herr Khaled speaks mostly German, so I felt completely lost.',
   'رسالة واتساب من طالب — {n}': 'WhatsApp message from a student — {n}',
   'آراء الطلاب ({n})': 'Student reviews ({n})',
   'معرض المحادثات ({n} صورة)': 'Chat gallery ({n} images)',
-  'آراء عامة': 'General',
   'رسائل الطلاب بعد السيشنات': 'What students say after their sessions',
   'كلام الطلاب بنفسهم بعد المحاضرات، ومع كل رأي صورة الرسالة زي ما وصلت على واتساب.': 'In the students’ own words after class — each one with a screenshot of the message as it arrived on WhatsApp.',
-  'عرض المزيد ({n})': 'Show more ({n})',
   'طالب في الأكاديمية': 'Academy student',
   'أوفلاين — فرع المنصورة': 'In class — Mansoura branch',
   'رسالة حقيقية على واتساب': 'Real WhatsApp message',

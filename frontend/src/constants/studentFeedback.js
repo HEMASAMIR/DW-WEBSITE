@@ -61,7 +61,5 @@ export const STUDENT_FEEDBACK = [
   { id: 19, image: shot(19), level: null, text: 'ماشاء الله عليه ربنا يباركلو ان شاء الله' },
   { id: 4, image: shot(4), level: null, text: 'الدنيا كويسه وكلو تمام، نكمل على كده' },
   { id: 10, image: shot(10), level: null, text: 'الدنيا تمام الحمد لله' },
+  { id: 31, image: shot(31), level: null, text: 'الدنيا تمام بس هير خالد معظم كلامه الماني فكنت حاسه اني تايهه خالص' },
 ];
-
-/** Levels that have feedback, in course order. */
-export const FEEDBACK_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'].filter((c) => STUDENT_FEEDBACK.some((f) => f.level === c));
