@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useModal } from '@/context/ModalContext';
 import Reveal from '@/components/common/Reveal';
 import { toneFor } from '@/constants/levelTones';
-import { STUDENT_FEEDBACK } from '@/constants/studentFeedback';
+import { STUDENT_FEEDBACK, FEEDBACK_LEVELS } from '@/constants/studentFeedback';
 import {
   Star, MessageSquare, Maximize2, Award, Sparkles, Video, CheckCircle2, ChevronRight, ChevronLeft, Building2,
   GraduationCap, Stethoscope, Users, MessageCircle, FileCheck, Quote, MapPin, Languages, BadgeCheck,
@@ -294,8 +294,15 @@ export default function ReviewsSection() {
 /* ------------------------------------------------------------------ */
 
 function FeedbackWall({ onShot }) {
-  const featured = STUDENT_FEEDBACK.filter((f) => f.featured);
-  const rest = STUDENT_FEEDBACK.filter((f) => !f.featured);
+  const [level, setLevel] = useState('all');
+
+  const filters = [
+    { key: 'all', label: t('كل المستويات'), count: STUDENT_FEEDBACK.length },
+    ...FEEDBACK_LEVELS.map((code) => ({ key: code, code, label: t('مستوى {code}', { code }), count: STUDENT_FEEDBACK.filter((f) => f.level === code).length })),
+  ];
+
+  const featured = level === 'all' ? STUDENT_FEEDBACK.filter((f) => f.featured) : [];
+  const rest = STUDENT_FEEDBACK.filter((f) => !featured.includes(f) && (level === 'all' || f.level === level));
 
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -310,16 +317,47 @@ function FeedbackWall({ onShot }) {
         </span>
       </div>
 
-      {/* Spotlight */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-        <SpotlightCard item={featured[0]} onShot={onShot} />
-        <div className="lg:col-span-2 grid gap-5">
-          {featured.slice(1).map((f) => <FeedbackCard key={f.id} item={f} onShot={onShot} highlight />)}
-        </div>
+      {/* Level filter */}
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 sm:justify-center" role="tablist">
+        {filters.map((f) => {
+          const active = level === f.key;
+          const tone = f.code ? toneFor(f.code) : null;
+          return (
+            <button
+              key={f.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setLevel(f.key)}
+              className={`shrink-0 inline-flex items-center gap-2 h-11 ps-2 pe-4 rounded-full border text-xs sm:text-sm font-black transition-all active:scale-95 ${
+                active ? 'bg-[#0e2c4e] border-[#0e2c4e] text-white shadow-lg shadow-[#0e2c4e]/20' : 'bg-white border-slate-200 text-slate-700 hover:border-teal-300'
+              }`}
+            >
+              <span
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-br ${tone?.badge || 'from-teal-400 to-emerald-600'}`}
+                dir="ltr"
+              >
+                {f.code || <Users className="w-3.5 h-3.5" />}
+              </span>
+              {f.label}
+              <span className={`min-w-5 h-5 px-1.5 rounded-full text-[10px] flex items-center justify-center ${active ? 'bg-white/20' : 'bg-slate-100 text-slate-500'}`}>{f.count}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Wall — every message */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-5">
+      {/* Spotlight */}
+      {featured.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+          <SpotlightCard item={featured[0]} onShot={onShot} />
+          <div className="lg:col-span-2 grid gap-5">
+            {featured.slice(1).map((f) => <FeedbackCard key={f.id} item={f} onShot={onShot} highlight />)}
+          </div>
+        </div>
+      )}
+
+      {/* Wall */}
+      <div key={level} className="columns-1 sm:columns-2 lg:columns-3 gap-5">
         {rest.map((f, i) => (
           <div key={f.id} className="break-inside-avoid mb-5 dw-card-enter" style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}>
             <FeedbackCard item={f} onShot={onShot} />
