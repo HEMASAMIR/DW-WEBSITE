@@ -10,6 +10,13 @@ const nextConfig = {
   // Django URLs end with "/" — don't let Next.js redirect them to the slash-less form.
   skipTrailingSlashRedirect: true,
 
+  // next/image: resize + serve AVIF/WebP for the site's own pictures (logos, photos, reviews).
+  images: {
+    localPatterns: [{ pathname: '/assets/**', search: '' }],
+    qualities: [75, 85],
+    formats: ['image/avif', 'image/webp'],
+  },
+
   async rewrites() {
     return [
       // :path* drops the trailing slash; Django would then 301 back to the same relative URL (loop).

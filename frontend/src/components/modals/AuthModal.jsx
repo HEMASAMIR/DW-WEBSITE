@@ -1,15 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/auth.service';
 import { getErrorMessage } from '@/services/api';
+import { track } from '@/lib/analytics';
 import {
   X, Lock, Mail, MailCheck, LogIn, UserPlus, AlertCircle, KeyRound, ArrowRight, Eye, EyeOff, User, Phone,
   Loader2, CheckCircle2, ShieldCheck, PlayCircle, BookOpen, MessageCircle, RotateCw, Sparkles,
 } from 'lucide-react';
 
+import { t, langMeta } from '@/lib/i18n';
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 const OTP_LENGTH = 6;
@@ -145,28 +148,31 @@ function AuthDialog({ initialMode, onClose }) {
     run(
       async () => {
         await login(email, password);
+        track('login', { method: 'email' });
         onClose();
       },
-      'تعذّر تسجيل الدخول، حاول مرة أخرى.',
+      t('تعذّر تسجيل الدخول، حاول مرة أخرى.'),
       (text, err) => showError(text, { forgotLink: err?.response?.status === 401 || /غير صحيحة/.test(text) }),
     );
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
-    if (!PHONE_RE.test(phone)) return showError('رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.');
-    if (password.length < 8) return showError('كلمة المرور لازم تكون 8 حروف على الأقل.');
+    if (!PHONE_RE.test(phone)) return showError(t('رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.'));
+    if (password.length < 8) return showError(t('كلمة المرور لازم تكون 8 حروف على الأقل.'));
     run(async () => {
       await register({ email, password, first_name: firstName, last_name: lastName, phone_number: phone });
       // Sign the new user straight in for a smoother flow.
       await login(email, password);
+      track('sign_up', { method: 'email' });
       onClose();
-    }, 'تعذّر إنشاء الحساب، حاول مرة أخرى.');
+    }, t('تعذّر إنشاء الحساب، حاول مرة أخرى.'));
   };
 
   const handleGoogleCredential = (credential) =>
     run(async () => {
       const data = await loginWithGoogle(credential);
+      track('login', { method: 'google' });
       // Google accounts arrive without a phone number — ask for it once.
       if (data?.user && !data.user.phone_number) {
         setFirstName(data.user.first_name || '');
@@ -174,15 +180,15 @@ function AuthDialog({ initialMode, onClose }) {
       } else {
         onClose();
       }
-    }, 'فشل تسجيل الدخول بحساب جوجل.');
+    }, t('فشل تسجيل الدخول بحساب جوجل.'));
 
   const handleSavePhone = (e) => {
     e.preventDefault();
-    if (!PHONE_RE.test(phone)) return showError('رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.');
+    if (!PHONE_RE.test(phone)) return showError(t('رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.'));
     run(async () => {
       await updateProfile({ phone_number: phone });
       onClose();
-    }, 'تعذّر حفظ رقم الموبايل.');
+    }, t('تعذّر حفظ رقم الموبايل.'));
   };
 
   /* ---------- Forgot password ---------- */
@@ -197,30 +203,30 @@ function AuthDialog({ initialMode, onClose }) {
 
   const handleSendCode = (e) => {
     e.preventDefault();
-    if (!EMAIL_RE.test(email.trim())) return showError('اكتب بريد إلكتروني صحيح.');
+    if (!EMAIL_RE.test(email.trim())) return showError(t('اكتب بريد إلكتروني صحيح.'));
     run(async () => {
       await sendCode();
       setStep('otp');
-    }, 'تعذّر إرسال الكود، حاول مرة أخرى.');
+    }, t('تعذّر إرسال الكود، حاول مرة أخرى.'));
   };
 
   const handleResend = () =>
     run(async () => {
       await sendCode();
-      setNotice('بعتنالك كود جديد، الكود القديم مبقاش شغال.');
-    }, 'تعذّر إعادة إرسال الكود.');
+      setNotice(t('بعتنالك كود جديد، الكود القديم مبقاش شغال.'));
+    }, t('تعذّر إعادة إرسال الكود.'));
 
   const handleOtpNext = (e) => {
     e?.preventDefault();
-    if (otp.length !== OTP_LENGTH) return showError('اكتب الكود كامل (6 أرقام).');
+    if (otp.length !== OTP_LENGTH) return showError(t('اكتب الكود كامل (6 أرقام).'));
     clearMessages();
     setStep('password');
   };
 
   const handleReset = (e) => {
     e.preventDefault();
-    if (password.length < 8) return showError('كلمة المرور لازم تكون 8 حروف على الأقل.');
-    if (password !== confirm) return showError('كلمتين المرور مش متطابقين.');
+    if (password.length < 8) return showError(t('كلمة المرور لازم تكون 8 حروف على الأقل.'));
+    if (password !== confirm) return showError(t('كلمتين المرور مش متطابقين.'));
     run(
       async () => {
         await authService.resetPassword({ email, otp, new_password: password });
@@ -231,12 +237,12 @@ function AuthDialog({ initialMode, onClose }) {
           const saved = email;
           switchMode('login');
           setEmail(saved);
-          setNotice('تم تغيير كلمة المرور بنجاح، سجّل دخولك بالكلمة الجديدة.');
+          setNotice(t('تم تغيير كلمة المرور بنجاح، سجّل دخولك بالكلمة الجديدة.'));
           return;
         }
         setStep('done');
       },
-      'تعذّر تغيير كلمة المرور.',
+      t('تعذّر تغيير كلمة المرور.'),
       (text) => {
         // The backend only checks the code on this final call — send them back to fix it.
         if (isOtpError(text)) {
@@ -267,15 +273,14 @@ function AuthDialog({ initialMode, onClose }) {
           <div className="md:hidden relative h-24 shrink-0 bg-[#0e2c4e] overflow-hidden">
             <BrandBackdrop />
             <div className="relative h-full flex items-center justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
-              <img src="/assets/images/logo-full-white.png" alt="Deutsche Welt" className="h-14 w-auto" />
+              <Image src="/assets/images/logo-full-white.png" alt="Deutsche Welt" width={954} height={622} sizes="200px" className="h-14 w-auto" />
             </div>
           </div>
 
           <button
             onClick={safeClose}
-            aria-label="إغلاق"
-            className="absolute top-4 left-4 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-white/15 hover:bg-white/25 text-white border border-white/20 backdrop-blur transition-colors"
+            aria-label={t('إغلاق')}
+            className="absolute top-4 end-4 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-white/15 hover:bg-white/25 text-white border border-white/20 backdrop-blur transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -284,15 +289,15 @@ function AuthDialog({ initialMode, onClose }) {
             {isTabMode ? (
               <>
                 <Heading
-                  title={mode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب جديد'}
-                  subtitle={mode === 'login' ? 'ادخل على محاضراتك وكتبك.' : 'مجاناً — وتقدر تشترك في أي مستوى بعدين.'}
+                  title={mode === 'login' ? t('تسجيل الدخول') : t('إنشاء حساب جديد')}
+                  subtitle={mode === 'login' ? t('ادخل على محاضراتك وكتبك.') : t('مجاناً — وتقدر تشترك في أي مستوى بعدين.')}
                 />
                 <Tabs mode={mode} onChange={switchMode} disabled={loading} />
               </>
             ) : mode === 'phone' ? (
               <Heading
-                title={`أهلاً${firstName ? ` يا ${firstName}` : ''} 👋`}
-                subtitle="دخلت بحساب جوجل بنجاح. فاضل رقم موبايلك عشان نقدر نتواصل معاك في الاشتراكات."
+                title={firstName ? t('أهلاً يا {name} 👋', { name: firstName }) : t('أهلاً 👋')}
+                subtitle={t('دخلت بحساب جوجل بنجاح. فاضل رقم موبايلك عشان نقدر نتواصل معاك في الاشتراكات.')}
               />
             ) : (
               <ForgotHeader step={step} onBack={() => switchMode('login')} disabled={loading} />
@@ -303,10 +308,10 @@ function AuthDialog({ initialMode, onClose }) {
                 <div key={errorKey} className="dw-shake flex items-start gap-2.5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-[13px] font-semibold" role="alert">
                   <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                   <div className="flex-1">
-                    <p>{error.text}</p>
+                    <p>{t(error.text)}</p>
                     {error.forgotLink && (
                       <button type="button" onClick={() => switchMode('forgot')} className="mt-1 text-rose-800 underline underline-offset-4 font-black">
-                        نسيت كلمة المرور؟ استرجعها دلوقتي
+                        {t('نسيت كلمة المرور؟ استرجعها دلوقتي')}
                       </button>
                     )}
                   </div>
@@ -315,7 +320,7 @@ function AuthDialog({ initialMode, onClose }) {
               {notice && (
                 <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] font-semibold" role="status">
                   <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
-                  <p>{notice}</p>
+                  <p>{t(notice)}</p>
                 </div>
               )}
             </div>
@@ -323,47 +328,47 @@ function AuthDialog({ initialMode, onClose }) {
             <div key={`${mode}-${step}`} className="dw-step-in mt-4">
               {mode === 'login' && (
                 <form onSubmit={handleLogin} className="space-y-4" autoComplete="off">
-                  <TextField label="البريد الإلكتروني" icon={Mail}>
+                  <TextField label={t('البريد الإلكتروني')} icon={Mail}>
                     {(cls) => (
                       <NoFillInput type="email" required dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className={cls} />
                     )}
                   </TextField>
 
                   <PasswordField
-                    label="كلمة المرور"
+                    label={t('كلمة المرور')}
                     value={password}
                     onChange={setPassword}
                     noFill
                     labelAction={
                       <button type="button" onClick={() => switchMode('forgot')} className="text-xs font-black text-teal-700 hover:text-teal-600">
-                        نسيت كلمة المرور؟
+                        {t('نسيت كلمة المرور؟')}
                       </button>
                     }
                   />
 
-                  <PrimaryButton loading={loading} icon={LogIn} label="دخول" loadingLabel="بنتحقق من بياناتك…" />
+                  <PrimaryButton loading={loading} icon={LogIn} label={t('دخول')} loadingLabel={t('بنتحقق من بياناتك…')} />
                 </form>
               )}
 
               {mode === 'register' && (
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
-                    <TextField label="الاسم الأول" icon={User}>
+                    <TextField label={t('الاسم الأول')} icon={User}>
                       {(cls) => <input type="text" required autoComplete="given-name" value={firstName} onChange={(e) => setFirstName(e.target.value)} className={cls} />}
                     </TextField>
-                    <TextField label="اسم العائلة" icon={User}>
+                    <TextField label={t('اسم العائلة')} icon={User}>
                       {(cls) => <input type="text" required autoComplete="family-name" value={lastName} onChange={(e) => setLastName(e.target.value)} className={cls} />}
                     </TextField>
                   </div>
 
-                  <TextField label="البريد الإلكتروني" icon={Mail}>
+                  <TextField label={t('البريد الإلكتروني')} icon={Mail}>
                     {(cls) => <input type="email" required autoComplete="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className={cls} />}
                   </TextField>
 
                   <TextField
-                    label="رقم الموبايل"
+                    label={t('رقم الموبايل')}
                     icon={Phone}
-                    hint={phone && !PHONE_RE.test(phone) ? `${phone.length}/11 — لازم يبدأ بـ 01` : null}
+                    hint={phone && !PHONE_RE.test(phone) ? t('{n}/11 — لازم يبدأ بـ 01', { n: phone.length }) : null}
                     valid={PHONE_RE.test(phone)}
                   >
                     {(cls) => (
@@ -381,19 +386,19 @@ function AuthDialog({ initialMode, onClose }) {
                     )}
                   </TextField>
 
-                  <PasswordField label="كلمة المرور" value={password} onChange={setPassword} autoComplete="new-password" placeholder="8 حروف على الأقل" showStrength />
+                  <PasswordField label={t('كلمة المرور')} value={password} onChange={setPassword} autoComplete="new-password" placeholder={t('8 حروف على الأقل')} showStrength />
 
-                  <PrimaryButton loading={loading} icon={UserPlus} label="إنشاء الحساب" loadingLabel="بنجهّز حسابك…" />
+                  <PrimaryButton loading={loading} icon={UserPlus} label={t('إنشاء الحساب')} loadingLabel={t('بنجهّز حسابك…')} />
                 </form>
               )}
 
               {mode === 'forgot' && step === 'email' && (
                 <form onSubmit={handleSendCode} className="space-y-4">
-                  <StepIntro icon={Mail} title="اكتب إيميلك" text="هنبعتلك كود من 6 أرقام على الإيميل اللي سجّلت بيه." />
-                  <TextField label="البريد الإلكتروني" icon={Mail}>
+                  <StepIntro icon={Mail} title={t('اكتب إيميلك')} text={t('هنبعتلك كود من 6 أرقام على الإيميل اللي سجّلت بيه.')} />
+                  <TextField label={t('البريد الإلكتروني')} icon={Mail}>
                     {(cls) => <input type="email" required autoFocus autoComplete="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className={cls} />}
                   </TextField>
-                  <PrimaryButton loading={loading} icon={MailCheck} label="ابعت الكود" loadingLabel="بنبعت الكود…" />
+                  <PrimaryButton loading={loading} icon={MailCheck} label={t('ابعت الكود')} loadingLabel={t('بنبعت الكود…')} />
                 </form>
               )}
 
@@ -401,12 +406,12 @@ function AuthDialog({ initialMode, onClose }) {
                 <form onSubmit={handleOtpNext} className="space-y-5">
                   <StepIntro
                     icon={MailCheck}
-                    title="شوف الإيميل بتاعك"
+                    title={t('شوف الإيميل بتاعك')}
                     text={
                       <>
-                        لو الحساب موجود، هيوصلك كود على:
-                        <span dir="ltr" className="block my-0.5 font-black text-[#0e2c4e] text-right truncate">{email.trim()}</span>
-                        بص كمان في الـ Spam.
+                        {t('لو الحساب موجود، هيوصلك كود على:')}
+                        <span className="block my-0.5 font-black text-[#0e2c4e] text-start truncate"><bdi dir="ltr">{email.trim()}</bdi></span>
+                        {t('بص كمان في الـ Spam.')}
                       </>
                     }
                   />
@@ -417,27 +422,27 @@ function AuthDialog({ initialMode, onClose }) {
                     invalid={!!error}
                   />
                   <CodeTimers expiresAt={codeExpiresAt} resendAt={resendAt} onResend={handleResend} loading={loading} />
-                  <PrimaryButton loading={false} disabled={otp.length !== OTP_LENGTH} icon={ArrowRight} iconFlip label="التالي" />
+                  <PrimaryButton loading={false} disabled={otp.length !== OTP_LENGTH} icon={ArrowRight} iconFlip label={t('التالي')} />
                   <button type="button" onClick={() => { clearMessages(); setStep('email'); }} className="w-full text-xs font-bold text-slate-500 hover:text-[#0e2c4e]">
-                    الإيميل غلط؟ غيّره
+                    {t('الإيميل غلط؟ غيّره')}
                   </button>
                 </form>
               )}
 
               {mode === 'forgot' && step === 'password' && (
                 <form onSubmit={handleReset} className="space-y-4">
-                  <StepIntro icon={KeyRound} title="اختار كلمة مرور جديدة" text="استخدم 8 حروف على الأقل، والأحسن تخلط حروف وأرقام ورموز." />
-                  <PasswordField label="كلمة المرور الجديدة" value={password} onChange={setPassword} autoComplete="new-password" autoFocus showStrength />
+                  <StepIntro icon={KeyRound} title={t('اختار كلمة مرور جديدة')} text={t('استخدم 8 حروف على الأقل، والأحسن تخلط حروف وأرقام ورموز.')} />
+                  <PasswordField label={t('كلمة المرور الجديدة')} value={password} onChange={setPassword} autoComplete="new-password" autoFocus showStrength />
                   <PasswordField
-                    label="أكّد كلمة المرور"
+                    label={t('أكّد كلمة المرور')}
                     value={confirm}
                     onChange={setConfirm}
                     autoComplete="new-password"
                     matchState={confirm ? confirm === password : null}
                   />
-                  <PrimaryButton loading={loading} icon={ShieldCheck} label="حفظ كلمة المرور" loadingLabel="بنحفظ…" />
+                  <PrimaryButton loading={loading} icon={ShieldCheck} label={t('حفظ كلمة المرور')} loadingLabel={t('بنحفظ…')} />
                   <button type="button" onClick={() => { clearMessages(); setStep('otp'); }} className="w-full text-xs font-bold text-slate-500 hover:text-[#0e2c4e]">
-                    رجوع لتعديل الكود
+                    {t('رجوع لتعديل الكود')}
                   </button>
                 </form>
               )}
@@ -448,19 +453,19 @@ function AuthDialog({ initialMode, onClose }) {
                     <CheckCircle2 className="w-10 h-10 text-emerald-500" />
                   </div>
                   <div className="space-y-1.5">
-                    <h3 className="text-xl font-black text-[#0e2c4e]">تم تغيير كلمة المرور 🎉</h3>
-                    <p className="text-sm text-slate-500">ودخّلناك على حسابك على طول. يلا نكمّل تعلّم.</p>
+                    <h3 className="text-xl font-black text-[#0e2c4e]">{t('تم تغيير كلمة المرور 🎉')}</h3>
+                    <p className="text-sm text-slate-500">{t('ودخّلناك على حسابك على طول. يلا نكمّل تعلّم.')}</p>
                   </div>
-                  <PrimaryButton type="button" onClick={onClose} icon={Sparkles} label="يلا بينا" />
+                  <PrimaryButton type="button" onClick={onClose} icon={Sparkles} label={t('يلا بينا')} />
                 </div>
               )}
 
               {mode === 'phone' && (
                 <form onSubmit={handleSavePhone} className="space-y-4">
                   <TextField
-                    label="رقم الموبايل"
+                    label={t('رقم الموبايل')}
                     icon={Phone}
-                    hint={phone && !PHONE_RE.test(phone) ? `${phone.length}/11 — لازم يبدأ بـ 01` : null}
+                    hint={phone && !PHONE_RE.test(phone) ? t('{n}/11 — لازم يبدأ بـ 01', { n: phone.length }) : null}
                     valid={PHONE_RE.test(phone)}
                   >
                     {(cls) => (
@@ -478,9 +483,9 @@ function AuthDialog({ initialMode, onClose }) {
                       />
                     )}
                   </TextField>
-                  <PrimaryButton loading={loading} icon={CheckCircle2} label="حفظ ومتابعة" loadingLabel="بنحفظ…" />
+                  <PrimaryButton loading={loading} icon={CheckCircle2} label={t('حفظ ومتابعة')} loadingLabel={t('بنحفظ…')} />
                   <button type="button" onClick={onClose} disabled={loading} className="w-full text-xs font-bold text-slate-500 hover:text-[#0e2c4e]">
-                    بعدين — هضيفه من صفحة حسابي
+                    {t('بعدين — هضيفه من صفحة حسابي')}
                   </button>
                 </form>
               )}
@@ -490,7 +495,7 @@ function AuthDialog({ initialMode, onClose }) {
               <div className="mt-6 space-y-4">
                 <div className="flex items-center gap-3 text-[11px] font-bold text-slate-400">
                   <div className="flex-1 h-px bg-slate-200" />
-                  <span>أو كمّل بـ</span>
+                  <span>{t('أو كمّل بـ')}</span>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
                 <GoogleButton onCredential={handleGoogleCredential} text={mode === 'register' ? 'signup_with' : 'continue_with'} />
@@ -499,9 +504,9 @@ function AuthDialog({ initialMode, onClose }) {
 
             {isTabMode && (
               <p className="mt-6 text-center text-[13px] text-slate-500">
-                {mode === 'login' ? 'لسه معندكش حساب؟ ' : 'عندك حساب بالفعل؟ '}
+                {mode === 'login' ? t('لسه معندكش حساب؟ ') : t('عندك حساب بالفعل؟ ')}
                 <button type="button" onClick={() => switchMode(mode === 'login' ? 'register' : 'login')} className="font-black text-teal-700 hover:text-teal-600">
-                  {mode === 'login' ? 'اعمل حساب مجاناً' : 'سجّل دخول'}
+                  {mode === 'login' ? t('اعمل حساب مجاناً') : t('سجّل دخول')}
                 </button>
               </p>
             )}
@@ -512,13 +517,12 @@ function AuthDialog({ initialMode, onClose }) {
         <aside className="hidden md:flex relative w-[42%] shrink-0 bg-[#0e2c4e] text-white overflow-hidden flex-col justify-between p-10">
           <BrandBackdrop />
           <div className="relative">
-            {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
-            <img src="/assets/images/logo-full-white.png" alt="Deutsche Welt" className="h-20 w-auto" />
+            <Image src="/assets/images/logo-full-white.png" alt="Deutsche Welt" width={954} height={622} sizes="200px" className="h-20 w-auto" />
           </div>
 
           <div key={mode} className="relative dw-step-in space-y-3">
-            <h2 id="auth-title" className="text-3xl font-black leading-tight">{brand.title}</h2>
-            <p className="text-sm text-white/70 leading-relaxed">{brand.text}</p>
+            <h2 id="auth-title" className="text-3xl font-black leading-tight">{t(brand.title)}</h2>
+            <p className="text-sm text-white/70 leading-relaxed">{t(brand.text)}</p>
           </div>
 
           <ul className="relative space-y-3">
@@ -527,7 +531,7 @@ function AuthDialog({ initialMode, onClose }) {
                 <span className="w-9 h-9 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
                   <Icon className="w-4 h-4 text-amber-300" />
                 </span>
-                {text}
+                {t(text)}
               </li>
             ))}
           </ul>
@@ -574,8 +578,8 @@ function Tabs({ mode, onChange, disabled }) {
         aria-hidden
       />
       {[
-        { key: 'login', label: 'تسجيل الدخول', icon: LogIn },
-        { key: 'register', label: 'حساب جديد', icon: UserPlus },
+        { key: 'login', label: t('تسجيل الدخول'), icon: LogIn },
+        { key: 'register', label: t('حساب جديد'), icon: UserPlus },
       ].map(({ key, label, icon: Icon }) => (
         <button
           key={key}
@@ -612,10 +616,10 @@ function ForgotHeader({ step, onBack, disabled }) {
         disabled={disabled}
         className="inline-flex items-center gap-1.5 text-xs font-black text-slate-500 hover:text-[#0e2c4e] mb-4"
       >
-        <ArrowRight className="w-4 h-4" />
-        رجوع لتسجيل الدخول
+        <ArrowRight className="w-4 h-4 ltr:-scale-x-100" />
+        {t('رجوع لتسجيل الدخول')}
       </button>
-      <h3 className="text-2xl sm:text-[1.7rem] font-black text-[#0e2c4e]">استرجاع كلمة المرور</h3>
+      <h3 className="text-2xl sm:text-[1.7rem] font-black text-[#0e2c4e]">{t('استرجاع كلمة المرور')}</h3>
 
       <ol className="mt-5 flex items-center gap-2">
         {FORGOT_STEPS.map((s, i) => {
@@ -626,7 +630,7 @@ function ForgotHeader({ step, onBack, disabled }) {
               <div className={`h-1.5 rounded-full transition-colors duration-500 ${done ? 'bg-teal-500' : active ? 'bg-amber-400' : 'bg-slate-200'}`} />
               <span className={`mt-1.5 flex items-center gap-1 text-[11px] font-black ${done ? 'text-teal-700' : active ? 'text-[#0e2c4e]' : 'text-slate-400'}`}>
                 {done ? <CheckCircle2 className="w-3 h-3" /> : <span className="tabular-nums">{i + 1}.</span>}
-                {s.label}
+                {t(s.label)}
               </span>
             </li>
           );
@@ -651,10 +655,10 @@ function StepIntro({ icon: Icon, title, text }) {
 }
 
 const fieldBase =
-  'w-full h-12 rounded-2xl bg-slate-50 border-2 border-slate-200 pr-11 text-[15px] text-slate-900 placeholder:text-slate-400 text-right ' +
+  'w-full h-12 rounded-2xl bg-slate-50 border-2 border-slate-200 px-11 text-[15px] text-slate-900 placeholder:text-slate-400 text-start ' +
   'transition-all focus:outline-none focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10';
 
-function TextField({ label, icon: Icon, hint, valid, labelAction, extraPadding = 'pl-4', children }) {
+function TextField({ label, icon: Icon, hint, valid, labelAction, extraPadding = '', children }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
@@ -663,8 +667,8 @@ function TextField({ label, icon: Icon, hint, valid, labelAction, extraPadding =
       </div>
       <div className="relative group">
         {children(`${fieldBase} ${extraPadding}`)}
-        <Icon className="w-[18px] h-[18px] text-slate-400 group-focus-within:text-teal-600 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors" />
-        {valid && <CheckCircle2 className="w-[18px] h-[18px] text-emerald-500 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />}
+        <Icon className="w-[18px] h-[18px] text-slate-400 group-focus-within:text-teal-600 absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors" />
+        {valid && <CheckCircle2 className="w-[18px] h-[18px] text-emerald-500 absolute end-4 top-1/2 -translate-y-1/2 pointer-events-none" />}
       </div>
       {hint && <p className="mt-1.5 text-[11px] font-semibold text-amber-700" dir="rtl">{hint}</p>}
     </div>
@@ -680,7 +684,7 @@ function PasswordField({ label, value, onChange, autoComplete, autoFocus, placeh
 
   return (
     <div>
-      <TextField label={label} icon={Lock} extraPadding="pl-12" labelAction={labelAction}>
+      <TextField label={label} icon={Lock} extraPadding="px-12" labelAction={labelAction}>
         {(cls) => (
           <>
             <Input
@@ -700,16 +704,16 @@ function PasswordField({ label, value, onChange, autoComplete, autoFocus, placeh
             <button
               type="button"
               onClick={() => setVisible((v) => !v)}
-              aria-label={visible ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-[#0e2c4e] hover:bg-slate-200/70 transition-colors"
+              aria-label={visible ? t('إخفاء كلمة المرور') : t('إظهار كلمة المرور')}
+              className="absolute end-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-[#0e2c4e] hover:bg-slate-200/70 transition-colors"
             >
               {visible ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
             </button>
           </>
         )}
       </TextField>
-      {capsOn && <p className="mt-1.5 text-[11px] font-bold text-amber-700">⚠︎ زرار Caps Lock شغّال</p>}
-      {matchState === false && <p className="mt-1.5 text-[11px] font-bold text-rose-600">كلمتين المرور مش متطابقين</p>}
+      {capsOn && <p className="mt-1.5 text-[11px] font-bold text-amber-700">{t('⚠︎ زرار Caps Lock شغّال')}</p>}
+      {matchState === false && <p className="mt-1.5 text-[11px] font-bold text-rose-600">{t('كلمتين المرور مش متطابقين')}</p>}
       {showStrength && value && <StrengthMeter value={value} />}
     </div>
   );
@@ -743,7 +747,7 @@ function StrengthMeter({ value }) {
           <span key={i} className={`h-1.5 rounded-full transition-colors duration-300 ${i <= Math.max(score, 1) ? s.color : 'bg-slate-200'}`} />
         ))}
       </div>
-      <span className={`text-[11px] font-black ${s.text}`}>{value.length < 8 ? `${value.length}/8` : s.label}</span>
+      <span className={`text-[11px] font-black ${s.text}`}>{value.length < 8 ? `${value.length}/8` : t(s.label)}</span>
     </div>
   );
 }
@@ -756,7 +760,7 @@ function PrimaryButton({ loading, disabled, icon: Icon, iconFlip, label, loading
       disabled={loading || disabled}
       className="dw-shine group w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-[#0e2c4e] hover:bg-teal-700 text-white font-black text-[15px] shadow-lg shadow-[#0e2c4e]/20 transition-all active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-teal-500/30 disabled:opacity-50 disabled:pointer-events-none"
     >
-      {loading ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <Icon className={`w-[18px] h-[18px] ${iconFlip ? '-scale-x-100' : ''}`} />}
+      {loading ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <Icon className={`w-[18px] h-[18px] ${iconFlip ? 'rtl:-scale-x-100' : ''}`} />}
       <span>{loading ? loadingLabel : label}</span>
     </button>
   );
@@ -764,7 +768,7 @@ function PrimaryButton({ loading, disabled, icon: Icon, iconFlip, label, loading
 
 /* ---------- OTP ---------- */
 
-const toLatinDigits = (s) => s.replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+const toLatinDigits = (s) => s.replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩' /* i18n-keep */.indexOf(d)));
 
 function OtpInput({ value, onChange, onComplete, invalid }) {
   const refs = useRef([]);
@@ -817,7 +821,7 @@ function OtpInput({ value, onChange, onComplete, invalid }) {
             value={char}
             inputMode="numeric"
             autoComplete={i === 0 ? 'one-time-code' : 'off'}
-            aria-label={`رقم ${i + 1} من الكود`}
+            aria-label={t('رقم {n} من الكود', { n: i + 1 })}
             onFocus={(e) => {
               if (i > value.length) focusAt(value.length);
               else e.target.select();
@@ -882,7 +886,7 @@ function CodeTimers({ expiresAt, resendAt, onResend, loading }) {
   return (
     <div className="flex items-center justify-between gap-3 text-xs font-bold">
       <span className={`tabular-nums ${left === 0 ? 'text-rose-600' : left < 60 ? 'text-amber-700' : 'text-slate-500'}`}>
-        {left === 0 ? 'الكود انتهى — اطلب واحد جديد' : <>الكود صالح لمدة <span dir="ltr">{mmss(left)}</span></>}
+        {left === 0 ? t('الكود انتهى — اطلب واحد جديد') : <>{t('الكود صالح لمدة')}{' '}<span dir="ltr">{mmss(left)}</span></>}
       </span>
       <button
         type="button"
@@ -891,7 +895,7 @@ function CodeTimers({ expiresAt, resendAt, onResend, loading }) {
         className="inline-flex items-center gap-1.5 text-teal-700 hover:text-teal-600 disabled:text-slate-400 disabled:cursor-not-allowed"
       >
         {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCw className="w-3.5 h-3.5" />}
-        {resendIn > 0 ? <>إعادة الإرسال بعد <span className="tabular-nums" dir="ltr">{resendIn}s</span></> : 'ابعت كود جديد'}
+        {resendIn > 0 ? <>{t('إعادة الإرسال بعد')}{' '}<span className="tabular-nums" dir="ltr">{resendIn}s</span></> : t('ابعت كود جديد')}
       </button>
     </div>
   );
@@ -935,7 +939,7 @@ function GoogleButton({ onCredential, text = 'continue_with' }) {
         shape: 'pill',
         text,
         logo_alignment: 'center',
-        locale: 'ar',
+        locale: langMeta().value,
         width: Math.min(ref.current.offsetWidth || 320, 400),
       });
     };
@@ -964,7 +968,7 @@ function GoogleButton({ onCredential, text = 'continue_with' }) {
   }, [text]);
 
   if (failed) {
-    return <p className="text-center text-[11px] font-semibold text-slate-400">تعذّر تحميل زرار جوجل — سجّل بالإيميل أو جرّب تاني.</p>;
+    return <p className="text-center text-[11px] font-semibold text-slate-400">{t('تعذّر تحميل زرار جوجل — سجّل بالإيميل أو جرّب تاني.')}</p>;
   }
   return <div ref={ref} className="w-full flex justify-center min-h-[44px]" />;
 }

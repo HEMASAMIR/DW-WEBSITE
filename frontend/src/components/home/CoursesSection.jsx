@@ -19,6 +19,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 export default function CoursesSection() {
   const { courses, allCourses, loading, error, requiresLogin, reload, activeTab, setActiveTab } = useCourses();
   const { openEnrollModal, openAuthModal, openLoginPromptModal } = useModal();
@@ -26,8 +27,8 @@ export default function CoursesSection() {
   const { isAuthenticated } = useAuth();
 
   const tabs = [
-    { key: 'ALL', label: 'جميع المستويات' },
-    ...allCourses.map((c) => ({ key: c.code, label: `المستوى ${c.code}` })),
+    { key: 'ALL', label: t('جميع المستويات') },
+    ...allCourses.map((c) => ({ key: c.code, label: t('المستوى {code}', { code: c.code }) })),
   ];
 
   const handleAction = (course) => {
@@ -50,10 +51,10 @@ export default function CoursesSection() {
         <Reveal className="text-center max-w-3xl mx-auto mb-14 space-y-4">
           <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-xs font-black text-[#0e2c4e]">
             <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>برامج التأسيس والتأهيل الأكاديمي</span>
+            <span>{t('برامج التأسيس والتأهيل الأكاديمي')}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-[#0e2c4e]">
-            الكورسات الأونلاين{' '}
+            {t('الكورسات الأونلاين')}{' '}
             {allCourses.length > 0 && (
               <span className="text-teal-600" dir="ltr">
                 ({allCourses[0].code} - {allCourses[allCourses.length - 1].code})
@@ -64,25 +65,25 @@ export default function CoursesSection() {
             <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
           </div>
           <p className="text-slate-600 text-sm sm:text-base">
-            محاضرات مسجلة بجودة عالية، ملفات PDF لكل مستوى، ومناقشة مباشرة على كل محاضرة.
+            {t('محاضرات مسجلة بجودة عالية، ملفات PDF لكل مستوى، ومناقشة مباشرة على كل محاضرة.')}
           </p>
 
           {allCourses.length > 1 && (
             <div className="flex flex-wrap justify-center gap-2 pt-3">
-              {tabs.map((t, i) => {
-                const active = activeTab === t.key;
-                const tone = t.key === 'ALL' ? null : toneFor(t.key, i - 1);
+              {tabs.map((tab, i) => {
+                const active = activeTab === tab.key;
+                const tone = tab.key === 'ALL' ? null : toneFor(tab.key, i - 1);
                 return (
                   <button
-                    key={t.key}
-                    onClick={() => setActiveTab(t.key)}
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
                     className={`px-5 py-2 rounded-full text-xs font-black border transition-all duration-300 ${
                       active
                         ? tone ? `${tone.btn} text-white border-transparent shadow-lg` : 'bg-[#0e2c4e] text-white border-transparent shadow-lg'
                         : tone ? `${tone.btnSoft}` : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
                     }`}
                   >
-                    {t.label}
+                    {tab.label}
                   </button>
                 );
               })}
@@ -110,7 +111,7 @@ export default function CoursesSection() {
             <p className="text-sm text-rose-700 font-semibold">{error}</p>
             <button onClick={reload} className="inline-flex items-center gap-2 bg-rose-600 text-white px-5 py-2.5 rounded-full text-xs font-black">
               <RefreshCw className="w-4 h-4" />
-              <span>إعادة المحاولة</span>
+              <span>{t('إعادة المحاولة')}</span>
             </button>
           </div>
         )}
@@ -118,16 +119,16 @@ export default function CoursesSection() {
         {!loading && requiresLogin && (
           <div className="max-w-md mx-auto text-center bg-teal-50 border border-teal-200 rounded-3xl p-8 space-y-4">
             <Lock className="w-10 h-10 text-teal-600 mx-auto" />
-            <p className="text-sm text-teal-900 font-semibold">سجّل الدخول أو أنشئ حساباً مجانياً لعرض المستويات والأسعار.</p>
+            <p className="text-sm text-teal-900 font-semibold">{t('سجّل الدخول أو أنشئ حساباً مجانياً لعرض المستويات والأسعار.')}</p>
             <button onClick={() => openAuthModal('register')} className="inline-flex items-center gap-2 bg-[#0e2c4e] text-white px-5 py-2.5 rounded-full text-xs font-black">
-              <span>إنشاء حساب / دخول</span>
-              <ArrowLeft className="w-4 h-4" />
+              <span>{t('إنشاء حساب / دخول')}</span>
+              <ArrowLeft className="w-4 h-4 ltr:-scale-x-100" />
             </button>
           </div>
         )}
 
         {!loading && !error && !requiresLogin && allCourses.length === 0 && (
-          <p className="text-center text-sm text-slate-500">لا توجد مستويات متاحة حالياً.</p>
+          <p className="text-center text-sm text-slate-500">{t('لا توجد مستويات متاحة حالياً.')}</p>
         )}
 
         {/* Courses grid */}
@@ -152,13 +153,13 @@ export default function CoursesSection() {
                         className="absolute inset-0 opacity-25"
                         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1.5px)', backgroundSize: '14px 14px' }}
                       />
-                      <span className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-white/15 group-hover:scale-125 transition-transform duration-700" />
-                      <span className="absolute top-8 left-16 w-16 h-16 rounded-full border-2 border-white/30 group-hover:translate-x-3 group-hover:-translate-y-2 transition-transform duration-700" />
-                      <span className="absolute -bottom-12 right-10 w-28 h-28 rounded-full bg-black/10 group-hover:scale-110 transition-transform duration-700" />
+                      <span className="absolute -top-10 -end-10 w-40 h-40 rounded-full bg-white/15 group-hover:scale-125 transition-transform duration-700" />
+                      <span className="absolute top-8 end-16 w-16 h-16 rounded-full border-2 border-white/30 group-hover:translate-x-3 group-hover:-translate-y-2 transition-transform duration-700" />
+                      <span className="absolute -bottom-12 start-10 w-28 h-28 rounded-full bg-black/10 group-hover:scale-110 transition-transform duration-700" />
 
                       <div className="relative h-full flex items-end justify-between p-5">
                         <div className="text-white">
-                          <span className="block text-[11px] font-black tracking-[0.2em] text-white/80 mb-1">المستوى</span>
+                          <span className="block text-[11px] font-black tracking-[0.2em] text-white/80 mb-1">{t('المستوى')}</span>
                           <span
                             className="block text-6xl font-black leading-none tracking-tight drop-shadow-[0_6px_16px_rgba(0,0,0,0.18)] group-hover:scale-110 origin-bottom-right transition-transform duration-500"
                             dir="ltr"
@@ -172,9 +173,9 @@ export default function CoursesSection() {
                       </div>
 
                       {course.hasAccess && (
-                        <span className="absolute top-4 right-4 px-3 py-1 rounded-full text-[11px] font-black bg-white text-emerald-700 flex items-center gap-1 shadow-lg">
+                        <span className="absolute top-4 start-4 px-3 py-1 rounded-full text-[11px] font-black bg-white text-emerald-700 flex items-center gap-1 shadow-lg">
                           <CheckCircle2 className="w-3.5 h-3.5" />
-                          مفعّل لك
+                          {t('مفعّل لك')}
                         </span>
                       )}
                       {/* curved bottom */}
@@ -207,16 +208,16 @@ export default function CoursesSection() {
 
                       {price !== null && !course.hasAccess && (
                         <div className="mt-6 flex items-center justify-between gap-2 rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
-                          <span className="text-xs font-black text-slate-500">سعر المستوى</span>
+                          <span className="text-xs font-black text-slate-500">{t('سعر المستوى')}</span>
                           <span className="flex items-baseline gap-1.5 flex-wrap justify-end">
                             {oldPrice && <span className="text-xs text-slate-400 line-through" dir="ltr">{oldPrice}</span>}
                             <span className={`text-2xl font-black tracking-tight ${tone.price}`} dir="ltr">{price}</span>
-                            <span className="text-xs font-black text-slate-500">ج.م</span>
+                            <span className="text-xs font-black text-slate-500">{t('ج.م')}</span>
                           </span>
                         </div>
                       )}
                       {oldPrice && !course.hasAccess && (
-                        <span className="self-start mt-2 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">خصم {discount}%</span>
+                        <span className="self-start mt-2 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">{t('خصم')}{' '}{discount}%</span>
                       )}
 
                       <div className="space-y-2 mt-4">
@@ -226,10 +227,10 @@ export default function CoursesSection() {
                         >
                           <span className="flex items-center gap-2">
                             <PlayCircle className="w-4 h-4" />
-                            {course.hasAccess ? 'ادخل للمحاضرات' : 'تفاصيل المستوى'}
+                            {course.hasAccess ? t('ادخل للمحاضرات') : t('تفاصيل المستوى')}
                           </span>
                           <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center group-hover:-translate-x-1 transition-transform">
-                            <ArrowLeft className="w-4 h-4" />
+                            <ArrowLeft className="w-4 h-4 ltr:-scale-x-100" />
                           </span>
                         </Link>
 
@@ -239,7 +240,7 @@ export default function CoursesSection() {
                             className={`w-full py-3 px-4 rounded-2xl border font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors ${tone.btnSoft}`}
                           >
                             <Lock className="w-3.5 h-3.5" />
-                            <span>{isAuthenticated ? 'اشترك في الكورس الآن' : 'اشترك الآن'}</span>
+                            <span>{isAuthenticated ? t('اشترك في الكورس الآن') : t('اشترك الآن')}</span>
                           </button>
                         )}
                       </div>

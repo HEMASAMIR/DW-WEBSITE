@@ -3,6 +3,7 @@ import { booksService } from '@/services/books.service';
 import { getErrorMessage } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 
+import { t } from '@/lib/i18n';
 // Real data only: names, prices and access always come from the backend.
 // Never add hard-coded fallback books here — they show wrong names/prices to the client.
 export function useBooks() {
@@ -44,7 +45,7 @@ export function useBooks() {
         const needsLogin = !isAuthenticated || err.response?.status === 401;
         setRequiresLogin(needsLogin);
         setBooks([]);
-        setError(needsLogin ? '' : getErrorMessage(err, 'تعذر تحميل الكتب حالياً.'));
+        setError(needsLogin ? '' : getErrorMessage(err, t('تعذر تحميل الكتب حالياً.')));
       })
       .finally(() => !cancelled && setLoading(false));
     return () => {

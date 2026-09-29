@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
@@ -21,6 +22,8 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
+import LangSwitcher from '@/components/common/LangSwitcher';
 // Each link has its own accent colour (full class names so Tailwind generates them).
 const NAV_LINKS = [
   { label: 'الرئيسية', href: '/#hero', section: 'hero', icon: Home, bar: 'bg-teal-500', text: 'text-teal-600', tile: 'bg-teal-50 text-teal-600' },
@@ -65,7 +68,7 @@ export default function Header() {
     return () => io.disconnect();
   }, [mounted]);
 
-  const initial = (user?.first_name || user?.email || '؟').trim().charAt(0).toUpperCase();
+  const initial = (user?.first_name || user?.email || t('؟')).trim().charAt(0).toUpperCase();
 
   return (
     <header
@@ -82,10 +85,13 @@ export default function Header() {
 
         {/* Brand */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
-          <img
+          <Image
             src="/assets/images/logo-mark.png"
             alt="Deutsche Welt"
+            width={682}
+            height={425}
+            sizes="72px"
+            loading="eager"
             className={`w-auto transition-all duration-300 group-hover:scale-105 ${scrolled ? 'h-9' : 'h-11'}`}
           />
           <div className="hidden sm:flex flex-col whitespace-nowrap">
@@ -94,7 +100,7 @@ export default function Header() {
             </span>
             <span className="text-[11px] text-slate-500 font-bold tracking-wide flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-              هير خالد الحلواني • أكاديمية الألمانية
+              {t('هير خالد الحلواني • أكاديمية الألمانية')}
             </span>
           </div>
         </Link>
@@ -110,7 +116,7 @@ export default function Header() {
                   className="dw-shine group mx-1 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0e2c4e] text-white text-[13px] font-black shadow-lg shadow-[#0e2c4e]/25 hover:-translate-y-0.5 transition-all"
                 >
                   <Sparkles className="dw-wiggle w-4 h-4 text-amber-300" />
-                  <span>{link.label}</span>
+                  <span>{t(link.label)}</span>
                 </Link>
               );
             }
@@ -124,9 +130,9 @@ export default function Header() {
                   active ? `${link.text}` : 'text-slate-600 hover:text-[#0e2c4e]'
                 }`}
               >
-                {link.label}
+                {t(link.label)}
                 <span
-                  className={`absolute bottom-0 right-2.5 left-2.5 xl:right-3 xl:left-3 h-[3px] rounded-full ${link.bar} origin-center transition-transform duration-300 ${
+                  className={`absolute bottom-0 start-2.5 end-2.5 xl:start-3 xl:end-3 h-[3px] rounded-full ${link.bar} origin-center transition-transform duration-300 ${
                     active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                   }`}
                 />
@@ -137,11 +143,12 @@ export default function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
+          <LangSwitcher />
           {mounted && isAdmin && (
             <button
               onClick={openAdminDashboard}
               className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-colors"
-              title="لوحة تحكم الإدارة"
+              title={t('لوحة تحكم الإدارة')}
             >
               <LayoutDashboard className="w-4 h-4" />
             </button>
@@ -154,25 +161,25 @@ export default function Header() {
               <Link
                 href="/courses"
                 className="hidden sm:inline-flex items-center gap-1.5 px-3.5 h-10 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-black hover:bg-teal-600 hover:text-white transition-colors"
-                title="محاضراتي"
+                title={t('محاضراتي')}
               >
                 <PlayCircle className="w-4 h-4" />
-                <span>محاضراتي</span>
+                <span>{t('محاضراتي')}</span>
               </Link>
               <button
                 onClick={openProfileModal}
-                className="flex items-center gap-2 h-10 pl-3 pr-1 rounded-full bg-white border border-slate-200 hover:border-[#0e2c4e]/30 hover:shadow-md transition-all"
-                title="حسابي"
+                className="flex items-center gap-2 h-10 pe-3 ps-1 rounded-full bg-white border border-slate-200 hover:border-[#0e2c4e]/30 hover:shadow-md transition-all"
+                title={t('حسابي')}
               >
                 <span className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-[#0e2c4e] text-white text-sm font-black flex items-center justify-center">
                   {initial}
                 </span>
-                <span className="text-xs font-black text-[#0e2c4e] max-w-[90px] truncate hidden sm:inline">{user?.first_name || 'حسابي'}</span>
+                <span className="text-xs font-black text-[#0e2c4e] max-w-[90px] truncate hidden sm:inline">{user?.first_name || t('حسابي')}</span>
               </button>
               <button
                 onClick={askLogout}
                 className="w-10 h-10 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors"
-                title="خروج"
+                title={t('خروج')}
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -183,7 +190,7 @@ export default function Header() {
               className="dw-shine inline-flex items-center gap-2 h-10 sm:h-11 px-4 sm:px-5 rounded-full bg-gradient-to-l from-[#0e2c4e] to-teal-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-[#0e2c4e]/25 hover:-translate-y-0.5 transition-all"
             >
               <User className="w-4 h-4" />
-              <span>دخول<span className="hidden sm:inline"> / حساب جديد</span></span>
+              <span>{t('دخول')}<span className="hidden sm:inline">{' '}{t('/ حساب جديد')}</span></span>
             </button>
           )}
 
@@ -191,7 +198,7 @@ export default function Header() {
           <button
             onClick={() => setMobileMenuOpen((v) => !v)}
             className="lg:hidden w-10 h-10 rounded-full bg-slate-100 border border-slate-200 text-[#0e2c4e] flex items-center justify-center"
-            aria-label="القائمة"
+            aria-label={t('القائمة')}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -218,7 +225,7 @@ export default function Header() {
                   <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${link.highlighted ? 'bg-white/10 text-amber-300' : link.tile}`}>
                     <Icon className="w-4 h-4" />
                   </span>
-                  <span className="text-sm font-black">{link.label}</span>
+                  <span className="text-sm font-black">{t(link.label)}</span>
                 </a>
               );
             })}
@@ -229,7 +236,7 @@ export default function Header() {
               className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-l from-[#0e2c4e] to-teal-700 text-white text-sm font-black"
             >
               <LogIn className="w-4 h-4" />
-              دخول / حساب جديد
+              {t('دخول / حساب جديد')}
             </button>
           )}
         </div>

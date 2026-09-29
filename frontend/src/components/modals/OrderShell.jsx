@@ -4,6 +4,7 @@ import React from 'react';
 import { useContactInfo, activeMethods, CASH_METHOD } from '@/lib/contactInfo';
 import { X, CheckCircle2, Wallet, Zap, Landmark, CreditCard, Store } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 /** Shared frame for the subscribe / book-order modals: navy header + two-column body. */
 export function OrderShell({ icon: Icon, title, subtitle, onClose, children }) {
   return (
@@ -19,12 +20,12 @@ export function OrderShell({ icon: Icon, title, subtitle, onClose, children }) {
           </div>
           <button
             onClick={onClose}
-            className="absolute top-5 left-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-            aria-label="إغلاق"
+            className="absolute top-5 end-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            aria-label={t('إغلاق')}
           >
             <X className="w-5 h-5" />
           </button>
-          <div className="relative flex items-center gap-4 pl-12">
+          <div className="relative flex items-center gap-4 pe-12">
             <span className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-[#0e2c4e] flex items-center justify-center shadow-lg shadow-amber-500/30 shrink-0">
               <Icon className="w-7 h-7" />
             </span>
@@ -52,7 +53,7 @@ export function usePayOptions() {
   const info = useContactInfo();
   const options = activeMethods(info).map((m) => ({ value: m.label, label: m.label, ...(PICKER_STYLE[m.type] || PICKER_STYLE.other) }));
   if (info.payment?.cash_at_branch !== false) {
-    options.push({ value: CASH_METHOD, label: 'نقدي بالفرع', icon: Store, on: 'border-amber-400 bg-amber-50 text-amber-700' });
+    options.push({ value: CASH_METHOD, label: t('نقدي بالفرع'), icon: Store, on: 'border-amber-400 bg-amber-50 text-amber-700' });
   }
   return options;
 }
@@ -61,7 +62,7 @@ export function PayMethodPicker({ value, onChange }) {
   const options = usePayOptions();
   return (
     <div>
-      <label className="block text-xs font-black text-slate-600 mb-2">طريقة الدفع</label>
+      <label className="block text-xs font-black text-slate-600 mb-2">{t('طريقة الدفع')}</label>
       <div className={`grid gap-2 ${options.length >= 3 ? 'grid-cols-3' : options.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
         {options.map((o) => {
           const Icon = o.icon;
@@ -76,7 +77,7 @@ export function PayMethodPicker({ value, onChange }) {
               }`}
             >
               <Icon className="w-5 h-5" />
-              {o.label}
+              {t(o.label)}
             </button>
           );
         })}
@@ -97,7 +98,7 @@ export function Field({ label, children }) {
 export const inputCls =
   'w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-teal-500 transition-colors';
 
-export function SentState({ text, onClose, title = 'تم تجهيز طلبك على واتساب', showNumber = true, number }) {
+export function SentState({ text, onClose, title = t('تم تجهيز طلبك على واتساب'), showNumber = true, number }) {
   const info = useContactInfo();
   const transferNumber = number || activeMethods(info)[0]?.number;
   return (
@@ -110,11 +111,11 @@ export function SentState({ text, onClose, title = 'تم تجهيز طلبك ع�
       <p className="text-sm text-slate-600 leading-relaxed">{text}</p>
       {showNumber && transferNumber && (
         <p className="text-sm text-slate-600">
-          رقم التحويل: <strong className="text-[#0e2c4e]" dir="ltr">{transferNumber}</strong>
+          {t('رقم التحويل:')} <strong className="text-[#0e2c4e]" dir="ltr">{transferNumber}</strong>
         </p>
       )}
       <button onClick={onClose} className="mt-2 bg-[#0e2c4e] hover:bg-teal-700 text-white font-black text-sm px-8 py-3 rounded-2xl transition-colors">
-        تمام
+        {t('تمام')}
       </button>
     </div>
   );

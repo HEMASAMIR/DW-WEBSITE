@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { TOPICS } from '@/constants/siteContent';
 import { useContactInfo, waNumber, primaryPhone } from '@/lib/contactInfo';
+import { track } from '@/lib/analytics';
 import Reveal from '@/components/common/Reveal';
 import {
   Phone,
@@ -20,12 +21,14 @@ import {
   ArrowLeft
 } from 'lucide-react';
 
+import { t, tRich } from '@/lib/i18n';
 export default function ContactSection() {
   const contact = useContactInfo();
   const [formData, setFormData] = useState({ name: '', phone: '', level: 'A1', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // i18n-keep: the WhatsApp message goes to the academy, always in Arabic
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -44,8 +47,8 @@ export default function ContactSection() {
     <section id="contact" className="py-24 bg-gradient-to-b from-slate-50 via-teal-50/20 to-slate-50 border-t border-slate-200/80 relative z-10 overflow-hidden">
       
       {/* Ambient Lighting Orbs */}
-      <div className="absolute top-10 right-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" />
-      <div className="absolute bottom-10 left-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-10 start-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" />
+      <div className="absolute bottom-10 end-10 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" style={{ animationDelay: '2s' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -62,39 +65,40 @@ export default function ContactSection() {
               
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black bg-gradient-to-r from-teal-500/15 to-emerald-500/15 border border-teal-500/30 text-teal-800 shadow-xs">
                 <Sparkles className="w-4 h-4 text-amber-500 animate-spin" style={{ animationDuration: '6s' }} />
-                <span>خدمة التسجيل والاستفسارات المباشرة</span>
+                <span>{t('خدمة التسجيل والاستفسارات المباشرة')}</span>
               </div>
 
               <div className="space-y-3">
                 <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                  هل لديك سؤال أو ترغب في{' '}
-                  <span className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 bg-clip-text text-transparent">
-                    حجز كورس؟
-                  </span>
+                  {tRich('هل لديك سؤال أو ترغب في <b>حجز كورس؟</b>', {
+                    b: (s) => <span className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 bg-clip-text text-transparent">{s}</span>,
+                  })}
                 </h2>
                 <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
-                  تواصل معنا للاستفسار عن المستويات والاشتراك والكتب.
+                  {t('تواصل معنا للاستفسار عن المستويات والاشتراك والكتب.')}
                 </p>
               </div>
 
               {/* Direct Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <a
-                  href={`https://wa.me/${waNumber(contact.whatsapp)}?text=${encodeURIComponent('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية مع هير خالد')}`}
+                  onClick={() => track('contact', { method: 'whatsapp', location: 'contact_section' })}
+                  href={`https://wa.me/${waNumber(contact.whatsapp)}?text=${encodeURIComponent(t('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية مع هير خالد'))}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 relative py-3.5 px-6 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 hover:from-teal-600 hover:to-emerald-500 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-teal-900/25 transition-all transform hover:scale-[1.02] active:scale-95"
                 >
                   <MessageCircle className="w-5 h-5 fill-white" />
-                  <span>محادثة واتساب مباشرة</span>
+                  <span>{t('محادثة واتساب مباشرة')}</span>
                 </a>
 
                 <a
+                  onClick={() => track('contact', { method: 'phone', location: 'contact_section' })}
                   href={`tel:${primaryPhone(contact)}`}
                   className="py-3.5 px-6 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-sm flex items-center justify-center gap-2 border border-slate-300 hover:border-teal-400 transition-all shadow-sm active:scale-95"
                 >
                   <Phone className="w-4 h-4 text-teal-600" />
-                  <span>اتصال تلفوني</span>
+                  <span>{t('اتصال تلفوني')}</span>
                 </a>
               </div>
 
@@ -108,15 +112,15 @@ export default function ContactSection() {
                   <div className="w-16 h-16 rounded-3xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20 border border-emerald-300 animate-bounce">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <h4 className="text-2xl font-black text-slate-900">تم تجهيز طلبك بنجاح! 🎉</h4>
+                  <h4 className="text-2xl font-black text-slate-900">{t('تم تجهيز طلبك بنجاح! 🎉')}</h4>
                   <p className="text-sm text-slate-600 max-w-md mx-auto font-medium">
-                    تم فتح محادثة الواتساب المباشرة مع هير خالد وفريق الأكاديمية لتأكيد حجزك وبياناتك فوراً.
+                    {t('تم فتح محادثة الواتساب المباشرة مع هير خالد وفريق الأكاديمية لتأكيد حجزك وبياناتك فوراً.')}
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
                     className="mt-4 px-6 py-2.5 rounded-full bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors"
                   >
-                    إرسال استفسار آخر
+                    {t('إرسال استفسار آخر')}
                   </button>
                 </div>
               ) : (
@@ -124,8 +128,8 @@ export default function ContactSection() {
                   
                   <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-2">
                     <div>
-                      <h3 className="text-lg font-black text-slate-900">أرسل استفسارك السريع</h3>
-                      <p className="text-xs text-slate-500 font-medium">سنقوم بتجهيز الرد فوراً عبر الواتساب</p>
+                      <h3 className="text-lg font-black text-slate-900">{t('أرسل استفسارك السريع')}</h3>
+                      <p className="text-xs text-slate-500 font-medium">{t('سنقوم بتجهيز الرد فوراً عبر الواتساب')}</p>
                     </div>
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
                   </div>
@@ -135,14 +139,14 @@ export default function ContactSection() {
                     <div className="space-y-1.5">
                       <label className="block text-xs font-black text-slate-800 flex items-center gap-1.5">
                         <User className="w-3.5 h-3.5 text-teal-600" />
-                        <span>الاسم بالكامل</span>
+                        <span>{t('الاسم بالكامل')}</span>
                       </label>
                       <input
                         type="text"
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="أدخل اسمك الكريم"
+                        placeholder={t('أدخل اسمك الكريم')}
                         className="w-full bg-white border border-slate-300/90 rounded-2xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 shadow-xs transition-all font-medium"
                       />
                     </div>
@@ -150,7 +154,7 @@ export default function ContactSection() {
                     <div className="space-y-1.5">
                       <label className="block text-xs font-black text-slate-800 flex items-center gap-1.5">
                         <Phone className="w-3.5 h-3.5 text-teal-600" />
-                        <span>رقم الهاتف (الواتساب)</span>
+                        <span>{t('رقم الهاتف (الواتساب)')}</span>
                       </label>
                       <input
                         type="tel"
@@ -159,7 +163,7 @@ export default function ContactSection() {
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="010xxxxxxxxx"
                         dir="ltr"
-                        className="w-full bg-white border border-slate-300/90 rounded-2xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 text-right shadow-xs transition-all font-mono font-bold"
+                        className="w-full bg-white border border-slate-300/90 rounded-2xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 text-start shadow-xs transition-all font-mono font-bold"
                       />
                     </div>
                   </div>
@@ -168,7 +172,7 @@ export default function ContactSection() {
                   <div className="space-y-1.5">
                     <label className="block text-xs font-black text-slate-800 flex items-center gap-1.5">
                       <BookOpen className="w-3.5 h-3.5 text-teal-600" />
-                      <span>المستوى المطلوب أو نوع الاستفسار</span>
+                      <span>{t('المستوى المطلوب أو نوع الاستفسار')}</span>
                     </label>
                     <select
                       value={formData.level}
@@ -176,7 +180,7 @@ export default function ContactSection() {
                       className="w-full bg-white border border-slate-300/90 rounded-2xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 shadow-xs transition-all font-bold cursor-pointer"
                     >
                       {Object.entries(TOPICS).map(([value, label]) => (
-                        <option key={value} value={value}>{label}</option>
+                        <option key={value} value={value}>{t(label)}</option>
                       ))}
                     </select>
                   </div>
@@ -185,13 +189,13 @@ export default function ContactSection() {
                   <div className="space-y-1.5">
                     <label className="block text-xs font-black text-slate-800 flex items-center gap-1.5">
                       <HelpCircle className="w-3.5 h-3.5 text-teal-600" />
-                      <span>ملاحظاتك أو استفسارك (اختياري)</span>
+                      <span>{t('ملاحظاتك أو استفسارك (اختياري)')}</span>
                     </label>
                     <textarea
                       rows={3}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="اكتب استفسارك هنا، مثلاً: أود معرفة المواعيد المسائية أو فروع الدلتا..."
+                      placeholder={t('اكتب استفسارك هنا، مثلاً: أود معرفة المواعيد المسائية أو فروع الدلتا...')}
                       className="w-full bg-white border border-slate-300/90 rounded-2xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 resize-none shadow-xs transition-all font-medium"
                     ></textarea>
                   </div>
@@ -203,7 +207,7 @@ export default function ContactSection() {
                     className="w-full relative py-4 rounded-2xl bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-700 hover:from-teal-600 hover:to-emerald-600 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-teal-700/25 transition-all transform hover:scale-[1.01] active:scale-98 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
-                    <span>{loading ? 'جاري التجهيز...' : 'إرسال الاستفسار عبر واتساب الأكاديمية'}</span>
+                    <span>{loading ? t('جاري التجهيز...') : t('إرسال الاستفسار عبر واتساب الأكاديمية')}</span>
                   </button>
 
                 </form>

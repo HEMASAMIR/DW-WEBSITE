@@ -15,6 +15,9 @@ import CvModal from '@/components/modals/CvModal';
 import LoginPromptModal from '@/components/modals/LoginPromptModal';
 import FileViewerModal from '@/components/modals/FileViewerModal';
 import LogoutConfirmModal from '@/components/modals/LogoutConfirmModal';
+import Analytics from '@/components/common/Analytics';
+import { SiteLangProvider, LangRemount } from '@/lib/i18n';
+import { LANG_BOOT_SCRIPT } from '@/lib/i18nBoot';
 
 export const metadata = {
   title: 'Deutsche Welt Academy | هير خالد الحلواني - أكاديمية اللغة الألمانية',
@@ -31,23 +34,33 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <head>
+        {/* Saved English/German choice → left-to-right before the first paint */}
+        <script dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />
+      </head>
       <body className="bg-slate-950 text-slate-100 min-h-screen relative font-sans antialiased" suppressHydrationWarning>
-        <AuthProvider>
+        <SiteLangProvider>
+          <AuthProvider>
             <ModalProvider>
-              {children}
+              {/* Re-renders the whole page when the visitor switches language */}
+              <LangRemount>
+                {children}
 
-              {/* Global Modal Layer */}
-              <AuthModal />
-              <CourseEnrollModal />
-              <BookOrderModal />
-              <ProfileModal />
-              <LightboxModal />
-              <CvModal />
-              <LoginPromptModal />
-              <FileViewerModal />
-              <LogoutConfirmModal />
+                {/* Global Modal Layer */}
+                <AuthModal />
+                <CourseEnrollModal />
+                <BookOrderModal />
+                <ProfileModal />
+                <LightboxModal />
+                <CvModal />
+                <LoginPromptModal />
+                <FileViewerModal />
+                <LogoutConfirmModal />
+              </LangRemount>
+              <Analytics />
             </ModalProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </SiteLangProvider>
       </body>
     </html>
   );

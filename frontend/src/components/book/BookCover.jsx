@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { BookOpen } from 'lucide-react';
 
 import { LEVEL_TONES, toneFor } from '@/constants/levelTones';
@@ -30,10 +31,11 @@ export default function BookCover({ id, name, level, size = 'md', tilt = true })
 
   if (size === 'sm') {
     return src ? (
-      // eslint-disable-next-line @next/next/no-img-element -- static pre-rendered cover
-      <img
+      <Image
         src={src}
         alt={name || ''}
+        width={112}
+        height={157}
         onError={() => setImgFailed(true)}
         className={`${s.box} rounded-l-sm rounded-r-lg object-cover object-top shadow-md shrink-0 border-r-2 border-black/20`}
       />
@@ -52,13 +54,13 @@ export default function BookCover({ id, name, level, size = 'md', tilt = true })
     return (
       <div className="[perspective:1200px]">
         <div className={`${frame} bg-slate-100`}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- static pre-rendered cover */}
-          <img
+          <Image
             src={src}
             alt={name || ''}
-            loading="lazy"
+            fill
+            sizes={size === 'lg' ? '(min-width: 640px) 256px, 224px' : '160px'}
             onError={() => setImgFailed(true)}
-            className="absolute inset-0 w-full h-full object-cover object-top"
+            className="object-cover object-top"
           />
           {/* spine, page edge and glossy sheen so it reads as a real book */}
           <div className="absolute inset-y-0 left-0 w-5 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />

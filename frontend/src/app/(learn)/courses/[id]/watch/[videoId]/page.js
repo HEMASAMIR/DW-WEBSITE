@@ -13,6 +13,7 @@ import {
   ArrowRight, ChevronRight, ChevronLeft, Clock, FileText, MessageSquare, Eye, AlertCircle, RefreshCw, Lock, LogIn,
 } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 /** Standalone watch page: /courses/<levelId>/watch/<videoId>. All data from the backend. */
 export default function WatchPage() {
   const { id, videoId } = useParams();
@@ -27,14 +28,14 @@ export default function WatchPage() {
     body = <Skeleton />;
   } else if (requiresLogin || (!loading && level && !canWatch)) {
     body = (
-      <Notice icon={Lock} text={requiresLogin ? 'سجّل الدخول لمشاهدة المحاضرات.' : 'المستوى ده مش مفعّل على حسابك.'}>
+      <Notice icon={Lock} text={requiresLogin ? t('سجّل الدخول لمشاهدة المحاضرات.') : t('المستوى ده مش مفعّل على حسابك.')}>
         {requiresLogin ? (
           <button onClick={() => openAuthModal('login')} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
-            <LogIn className="w-4 h-4" /> تسجيل الدخول
+            <LogIn className="w-4 h-4" /> {t('تسجيل الدخول')}
           </button>
         ) : (
           <Link href={`/courses/${id}`} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
-            تفاصيل المستوى والاشتراك
+            {t('تفاصيل المستوى والاشتراك')}
           </Link>
         )}
       </Notice>
@@ -43,12 +44,12 @@ export default function WatchPage() {
     body = (
       <Notice icon={AlertCircle} text={levelsError || error}>
         <button onClick={retry} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
-          <RefreshCw className="w-4 h-4" /> إعادة المحاولة
+          <RefreshCw className="w-4 h-4" /> {t('إعادة المحاولة')}
         </button>
       </Notice>
     );
   } else if (!level) {
-    body = <Notice icon={AlertCircle} text="المستوى غير موجود." />;
+    body = <Notice icon={AlertCircle} text={t('المستوى غير موجود.')} />;
   } else if (!content) {
     body = <Skeleton />;
   } else {
@@ -80,7 +81,7 @@ function Watch({ level, content, videoId }) {
     openFileViewer({ title: file.name, load: (onProgress) => coursesService.viewFile(level.id, file, onProgress) });
 
   if (!active) {
-    return <Notice icon={AlertCircle} text="لم يتم رفع محاضرات لهذا المستوى بعد." />;
+    return <Notice icon={AlertCircle} text={t('لم يتم رفع محاضرات لهذا المستوى بعد.')} />;
   }
 
   return (
@@ -88,14 +89,14 @@ function Watch({ level, content, videoId }) {
       {/* Top bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white border border-slate-200 shadow-sm px-4 py-3">
         <Link href={`/courses/${level.id}`} className="inline-flex items-center gap-2 text-sm font-black text-slate-800 hover:text-teal-700 min-w-0">
-          <ArrowRight className="w-4 h-4 shrink-0" />
+          <ArrowRight className="w-4 h-4 shrink-0 ltr:-scale-x-100" />
           <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white text-xs font-black flex items-center justify-center shrink-0">
             {level.code}
           </span>
           <span className="truncate" dir="auto">{level.title}</span>
         </Link>
         <span className="text-xs font-black text-teal-700 bg-teal-50 border border-teal-100 px-3 py-1.5 rounded-full">
-          المحاضرة {index + 1} من {videos.length}
+          {t('المحاضرة {n} من {total}', { n: index + 1, total: videos.length })}
         </span>
       </div>
 
@@ -131,9 +132,9 @@ function Watch({ level, content, videoId }) {
                   href={`/courses/${level.id}/watch/${prev.id}`}
                   className="flex items-center gap-2 p-3 rounded-2xl border border-slate-200 hover:border-teal-300 hover:bg-teal-50 min-w-0"
                 >
-                  <ChevronRight className="w-5 h-5 text-teal-600 shrink-0" />
+                  <ChevronRight className="w-5 h-5 text-teal-600 shrink-0 ltr:-scale-x-100" />
                   <span className="min-w-0">
-                    <span className="block text-[11px] font-bold text-slate-500">المحاضرة السابقة</span>
+                    <span className="block text-[11px] font-bold text-slate-500">{t('المحاضرة السابقة')}</span>
                     <span className="block text-sm font-black text-slate-800 truncate" dir="auto">{prev.title}</span>
                   </span>
                 </Link>
@@ -141,20 +142,20 @@ function Watch({ level, content, videoId }) {
               {next ? (
                 <Link
                   href={`/courses/${level.id}/watch/${next.id}`}
-                  className="flex items-center justify-end gap-2 p-3 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white shadow-md shadow-teal-600/20 min-w-0 text-left"
+                  className="flex items-center justify-end gap-2 p-3 rounded-2xl bg-teal-600 hover:bg-teal-500 text-white shadow-md shadow-teal-600/20 min-w-0 text-end"
                 >
-                  <span className="min-w-0 text-right">
-                    <span className="block text-[11px] font-bold text-teal-100">المحاضرة التالية</span>
+                  <span className="min-w-0 text-start">
+                    <span className="block text-[11px] font-bold text-teal-100">{t('المحاضرة التالية')}</span>
                     <span className="block text-sm font-black truncate" dir="auto">{next.title}</span>
                   </span>
-                  <ChevronLeft className="w-5 h-5 shrink-0" />
+                  <ChevronLeft className="w-5 h-5 shrink-0 ltr:-scale-x-100" />
                 </Link>
               ) : (
                 <Link
                   href={`/courses/${level.id}`}
                   className="flex items-center justify-center p-3 rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-black"
                 >
-                  خلصت محاضرات المستوى 🎉
+                  {t('خلصت محاضرات المستوى 🎉')}
                 </Link>
               )}
             </div>
@@ -169,10 +170,10 @@ function Watch({ level, content, videoId }) {
           <div className="rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden">
             <div className="flex border-b border-slate-200 px-2">
               <TabButton active={tab === 'discussion'} onClick={() => setTab('discussion')} icon={MessageSquare}>
-                المناقشة
+                {t('المناقشة')}
               </TabButton>
               <TabButton active={tab === 'files'} onClick={() => setTab('files')} icon={FileText}>
-                ملفات المستوى
+                {t('ملفات المستوى')}
                 {files.length > 0 && <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded-full">{files.length}</span>}
               </TabButton>
             </div>
@@ -180,14 +181,14 @@ function Watch({ level, content, videoId }) {
               {tab === 'discussion' ? (
                 <CommentsPanel key={`${level.id}-${active.id}`} levelId={level.id} videoId={active.id} />
               ) : files.length === 0 ? (
-                <p className="text-sm text-slate-500 text-center py-8">لا توجد ملفات لهذا المستوى.</p>
+                <p className="text-sm text-slate-500 text-center py-8">{t('لا توجد ملفات لهذا المستوى.')}</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {files.map((file) => (
                     <button
                       key={file.id}
                       onClick={() => viewFile(file)}
-                      className="group flex items-center gap-3 p-3.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-teal-50 hover:border-teal-300 text-right transition-colors"
+                      className="group flex items-center gap-3 p-3.5 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-teal-50 hover:border-teal-300 text-start transition-colors"
                     >
                       <span className="w-10 h-10 rounded-xl bg-white border border-slate-200 group-hover:border-teal-300 flex items-center justify-center shrink-0">
                         <FileText className="w-5 h-5 text-teal-600" />
@@ -195,7 +196,7 @@ function Watch({ level, content, videoId }) {
                       <span className="flex-1 min-w-0 text-sm font-bold text-slate-800 truncate" dir="auto">{file.name}</span>
                       <span className="inline-flex items-center gap-1 text-xs font-black text-teal-700 shrink-0">
                         <Eye className="w-4 h-4" />
-                        عرض
+                        {t('عرض')}
                       </span>
                     </button>
                   ))}

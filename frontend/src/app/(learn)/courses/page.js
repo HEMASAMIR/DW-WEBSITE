@@ -6,22 +6,23 @@ import { useCourses } from '@/hooks/useCourses';
 import { formatPriceLatin } from '@/services/courses.service';
 import AccessGroups, { LevelCard } from '@/components/common/AccessGroups';
 
+import { t } from '@/lib/i18n';
 export default function CoursesPage() {
   const { allCourses, loading, error, requiresLogin, isGuest, reload } = useCourses();
 
   return (
     <AccessGroups
-      title="المستويات"
+      title={t('المستويات')}
       icon={ListVideo}
-      unit="مستوى"
-      subtitle={isGuest ? 'كل مستويات الأكاديمية وأسعارها.' : 'المستويات المفعّلة لك تقدر تدخل تشوف محاضراتها على طول، والباقي متاح للاشتراك.'}
+      unit={t('مستوى')}
+      subtitle={isGuest ? t('كل مستويات الأكاديمية وأسعارها.') : t('المستويات المفعّلة لك تقدر تدخل تشوف محاضراتها على طول، والباقي متاح للاشتراك.')}
       items={allCourses}
       loading={loading}
       error={error}
       requiresLogin={requiresLogin}
       isGuest={isGuest}
       reload={reload}
-      emptyText="لا توجد مستويات متاحة حالياً."
+      emptyText={t('لا توجد مستويات متاحة حالياً.')}
       renderCard={(c) => (
         <LevelCard
           href={`/courses/${c.id}`}
@@ -31,7 +32,7 @@ export default function CoursesPage() {
           price={formatPriceLatin(c.price)}
           hasAccess={c.hasAccess}
           guest={isGuest}
-          actionLabel={c.hasAccess ? 'ادخل للمحاضرات' : isGuest ? 'التفاصيل' : 'اشترك'}
+          actionLabel={c.hasAccess ? t('ادخل للمحاضرات') : isGuest ? t('التفاصيل') : t('اشترك')}
         />
       )}
     />

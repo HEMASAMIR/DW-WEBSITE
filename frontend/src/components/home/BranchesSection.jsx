@@ -6,6 +6,7 @@ import { branchTone } from '@/constants/branchTones';
 import { MapPin, Phone, Navigation, Sparkles } from 'lucide-react';
 import Reveal from '@/components/common/Reveal';
 
+import { t, tRich } from '@/lib/i18n';
 export default function BranchesSection() {
   const branches = useBranches();
   return (
@@ -15,33 +16,33 @@ export default function BranchesSection() {
         <Reveal className="text-center max-w-3xl mx-auto mb-14 space-y-4">
           <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-xs font-black text-[#0e2c4e]">
             <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>الحضور الفعلي والتواصل المباشر</span>
+            <span>{t('الحضور الفعلي والتواصل المباشر')}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-[#0e2c4e]">
-            فروع <span className="text-teal-600">الأكاديمية</span>
+            {tRich('فروع <b>الأكاديمية</b>', { b: (s) => <span className="text-teal-600">{s}</span> })}
           </h2>
           <div className="flex h-1.5 w-24 mx-auto rounded-full overflow-hidden">
             <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
           </div>
           <p className="text-slate-600 text-sm sm:text-base">
-            يمكنكم زيارتنا والتسجيل المباشر في أحد فروعنا، أو الدراسة أونلاين من أي مكان.
+            {t('يمكنكم زيارتنا والتسجيل المباشر في أحد فروعنا، أو الدراسة أونلاين من أي مكان.')}
           </p>
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7 max-w-6xl mx-auto">
           {branches.map((branch, idx) => {
-            const t = branchTone(branch.color, idx);
+            const tone = branchTone(branch.color, idx);
             return (
             <Reveal
               as="article"
               key={branch.id}
               from={idx % 2 === 0 ? 'left' : 'right'}
               delay={(idx % 2) * 150 + Math.floor(idx / 2) * 100}
-              className={`group flex flex-col bg-white rounded-[2rem] overflow-hidden border border-slate-200/80 ${t.border} shadow-xl shadow-slate-900/[0.05] hover:shadow-2xl hover:-translate-y-1.5`}
+              className={`group flex flex-col bg-white rounded-[2rem] overflow-hidden border border-slate-200/80 ${tone.border} shadow-xl shadow-slate-900/[0.05] hover:shadow-2xl hover:-translate-y-1.5`}
             >
               {/* Illustrated map header */}
-              <div className={`dw-shine relative h-44 bg-gradient-to-br ${t.mapBg} overflow-hidden`}>
-                <MapArt accent={t.accent} soft={t.soft} seed={idx} />
+              <div className={`dw-shine relative h-44 bg-gradient-to-br ${tone.mapBg} overflow-hidden`}>
+                <MapArt accent={tone.accent} soft={tone.soft} seed={idx} />
                 <div className="absolute top-0 inset-x-0 h-1 flex" dir="ltr">
                   <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
                 </div>
@@ -49,51 +50,51 @@ export default function BranchesSection() {
                 {/* Pin */}
                 <span className="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2">
                   <span className="dw-float block relative" style={{ animationDelay: `${idx * 0.4}s` }}>
-                    <span className={`absolute left-1/2 top-full -translate-x-1/2 mt-1 w-10 h-3 rounded-[50%] ${t.ping} blur-[2px]`} />
-                    <span className={`absolute inset-0 rounded-full ${t.ping} animate-ping`} />
-                    <span className={`relative w-14 h-14 rounded-full bg-gradient-to-br ${t.pin} ring-4 ring-white flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform`}>
+                    <span className={`absolute left-1/2 top-full -translate-x-1/2 mt-1 w-10 h-3 rounded-[50%] ${tone.ping} blur-[2px]`} />
+                    <span className={`absolute inset-0 rounded-full ${tone.ping} animate-ping`} />
+                    <span className={`relative w-14 h-14 rounded-full bg-gradient-to-br ${tone.pin} ring-4 ring-white flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform`}>
                       <MapPin className="w-7 h-7" />
                     </span>
                   </span>
                 </span>
 
-                <span className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[#0e2c4e] text-[11px] font-black">
-                  {branch.badge}
+                <span className="absolute top-4 start-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur shadow-sm text-[#0e2c4e] text-[11px] font-black">
+                  {t(branch.badge)}
                 </span>
                 {branch.city !== branch.badge && (
-                  <span className="absolute bottom-4 right-4 px-3 py-1 rounded-full bg-white/80 backdrop-blur text-[#0e2c4e] text-[11px] font-black">{branch.city}</span>
+                  <span className="absolute bottom-4 start-4 px-3 py-1 rounded-full bg-white/80 backdrop-blur text-[#0e2c4e] text-[11px] font-black">{t(branch.city)}</span>
                 )}
-                <span className="absolute bottom-3 left-4 text-5xl font-black leading-none select-none" style={{ color: t.accent, opacity: 0.18 }} dir="ltr">
+                <span className="absolute bottom-3 end-4 text-5xl font-black leading-none select-none" style={{ color: tone.accent, opacity: 0.18 }} dir="ltr">
                   {String(idx + 1).padStart(2, '0')}
                 </span>
               </div>
 
               <div className="flex-1 flex flex-col p-6 sm:p-7 gap-5">
                 <div className="flex-1 space-y-2">
-                  <h3 className="text-xl sm:text-2xl font-black text-[#0e2c4e]">{branch.name}</h3>
-                  <span className={`block h-1 w-12 rounded-full ${t.bar} group-hover:w-24 transition-all duration-500`} />
+                  <h3 className="text-xl sm:text-2xl font-black text-[#0e2c4e]">{t(branch.name)}</h3>
+                  <span className={`block h-1 w-12 rounded-full ${tone.bar} group-hover:w-24 transition-all duration-500`} />
                   <p className="text-sm text-slate-600 leading-relaxed flex items-start gap-2">
-                    <MapPin className={`w-4 h-4 ${t.icon} shrink-0 mt-0.5`} />
-                    <span>{branch.address}</span>
+                    <MapPin className={`w-4 h-4 ${tone.icon} shrink-0 mt-0.5`} />
+                    <span>{t(branch.address)}</span>
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <a
                     href={`tel:${branch.phone}`}
-                    className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-slate-100 border border-slate-200 ${t.phone} text-[#0e2c4e] text-xs sm:text-sm font-black transition-colors`}
+                    className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-slate-100 border border-slate-200 ${tone.phone} text-[#0e2c4e] text-xs sm:text-sm font-black transition-colors`}
                   >
-                    <Phone className={`w-4 h-4 ${t.icon}`} />
+                    <Phone className={`w-4 h-4 ${tone.icon}`} />
                     <span dir="ltr">{branch.phone}</span>
                   </a>
                   <a
                     href={branch.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#0e2c4e] ${t.mapBtn} text-white text-xs sm:text-sm font-black transition-colors shadow-lg shadow-[#0e2c4e]/20`}
+                    className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#0e2c4e] ${tone.mapBtn} text-white text-xs sm:text-sm font-black transition-colors shadow-lg shadow-[#0e2c4e]/20`}
                   >
                     <Navigation className="w-4 h-4" />
-                    <span>الموقع على الخريطة</span>
+                    <span>{t('الموقع على الخريطة')}</span>
                   </a>
                 </div>
               </div>

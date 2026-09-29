@@ -3,6 +3,7 @@ import { coursesService } from '@/services/courses.service';
 import { getErrorMessage } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 
+import { t } from '@/lib/i18n';
 // Real data only: names, prices and access always come from the backend.
 // Never add hard-coded fallback levels here — they show wrong names/prices to the client.
 export function useCourses() {
@@ -45,7 +46,7 @@ export function useCourses() {
         const needsLogin = !isAuthenticated || err.response?.status === 401;
         setRequiresLogin(needsLogin);
         setCourses([]);
-        setError(needsLogin ? '' : getErrorMessage(err, 'تعذر تحميل الكورسات حالياً.'));
+        setError(needsLogin ? '' : getErrorMessage(err, t('تعذر تحميل الكورسات حالياً.')));
       })
       .finally(() => !cancelled && setLoading(false));
     return () => {

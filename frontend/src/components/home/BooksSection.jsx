@@ -11,6 +11,7 @@ import BookCover from '@/components/book/BookCover';
 import Reveal from '@/components/common/Reveal';
 import { Eye, ShoppingCart, Lock, Sparkles, RefreshCw, AlertCircle, CheckCircle2, ChevronLeft } from 'lucide-react';
 
+import { t, tRich } from '@/lib/i18n';
 // Every value on a book card comes from the backend (name, level, price, has_access).
 // Do not add hard-coded descriptions/features here.
 export default function BooksSection() {
@@ -33,16 +34,16 @@ export default function BooksSection() {
         <Reveal className="text-center max-w-3xl mx-auto mb-14 space-y-4">
           <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-xs font-black text-[#0e2c4e]">
             <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>كتب الأكاديمية</span>
+            <span>{t('كتب الأكاديمية')}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-[#0e2c4e]">
-            كتب <span className="text-teal-600" dir="ltr">Deutsche Welt</span>
+            {tRich('كتب <b>Deutsche Welt</b>', { b: (s) => <span className="text-teal-600" dir="ltr">{s}</span> })}
           </h2>
           <div className="flex h-1.5 w-24 mx-auto rounded-full overflow-hidden" dir="ltr">
             <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
           </div>
           <p className="text-slate-600 text-sm sm:text-base">
-            بعد تفعيل الكتاب على حسابك تقدر تعرضه أونلاين من الموقع مباشرة.
+            {t('بعد تفعيل الكتاب على حسابك تقدر تعرضه أونلاين من الموقع مباشرة.')}
           </p>
         </Reveal>
 
@@ -66,7 +67,7 @@ export default function BooksSection() {
             <p className="text-sm text-rose-700 font-semibold">{error}</p>
             <button onClick={reload} className="inline-flex items-center gap-2 bg-rose-600 text-white px-5 py-2.5 rounded-full text-xs font-black">
               <RefreshCw className="w-4 h-4" />
-              <span>إعادة المحاولة</span>
+              <span>{t('إعادة المحاولة')}</span>
             </button>
           </div>
         )}
@@ -74,15 +75,15 @@ export default function BooksSection() {
         {!loading && requiresLogin && (
           <div className="max-w-md mx-auto text-center bg-teal-50 border border-teal-200 rounded-3xl p-8 space-y-4">
             <Lock className="w-10 h-10 text-teal-600 mx-auto" />
-            <p className="text-sm text-teal-900 font-semibold">سجّل الدخول لعرض الكتب المتاحة وأسعارها.</p>
+            <p className="text-sm text-teal-900 font-semibold">{t('سجّل الدخول لعرض الكتب المتاحة وأسعارها.')}</p>
             <button onClick={() => openAuthModal('login')} className="inline-flex items-center gap-2 bg-[#0e2c4e] text-white px-5 py-2.5 rounded-full text-xs font-black">
-              <span>تسجيل الدخول</span>
+              <span>{t('تسجيل الدخول')}</span>
             </button>
           </div>
         )}
 
         {!loading && !error && !requiresLogin && books.length === 0 && (
-          <p className="text-center text-sm text-slate-500">لا توجد كتب متاحة حالياً.</p>
+          <p className="text-center text-sm text-slate-500">{t('لا توجد كتب متاحة حالياً.')}</p>
         )}
 
         {books.length > 0 && (
@@ -102,18 +103,18 @@ export default function BooksSection() {
                         className="absolute inset-0 opacity-40"
                         style={{ backgroundImage: 'radial-gradient(circle, rgba(15,23,42,0.08) 1px, transparent 1px)', backgroundSize: '16px 16px' }}
                       />
-                      <span className="absolute top-4 right-4 z-10 flex items-center gap-2">
-                        <span className={`px-3 py-1 rounded-full border text-[11px] font-black bg-white/90 ${tone.chip}`}>مستوى {book.level}</span>
+                      <span className="absolute top-4 start-4 z-10 flex items-center gap-2">
+                        <span className={`px-3 py-1 rounded-full border text-[11px] font-black bg-white/90 ${tone.chip}`}>{t('مستوى')}{' '}{book.level}</span>
                       </span>
                       {isAuthenticated && (
-                        <span className="absolute top-4 left-4 z-10">
+                        <span className="absolute top-4 end-4 z-10">
                           {book.hasAccess ? (
                             <span className="px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500 text-white flex items-center gap-1 shadow-md shadow-emerald-500/30">
-                              <CheckCircle2 className="w-3.5 h-3.5" /> مفعّل لك
+                              <CheckCircle2 className="w-3.5 h-3.5" /> {t('مفعّل لك')}
                             </span>
                           ) : (
                             <span className="px-3 py-1 rounded-full text-[11px] font-black bg-white/90 text-slate-600 border border-slate-200 flex items-center gap-1">
-                              <Lock className="w-3.5 h-3.5" /> غير مفعّل
+                              <Lock className="w-3.5 h-3.5" /> {t('غير مفعّل')}
                             </span>
                           )}
                         </span>
@@ -132,16 +133,16 @@ export default function BooksSection() {
 
                       <div className="flex items-end justify-between gap-3">
                         {book.hasAccess ? (
-                          <span className="text-sm font-black text-emerald-600">جاهز للقراءة</span>
+                          <span className="text-sm font-black text-emerald-600">{t('جاهز للقراءة')}</span>
                         ) : price !== null ? (
                           <span className="flex items-baseline gap-1.5">
                             <span className={`text-3xl font-black tracking-tight ${tone.price}`} dir="ltr">{price}</span>
-                            <span className="text-sm font-black text-slate-500">ج.م</span>
+                            <span className="text-sm font-black text-slate-500">{t('ج.م')}</span>
                           </span>
                         ) : <span />}
                         <Link href={`/books/${book.id}`} className={`inline-flex items-center gap-1 text-xs font-black ${tone.text} group-hover:gap-2 transition-all`}>
-                          التفاصيل
-                          <ChevronLeft className="w-4 h-4" />
+                          {t('التفاصيل')}
+                          <ChevronLeft className="w-4 h-4 ltr:-scale-x-100" />
                         </Link>
                       </div>
 
@@ -151,7 +152,7 @@ export default function BooksSection() {
                           className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
-                          <span>اقرأ الكتاب</span>
+                          <span>{t('اقرأ الكتاب')}</span>
                         </Link>
                       ) : (
                         <button
@@ -159,7 +160,7 @@ export default function BooksSection() {
                           className={`w-full py-3.5 rounded-2xl text-white text-sm font-black flex items-center justify-center gap-2 shadow-lg transition-colors ${tone.btn}`}
                         >
                           <ShoppingCart className="w-4 h-4" />
-                          <span>اطلب الكتاب</span>
+                          <span>{t('اطلب الكتاب')}</span>
                         </button>
                       )}
                     </div>

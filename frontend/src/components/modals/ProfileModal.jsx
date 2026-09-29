@@ -8,6 +8,7 @@ import { getErrorMessage } from '@/services/api';
 import { mediaUrl } from '@/constants/apiRoutes';
 import { X, UserCircle, Save, KeyRound, Loader2, Camera } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 const inputClass =
   'w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400';
 
@@ -52,7 +53,7 @@ function ProfileDialog({ onClose }) {
   const saveInfo = (e) => {
     e.preventDefault();
     if (phone && !/^\d{11}$/.test(phone)) {
-      setMsg({ type: 'err', text: 'رقم الهاتف يجب أن يكون 11 رقماً بالضبط.' });
+      setMsg({ type: 'err', text: t('رقم الهاتف يجب أن يكون 11 رقماً بالضبط.') });
       return;
     }
     run(async () => {
@@ -65,7 +66,7 @@ function ProfileDialog({ onClose }) {
       }
       await updateProfile(payload);
       setPhoto(null);
-    }, 'تم حفظ بياناتك بنجاح.', 'تعذر حفظ البيانات.');
+    }, t('تم حفظ بياناتك بنجاح.'), t('تعذر حفظ البيانات.'));
   };
 
   const savePassword = (e) => {
@@ -74,7 +75,7 @@ function ProfileDialog({ onClose }) {
       await authService.changePassword({ old_password: oldPassword, new_password: newPassword });
       setOldPassword('');
       setNewPassword('');
-    }, 'تم تغيير كلمة المرور بنجاح.', 'تعذر تغيير كلمة المرور.');
+    }, t('تم تغيير كلمة المرور بنجاح.'), t('تعذر تغيير كلمة المرور.'));
   };
 
   return (
@@ -82,7 +83,7 @@ function ProfileDialog({ onClose }) {
       <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl max-h-[94vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-5 left-5 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
+          className="absolute top-5 end-5 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -90,15 +91,15 @@ function ProfileDialog({ onClose }) {
         <div className="flex items-center gap-3 mb-5">
           <UserCircle className="w-8 h-8 text-amber-400" />
           <div>
-            <h3 className="text-lg font-bold text-white">حسابي</h3>
+            <h3 className="text-lg font-bold text-white">{t('حسابي')}</h3>
             {user?.email && <p className="text-xs text-slate-400" dir="ltr">{user.email}</p>}
           </div>
         </div>
 
         <div className="flex gap-2 mb-5">
           {[
-            { key: 'info', label: 'البيانات الشخصية' },
-            { key: 'password', label: 'كلمة المرور' },
+            { key: 'info', label: t('البيانات الشخصية') },
+            { key: 'password', label: t('كلمة المرور') },
           ].map((t) => (
             <button
               key={t.key}
@@ -130,22 +131,22 @@ function ProfileDialog({ onClose }) {
                   <Camera className="w-3.5 h-3.5 text-white" />
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400">تغيير الصورة</span>
+              <span className="text-[11px] text-slate-400">{t('تغيير الصورة')}</span>
               <input type="file" accept="image/*" className="hidden" onChange={(e) => setPhoto(e.target.files?.[0] || null)} />
             </label>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-slate-300 mb-1">الاسم الأول</label>
+                <label className="block text-xs text-slate-300 mb-1">{t('الاسم الأول')}</label>
                 <input required value={firstName} onChange={(e) => setFirstName(e.target.value)} className={inputClass} />
               </div>
               <div>
-                <label className="block text-xs text-slate-300 mb-1">اسم العائلة</label>
+                <label className="block text-xs text-slate-300 mb-1">{t('اسم العائلة')}</label>
                 <input value={lastName} onChange={(e) => setLastName(e.target.value)} className={inputClass} />
               </div>
             </div>
             <div>
-              <label className="block text-xs text-slate-300 mb-1">رقم الموبايل</label>
+              <label className="block text-xs text-slate-300 mb-1">{t('رقم الموبايل')}</label>
               <input
                 type="tel"
                 inputMode="numeric"
@@ -153,28 +154,28 @@ function ProfileDialog({ onClose }) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
                 placeholder="010xxxxxxxx"
-                className={`${inputClass} text-right`}
+                className={`${inputClass} text-start`}
               />
             </div>
             <button type="submit" disabled={busy} className="w-full flex items-center justify-center gap-2 bg-amber-400 text-slate-950 font-extrabold text-sm py-3 rounded-xl disabled:opacity-50">
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              <span>حفظ التعديلات</span>
+              <span>{t('حفظ التعديلات')}</span>
             </button>
           </form>
         ) : (
           <form onSubmit={savePassword} className="space-y-3">
             <div>
-              <label className="block text-xs text-slate-300 mb-1">كلمة المرور الحالية</label>
+              <label className="block text-xs text-slate-300 mb-1">{t('كلمة المرور الحالية')}</label>
               <input type="password" autoComplete="current-password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} className={inputClass} />
-              <p className="text-[10px] text-slate-500 mt-1">اتركها فارغة إذا كنت سجلت بحساب جوجل ولم تضع كلمة مرور من قبل.</p>
+              <p className="text-[10px] text-slate-500 mt-1">{t('اتركها فارغة إذا كنت سجلت بحساب جوجل ولم تضع كلمة مرور من قبل.')}</p>
             </div>
             <div>
-              <label className="block text-xs text-slate-300 mb-1">كلمة المرور الجديدة</label>
+              <label className="block text-xs text-slate-300 mb-1">{t('كلمة المرور الجديدة')}</label>
               <input type="password" required minLength={8} autoComplete="new-password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className={inputClass} />
             </div>
             <button type="submit" disabled={busy} className="w-full flex items-center justify-center gap-2 bg-amber-400 text-slate-950 font-extrabold text-sm py-3 rounded-xl disabled:opacity-50">
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
-              <span>تغيير كلمة المرور</span>
+              <span>{t('تغيير كلمة المرور')}</span>
             </button>
           </form>
         )}

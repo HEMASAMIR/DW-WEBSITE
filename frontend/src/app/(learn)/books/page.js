@@ -6,22 +6,23 @@ import { useBooks } from '@/hooks/useBooks';
 import { formatPriceLatin } from '@/services/courses.service';
 import AccessGroups, { BookCard } from '@/components/common/AccessGroups';
 
+import { t } from '@/lib/i18n';
 export default function BooksPage() {
   const { books, loading, error, requiresLogin, isGuest, reload } = useBooks();
 
   return (
     <AccessGroups
-      title="الكتب"
+      title={t('الكتب')}
       icon={BookOpen}
-      unit="كتاب"
-      subtitle={isGuest ? 'كل كتب الأكاديمية وأسعارها.' : 'الكتب المفعّلة لك تقدر تقراها أونلاين على طول، والباقي متاح للطلب.'}
+      unit={t('كتاب')}
+      subtitle={isGuest ? t('كل كتب الأكاديمية وأسعارها.') : t('الكتب المفعّلة لك تقدر تقراها أونلاين على طول، والباقي متاح للطلب.')}
       items={books}
       loading={loading}
       error={error}
       requiresLogin={requiresLogin}
       isGuest={isGuest}
       reload={reload}
-      emptyText="لا توجد كتب متاحة حالياً."
+      emptyText={t('لا توجد كتب متاحة حالياً.')}
       renderCard={(b) => (
         <BookCard
           id={b.id}
@@ -31,7 +32,7 @@ export default function BooksPage() {
           price={formatPriceLatin(b.price)}
           hasAccess={b.hasAccess}
           guest={isGuest}
-          actionLabel={b.hasAccess ? 'اقرأ الكتاب' : isGuest ? 'التفاصيل' : 'اطلب الكتاب'}
+          actionLabel={b.hasAccess ? t('اقرأ الكتاب') : isGuest ? t('التفاصيل') : t('اطلب الكتاب')}
         />
       )}
     />

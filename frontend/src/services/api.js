@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL, API_ENDPOINTS } from '@/constants/apiRoutes';
+import { t } from '@/lib/i18n';
 
 const KEYS = {
   ACCESS: 'dw_access_token',
@@ -104,10 +105,16 @@ const STATUS_MESSAGES = {
 };
 
 /**
- * Turns an axios error into a readable Arabic message.
+ * Turns an axios error into a readable message in the visitor's language (Arabic texts —
+ * including the backend's own — are translated when the site dictionary knows them).
  * Handles `{detail}` and DRF field errors `{field: ["msg"]}`.
  */
-export function getErrorMessage(error, fallback = 'حدث خطأ غير متوقع، حاول مرة أخرى.') {
+export function getErrorMessage(error, fallback) {
+  return t(errorText(error, fallback || t('حدث خطأ غير متوقع، حاول مرة أخرى.')));
+}
+
+// i18n-translated: getErrorMessage passes the result through t()
+function errorText(error, fallback) {
   if (!error) return fallback;
   if (!error.response) {
     if (error.code === 'ECONNABORTED') return 'انتهت مهلة الاتصال بالخادم، حاول مرة أخرى.';

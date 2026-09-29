@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
@@ -204,8 +205,7 @@ function Shell({ user }) {
       <div className="relative px-4 pt-6 pb-4 [@media(max-height:760px)]:pt-4 [@media(max-height:760px)]:pb-2">
         <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-l from-[#0e2c4e] to-teal-800 text-white p-2.5 pe-3 shadow-lg shadow-[#0e2c4e]/20">
           <span className="dw-keep-light w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-md shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
-            <img src="/assets/images/logo-mark.png" alt="Deutsche Welt" className="w-9 h-auto" />
+            <Image src="/assets/images/logo-mark.png" alt="Deutsche Welt" width={682} height={425} sizes="200px" className="w-9 h-auto" />
           </span>
           <div className="min-w-0 flex-1">
             <p className="font-black leading-tight tracking-tight text-start">deutsche welt</p>

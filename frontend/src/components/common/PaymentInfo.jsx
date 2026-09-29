@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useContactInfo, activeMethods } from '@/lib/contactInfo';
 import { Wallet, Zap, Landmark, CreditCard, Store, Copy, Check, Send, ShieldCheck } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 export const METHOD_STYLE = {
   wallet: { icon: Wallet, tile: 'from-red-500 to-rose-600 shadow-rose-500/30', ring: 'border-rose-200 bg-rose-50/60' },
   instapay: { icon: Zap, tile: 'from-violet-500 to-indigo-600 shadow-violet-500/30', ring: 'border-violet-200 bg-violet-50/60' },
@@ -22,12 +23,12 @@ export function PayMethodBadges() {
         const Icon = (METHOD_STYLE[m.type] || METHOD_STYLE.other).icon;
         return (
           <span key={m.id} className="inline-flex items-center gap-1.5">
-            <Icon className={`w-3.5 h-3.5 ${BADGE_TONE[m.type] || BADGE_TONE.other}`} /> {m.label}
+            <Icon className={`w-3.5 h-3.5 ${BADGE_TONE[m.type] || BADGE_TONE.other}`} /> {t(m.label)}
           </span>
         );
       })}
       {info.payment?.cash_at_branch !== false && (
-        <span className="inline-flex items-center gap-1.5"><Store className="w-3.5 h-3.5 text-amber-300" /> نقدي في الفرع</span>
+        <span className="inline-flex items-center gap-1.5"><Store className="w-3.5 h-3.5 text-amber-300" />{' '}{t('نقدي في الفرع')}</span>
       )}
     </>
   );
@@ -65,8 +66,8 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
 
   const labels = methods.map((m) => m.label);
   const howTo = labels.length
-    ? `حوّل المبلغ بـ ${labels.join(' أو ')}${cash ? '، أو ادفع نقدي في الفرع' : ''}.`
-    : 'ادفع المبلغ نقدي في أقرب فرع.';
+    ? (cash ? t('حوّل المبلغ بـ {methods}، أو ادفع نقدي في الفرع.', { methods: labels.map((l) => t(l)).join(t(' أو ')) }) : t('حوّل المبلغ بـ {methods}.', { methods: labels.map((l) => t(l)).join(t(' أو ')) }))
+    : t('ادفع المبلغ نقدي في أقرب فرع.');
 
   return (
     <div className={`rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-900/[0.05] overflow-hidden text-slate-900 ${className}`}>
@@ -76,10 +77,10 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
 
       <div className="p-5 sm:p-6 space-y-5">
         <div className="flex items-center justify-between gap-3">
-          <h4 className="font-black text-base sm:text-lg text-[#0e2c4e]">طرق الدفع</h4>
+          <h4 className="font-black text-base sm:text-lg text-[#0e2c4e]">{t('طرق الدفع')}</h4>
           {amount && (
             <span className="px-3 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm font-black">
-              المبلغ: <span dir="ltr">{amount}</span> ج.م
+              {t('المبلغ:')} <span dir="ltr">{amount}</span> {t('ج.م')}
             </span>
           )}
         </div>
@@ -95,8 +96,8 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
                   <span className={`dw-wiggle w-11 h-11 rounded-xl bg-gradient-to-br ${s.tile} text-white flex items-center justify-center shadow-lg`}>
                     <Icon className="w-5 h-5" />
                   </span>
-                  <span className="text-sm font-black">{m.label}</span>
-                  {m.hint && <span className="text-[11px] text-slate-500 font-semibold leading-snug">{m.hint}</span>}
+                  <span className="text-sm font-black">{t(m.label)}</span>
+                  {m.hint && <span className="text-[11px] text-slate-500 font-semibold leading-snug">{t(m.hint)}</span>}
                 </div>
               );
             })}
@@ -105,8 +106,8 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
                 <span className="dw-wiggle w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30">
                   <Store className="w-5 h-5" />
                 </span>
-                <span className="text-sm font-black">نقدي في الفرع</span>
-                <span className="text-[11px] text-slate-500 font-semibold leading-snug">ادفع في أي فرع من فروعنا</span>
+                <span className="text-sm font-black">{t('نقدي في الفرع')}</span>
+                <span className="text-[11px] text-slate-500 font-semibold leading-snug">{t('ادفع في أي فرع من فروعنا')}</span>
               </div>
             )}
           </div>
@@ -117,7 +118,7 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
           <div key={n.number} className="rounded-2xl bg-[#0e2c4e] text-white p-4 flex items-center justify-between gap-3">
             <div className="min-w-0">
               <span className="block text-[11px] text-teal-200 font-bold mb-0.5">
-                حوّل على الرقم{numbers.length > 1 ? ` (${n.labels.join(' / ')})` : ''}
+                {t('حوّل على الرقم')}{numbers.length > 1 ? ` (${n.labels.map((l) => t(l)).join(' / ')})` : ''}
               </span>
               <span className={`block font-black break-all ${n.number.length > 14 ? 'text-lg sm:text-xl tracking-wide' : 'text-2xl sm:text-3xl tracking-wider'}`} dir="ltr">{n.number}</span>
             </div>
@@ -129,7 +130,7 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
               }`}
             >
               {copied === n.number ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied === n.number ? 'اتنسخ' : 'نسخ الرقم'}
+              {copied === n.number ? t('اتنسخ') : t('نسخ الرقم')}
             </button>
           </div>
         ))}
@@ -138,8 +139,8 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
           <ol className="space-y-2.5">
             {[
               howTo,
-              'ابعت طلب الاشتراك من الموقع وارفع معاه صورة التحويل.',
-              'أول ما الإدارة تقبل الطلب هيتفعّل على حسابك فوراً.',
+              t('ابعت طلب الاشتراك من الموقع وارفع معاه صورة التحويل.'),
+              t('أول ما الإدارة تقبل الطلب هيتفعّل على حسابك فوراً.'),
             ].map((step, i) => (
               <li key={step} className="flex items-start gap-3 text-sm text-slate-600 font-semibold">
                 <span className="w-6 h-6 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-black flex items-center justify-center shrink-0">
@@ -154,13 +155,13 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
         {compact && (
           <p className="flex items-center gap-2 text-xs text-slate-500 font-semibold">
             <Send className="w-3.5 h-3.5 text-emerald-600" />
-            بعد التحويل ابعت الطلب وارفع صورة التحويل من الفورم.
+            {t('بعد التحويل ابعت الطلب وارفع صورة التحويل من الفورم.')}
           </p>
         )}
 
         <p className="flex items-center gap-1.5 text-[11px] text-slate-400 font-semibold">
           <ShieldCheck className="w-3.5 h-3.5" />
-          التفعيل بيتم من الإدارة بعد مراجعة التحويل، وبيظهرلك على طول.
+          {t('التفعيل بيتم من الإدارة بعد مراجعة التحويل، وبيظهرلك على طول.')}
         </p>
       </div>
     </div>

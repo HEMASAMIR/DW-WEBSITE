@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
 import { ACADEMY_INFO } from '@/constants/siteContent';
 import { useContactInfo, whatsappHref, primaryPhone } from '@/lib/contactInfo';
+import { track } from '@/lib/analytics';
 import { useBranches } from '@/hooks/useBranches';
 import { branchTone } from '@/constants/branchTones';
 import Reveal from '@/components/common/Reveal';
@@ -26,6 +28,7 @@ import {
   Lock
 } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 // Each link / branch gets its own accent colour.
 const QUICK_LINKS = [
   { href: '/#hero', label: 'الرئيسية', tone: 'text-teal-400 group-hover:bg-teal-500/20' },
@@ -61,10 +64,10 @@ export default function Footer() {
 
   const devWhatsapp =
     'https://wa.me/201055673184?text=' +
-    encodeURIComponent('السلام عليكم مهندس إبراهيم سمير، أتواصل معك عبر موقع دويتشه فيلت للألمانية');
+    encodeURIComponent(t('السلام عليكم مهندس إبراهيم سمير، أتواصل معك عبر موقع دويتشه فيلت للألمانية'));
   const devEmail =
     'mailto:01055673184hs@gmail.com?subject=' +
-    encodeURIComponent('تواصل واستفسار برمجي - Eng. Ibrahim Samir');
+    encodeURIComponent(t('تواصل واستفسار برمجي - Eng. Ibrahim Samir'));
 
   return (
     <footer className="bg-[#071427] text-slate-300 pt-16 pb-10 relative z-10 overflow-hidden">
@@ -84,24 +87,24 @@ export default function Footer() {
 
         {/* Contact / admin CTA band */}
         <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-l from-[#0e2c4e] via-[#0f3a5c] to-teal-900 border border-white/10 p-6 sm:p-8 shadow-2xl">
-          <div className="absolute -top-20 -left-10 w-72 h-72 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-20 -end-10 w-72 h-72 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
           <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             {isAdmin ? (
               <>
                 <div className="space-y-2">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>جلسة المشرف نشطة</span>
+                    <span>{t('جلسة المشرف نشطة')}</span>
                   </span>
-                  <h5 className="text-white font-black text-2xl">لوحة تحكم الأدمن</h5>
-                  <p className="text-sm text-slate-300">إدارة المستويات الدراسية، الكتب، ومتابعة حجوزات الطلاب وقاعدة البيانات.</p>
+                  <h5 className="text-white font-black text-2xl">{t('لوحة تحكم الأدمن')}</h5>
+                  <p className="text-sm text-slate-300">{t('إدارة المستويات الدراسية، الكتب، ومتابعة حجوزات الطلاب وقاعدة البيانات.')}</p>
                 </div>
                 <button
                   onClick={openAdminDashboard}
                   className="shrink-0 px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-300 to-amber-500 text-[#0e2c4e] font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-amber-500/25 hover:-translate-y-0.5 transition-transform cursor-pointer"
                 >
                   <Lock className="w-4 h-4" />
-                  <span>دخول لوحة التحكم المباشرة</span>
+                  <span>{t('دخول لوحة التحكم المباشرة')}</span>
                 </button>
               </>
             ) : (
@@ -109,22 +112,24 @@ export default function Footer() {
                 <div className="space-y-2">
                   <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-extrabold bg-white/10 text-amber-300 border border-white/15">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>تواصل معنا</span>
+                    <span>{t('تواصل معنا')}</span>
                   </span>
-                  <h5 className="text-white font-black text-2xl sm:text-3xl">تواصل معنا فوراً</h5>
-                  <p className="text-sm text-slate-300">للاستفسار عن الكورسات والاشتراك وطلب الكتب.</p>
+                  <h5 className="text-white font-black text-2xl sm:text-3xl">{t('تواصل معنا فوراً')}</h5>
+                  <p className="text-sm text-slate-300">{t('للاستفسار عن الكورسات والاشتراك وطلب الكتب.')}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 shrink-0">
                   <a
-                    href={whatsappHref(contact, 'السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية والاشتراك')}
+                    onClick={() => track('contact', { method: 'whatsapp', location: 'footer' })}
+                    href={whatsappHref(contact, t('السلام عليكم، أود الاستفسار عن تفاصيل كورسات الألمانية والاشتراك'))}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-7 py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/25 hover:-translate-y-0.5 transition-all"
                   >
                     <MessageCircle className="w-5 h-5 fill-white" />
-                    <span>محادثة واتساب سريعة</span>
+                    <span>{t('محادثة واتساب سريعة')}</span>
                   </a>
                   <a
+                    onClick={() => track('contact', { method: 'phone', location: 'footer' })}
                     href={`tel:${phone}`}
                     className="px-7 py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-black text-sm flex items-center justify-center gap-2.5 transition-colors"
                   >
@@ -142,26 +147,25 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="lg:col-span-5 space-y-5">
-            {/* eslint-disable-next-line @next/next/no-img-element -- local static logo */}
-            <img src="/assets/images/logo-full-white.png" alt="Deutsche Welt" className="h-24 w-auto" />
+            <Image src="/assets/images/logo-full-white.png" alt="Deutsche Welt" width={954} height={622} sizes="200px" className="h-24 w-auto" />
             <p className="text-sm leading-relaxed text-slate-400 max-w-md font-medium">
-              {ACADEMY_INFO.subtitle} — منصتك الأولى والمتكاملة لاجتياز امتحانات جوته وتيلك وتأهيل الكول سنتر وسوق العمل الطبي والمهني في ألمانيا.
+              {t(ACADEMY_INFO.subtitle)} — {t('منصتك الأولى والمتكاملة لاجتياز امتحانات جوته وتيلك وتأهيل الكول سنتر وسوق العمل الطبي والمهني في ألمانيا.')}
             </p>
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white/[0.05] text-slate-300 border border-white/10">
                 <Award className="w-3.5 h-3.5 text-amber-400" />
-                <span>شهادات معتمدة دولياً</span>
+                <span>{t('شهادات معتمدة دولياً')}</span>
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-white/[0.05] text-slate-300 border border-white/10">
                 <Globe2 className="w-3.5 h-3.5 text-teal-400" />
-                <span>{branches.length} فروع + أونلاين</span>
+                <span>{branches.length}{' '}{t('فروع + أونلاين')}</span>
               </span>
             </div>
             <div className="flex items-center gap-3 pt-1">
               {[
-                { href: whatsappHref(contact), title: 'محادثة واتساب الأكاديمية', icon: MessageCircle, cls: 'hover:bg-emerald-500 hover:border-emerald-400', external: true, fill: true },
-                { href: `tel:${phone}`, title: 'الاتصال الهاتفي المباشر', icon: Phone, cls: 'hover:bg-teal-500 hover:border-teal-400' },
-                { href: '/#branches', title: 'مواقع الفروع على الخريطة', icon: MapPin, cls: 'hover:bg-amber-500 hover:border-amber-400' },
+                { href: whatsappHref(contact), title: t('محادثة واتساب الأكاديمية'), icon: MessageCircle, cls: 'hover:bg-emerald-500 hover:border-emerald-400', external: true, fill: true },
+                { href: `tel:${phone}`, title: t('الاتصال الهاتفي المباشر'), icon: Phone, cls: 'hover:bg-teal-500 hover:border-teal-400' },
+                { href: '/#branches', title: t('مواقع الفروع على الخريطة'), icon: MapPin, cls: 'hover:bg-amber-500 hover:border-amber-400' },
               ].map(({ href, title, icon: Icon, cls, external, fill }) => (
                 <a
                   key={title}
@@ -180,16 +184,16 @@ export default function Footer() {
           <div className="lg:col-span-3 space-y-5">
             <h4 className="text-white font-black text-lg flex items-center gap-3">
               <FlagStripe className="h-5 w-1.5 flex-col rounded-full" />
-              <span>الروابط السريعة</span>
+              <span>{t('الروابط السريعة')}</span>
             </h4>
             <ul className="space-y-1 text-sm font-semibold text-slate-400">
               {QUICK_LINKS.map((l, i) => (
                 <Reveal as="li" key={l.href} from="left" delay={i * 70}>
                   <Link href={l.href} className="group flex items-center gap-2 py-1.5 hover:text-white hover:-translate-x-1 transition-all">
                     <span className={`w-6 h-6 rounded-lg bg-white/[0.04] ${l.tone} flex items-center justify-center transition-colors`}>
-                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <ChevronLeft className="w-3.5 h-3.5 ltr:-scale-x-100" />
                     </span>
-                    <span>{l.label}</span>
+                    <span>{t(l.label)}</span>
                   </Link>
                 </Reveal>
               ))}
@@ -200,7 +204,7 @@ export default function Footer() {
           <div className="lg:col-span-4 space-y-5">
             <h4 className="text-white font-black text-lg flex items-center gap-3">
               <FlagStripe className="h-5 w-1.5 flex-col rounded-full" />
-              <span>فروعنا بالحضور</span>
+              <span>{t('فروعنا بالحضور')}</span>
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
               {branches.map((b, i) => (
@@ -219,10 +223,10 @@ export default function Footer() {
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className="flex items-center justify-between gap-2">
-                      <strong className="text-sm font-extrabold text-white">{b.name}</strong>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/[0.06] text-slate-300 shrink-0">{b.city}</span>
+                      <strong className="text-sm font-extrabold text-white">{t(b.name)}</strong>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/[0.06] text-slate-300 shrink-0">{t(b.city)}</span>
                     </span>
-                    <span className="block text-[11px] text-slate-400 truncate mt-0.5">{b.address}</span>
+                    <span className="block text-[11px] text-slate-400 truncate mt-0.5">{t(b.address)}</span>
                   </span>
                 </Reveal>
               ))}
@@ -234,13 +238,13 @@ export default function Footer() {
         {/* Bottom Bar: Copyright & Eng. Ibrahim Samir Developer Badge */}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400 gap-6 relative">
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-right">
+          <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-start">
             <p className="font-semibold">
-              © {new Date().getFullYear()} Deutsche Welt Akademie — هير خالد الحلواني. جميع الحقوق محفوظة.
+              © {new Date().getFullYear()} Deutsche Welt Akademie — {t('هير خالد الحلواني. جميع الحقوق محفوظة.')}
             </p>
             <span className="hidden sm:inline text-slate-600">•</span>
             <span className="text-[11px] text-teal-400/90 font-bold flex items-center gap-1">
-              <span>🇩🇪 أعلى معايير الجودة والتعليم الأكاديمي 🇪🇬</span>
+              <span>{t('🇩🇪 أعلى معايير الجودة والتعليم الأكاديمي 🇪🇬')}</span>
             </span>
           </div>
 
@@ -252,15 +256,15 @@ export default function Footer() {
             >
               <div className="bg-[#0b1329] group-hover:bg-[#111c3d] px-5 py-2.5 rounded-full flex items-center gap-3 transition-colors">
                 <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 font-black flex items-center justify-center text-xs shadow-md">
-                  إس
+                  {t('إس')}
                 </div>
-                <div className="text-right">
-                  <span className="text-[10px] text-teal-400 font-extrabold block leading-tight">تطوير وتصميم هندسي</span>
+                <div className="text-start">
+                  <span className="text-[10px] text-teal-400 font-extrabold block leading-tight">{t('تطوير وتصميم هندسي')}</span>
                   <span className="text-xs font-black text-white group-hover:text-amber-300 transition-colors">
-                    Eng. Ibrahim Samir (المهندس إبراهيم سمير)
+                    Eng. Ibrahim Samir {t('(المهندس إبراهيم سمير)')}
                   </span>
                 </div>
-                <Sparkles className="w-4 h-4 text-amber-400 animate-pulse mr-1" />
+                <Sparkles className="w-4 h-4 text-amber-400 animate-pulse ms-1" />
               </div>
             </button>
 
@@ -268,10 +272,10 @@ export default function Footer() {
             <div className="hidden group-hover:flex absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-80 bg-slate-900/98 backdrop-blur-2xl border-2 border-amber-400/70 rounded-3xl p-5 shadow-2xl flex-col gap-3 z-30 animate-fadeIn pointer-events-auto">
               <div className="text-center pb-3 border-b border-slate-800">
                 <div className="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 font-black flex items-center justify-center text-lg shadow-md mb-2">
-                  إس
+                  {t('إس')}
                 </div>
                 <span className="text-[10px] text-teal-400 font-black tracking-wider uppercase block">Full-Stack Software Engineer</span>
-                <h5 className="text-white font-black text-base">المهندس إبراهيم سمير</h5>
+                <h5 className="text-white font-black text-base">{t('المهندس إبراهيم سمير')}</h5>
               </div>
 
               <a
@@ -282,7 +286,7 @@ export default function Footer() {
               >
                 <div className="flex items-center gap-2.5">
                   <MessageCircle className="w-4 h-4 fill-current text-emerald-200" />
-                  <span>واتساب: <span dir="ltr">01055673184</span></span>
+                  <span>{t('واتساب:')}{' '}<span dir="ltr">01055673184</span></span>
                 </div>
                 <ExternalLink className="w-3.5 h-3.5 opacity-90" />
               </a>
@@ -312,19 +316,19 @@ export default function Footer() {
           <div className="relative w-full max-w-md bg-slate-900 border-2 border-amber-400/80 rounded-3xl p-6 sm:p-8 shadow-2xl text-white space-y-6">
             <button
               onClick={() => setDevModalOpen(false)}
-              className="absolute top-4 left-4 p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors shadow-sm cursor-pointer"
+              className="absolute top-4 end-4 p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors shadow-sm cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="text-center space-y-2 pt-2">
               <div className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-amber-400 via-amber-500 to-amber-600 text-slate-950 flex items-center justify-center shadow-xl shadow-amber-500/30 font-black text-3xl border-2 border-amber-300">
-                إس
+                {t('إس')}
               </div>
               <span className="inline-block text-[11px] text-teal-300 font-extrabold bg-teal-950/90 px-4 py-1 rounded-full border border-teal-500/40">
-                تطوير وتصميم موقع دويتشه فيلت الألمانية
+                {t('تطوير وتصميم موقع دويتشه فيلت الألمانية')}
               </span>
-              <h3 className="text-2xl font-black text-white">المهندس إبراهيم سمير</h3>
+              <h3 className="text-2xl font-black text-white">{t('المهندس إبراهيم سمير')}</h3>
               <p className="text-xs text-slate-400 font-mono">Full-Stack Software Engineer</p>
             </div>
 
@@ -338,8 +342,8 @@ export default function Footer() {
               >
                 <div className="flex items-center gap-3">
                   <MessageCircle className="w-6 h-6 fill-current shrink-0 text-emerald-200" />
-                  <div className="text-right">
-                    <span className="block font-black text-sm">محادثة واتساب مباشرة 💬</span>
+                  <div className="text-start">
+                    <span className="block font-black text-sm">{t('محادثة واتساب مباشرة 💬')}</span>
                     <span className="text-xs font-mono text-emerald-200" dir="ltr">01055673184</span>
                   </div>
                 </div>
@@ -353,8 +357,8 @@ export default function Footer() {
               >
                 <div className="flex items-center gap-3">
                   <Mail className="w-6 h-6 shrink-0 text-cyan-200" />
-                  <div className="text-right">
-                    <span className="block font-black text-sm">إرسال إيميل رسمي ✉️</span>
+                  <div className="text-start">
+                    <span className="block font-black text-sm">{t('إرسال إيميل رسمي ✉️')}</span>
                     <span className="text-xs font-mono text-cyan-200" dir="ltr">01055673184hs@gmail.com</span>
                   </div>
                 </div>
@@ -371,12 +375,12 @@ export default function Footer() {
                 {copiedText === 'phone' ? (
                   <>
                     <Check className="w-4 h-4 text-emerald-400" />
-                    <span className="text-emerald-400 font-extrabold">تم نسخ الرقم</span>
+                    <span className="text-emerald-400 font-extrabold">{t('تم نسخ الرقم')}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-4 h-4 text-amber-400" />
-                    <span>نسخ الرقم</span>
+                    <span>{t('نسخ الرقم')}</span>
                   </>
                 )}
               </button>
@@ -388,12 +392,12 @@ export default function Footer() {
                 {copiedText === 'email' ? (
                   <>
                     <Check className="w-4 h-4 text-emerald-400" />
-                    <span className="text-emerald-400 font-extrabold">تم نسخ الإيميل</span>
+                    <span className="text-emerald-400 font-extrabold">{t('تم نسخ الإيميل')}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-4 h-4 text-cyan-400" />
-                    <span>نسخ الإيميل</span>
+                    <span>{t('نسخ الإيميل')}</span>
                   </>
                 )}
               </button>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useModal } from '@/context/ModalContext';
 import Reveal from '@/components/common/Reveal';
 
@@ -31,6 +32,7 @@ import {
   FileCheck
 } from 'lucide-react';
 
+import { t, tRich } from '@/lib/i18n';
 export default function ReviewsSection() {
   const { openLightboxModal } = useModal();
   const [activeTab, setActiveTab] = useState('screenshots');
@@ -41,8 +43,8 @@ export default function ReviewsSection() {
   const allReviewScreenshots = Array.from({ length: 74 }, (_, i) => ({
     id: i + 1,
     image: `/assets/reviews/review_${i + 1}.jpg`,
-    title: `رأي الطالب الموثق رقم ${i + 1}`,
-    badge: (i % 3 === 0) ? 'Goethe B1/B2' : (i % 3 === 1) ? 'Concentrix & Vodafone' : 'تأسيس A1/A2'
+    title: t('رأي الطالب الموثق رقم {n}', { n: i + 1 }),
+    badge: (i % 3 === 0) ? 'Goethe B1/B2' : (i % 3 === 1) ? 'Concentrix & Vodafone' : t('تأسيس A1/A2')
   }));
 
   const itemsPerPage = 4;
@@ -64,30 +66,30 @@ export default function ReviewsSection() {
   const alumniReviews = [
     {
       id: 1,
-      name: 'محمد عبدالرحمن',
+      name: t('محمد عبدالرحمن'),
       role: 'Senior Team Leader • Concentrix',
-      comment: 'بدأت مع هير خالد من الصفر في A1، أسلوبه في تبسيط الجرامر وربطه بسوق العمل والكول سنتر خلاني أتقبل في Concentrix من أول إنترفيو بعد كورس B1، وحالياً بقيت Team Leader بفضل ربنا ثم هير خالد!',
+      comment: t('بدأت مع هير خالد من الصفر في A1، أسلوبه في تبسيط الجرامر وربطه بسوق العمل والكول سنتر خلاني أتقبل في Concentrix من أول إنترفيو بعد كورس B1، وحالياً بقيت Team Leader بفضل ربنا ثم هير خالد!'),
       rating: 5,
       icon: Building2,
-      tag: 'راتب 25k+'
+      tag: t('راتب 25k+')
     },
     {
       id: 2,
-      name: 'ياسمين الشناوي',
+      name: t('ياسمين الشناوي'),
       role: 'Senior Customer Advisor • Vodafone DE',
-      comment: 'كورس الـ Upskilling مع هير خالد كان نقطة تحول في حياتي المهنية. التدريب على مكالمات الـ Incident Management وطريقة التعامل مع الألمان كانت واقعية جداً. شكراً يا أحسن هير في مصر!',
+      comment: t('كورس الـ Upskilling مع هير خالد كان نقطة تحول في حياتي المهنية. التدريب على مكالمات الـ Incident Management وطريقة التعامل مع الألمان كانت واقعية جداً. شكراً يا أحسن هير في مصر!'),
       rating: 5,
       icon: MessageCircle,
       tag: 'Vodafone DE'
     },
     {
       id: 3,
-      name: 'د. أحمد سامي',
-      role: 'طبيب مقيم في مستشفى بمدينة شتوتغارت 🇩🇪',
-      comment: 'كنت محتاج ألماني طبي عشان معادلة الأطباء في ألمانيا، كورس الـ Medizin مع هير خالد وكتاب الأكاديمية خلوني أعدي امتحان الـ FSP من أول مرة وبكل سهولة. ربنا يباركلك في علمك يا هير.',
+      name: t('د. أحمد سامي'),
+      role: t('طبيب مقيم في مستشفى بمدينة شتوتغارت 🇩🇪'),
+      comment: t('كنت محتاج ألماني طبي عشان معادلة الأطباء في ألمانيا، كورس الـ Medizin مع هير خالد وكتاب الأكاديمية خلوني أعدي امتحان الـ FSP من أول مرة وبكل سهولة. ربنا يباركلك في علمك يا هير.'),
       rating: 5,
       icon: Stethoscope,
-      tag: 'معادلة الأطباء'
+      tag: t('معادلة الأطباء')
     }
   ];
 
@@ -95,8 +97,8 @@ export default function ReviewsSection() {
     <section id="reviews" className="py-20 bg-[#f0fdfa] border-t border-slate-200 relative z-10">
       
       {/* Background Glow Highlights */}
-      <div className="absolute top-10 right-10 w-96 h-96 bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-10 left-10 w-96 h-96 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-10 start-10 w-96 h-96 bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-10 end-10 w-96 h-96 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 relative">
         
@@ -104,23 +106,23 @@ export default function ReviewsSection() {
         <Reveal className="text-center max-w-4xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 glass-pill px-5 py-2 rounded-full text-xs font-bold text-amber-800 border border-amber-400/50 shadow-sm">
             <Sparkles className="w-4 h-4 text-amber-600 animate-pulse" />
-            <span>معرض الآراء والتجارب الموثقة 100%</span>
+            <span>{t('معرض الآراء والتجارب الموثقة 100%')}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-[#0f172a] leading-tight">
-            قصص نجاح وتجارب <span className="text-gradient-cyan">طلاب وأطباء وخريجي هير خالد</span>
+            {tRich('قصص نجاح وتجارب <b>طلاب وأطباء وخريجي هير خالد</b>', { b: (s) => <span className="text-gradient-cyan">{s}</span> })}
           </h2>
           <p className="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-            أكثر من 15,000 طالب حققوا أهدافهم في العمل بشركات الكول سنتر العالمية والتأهيل للسفر والامتحانات الرسمية.
+            {t('أكثر من 15,000 طالب حققوا أهدافهم في العمل بشركات الكول سنتر العالمية والتأهيل للسفر والامتحانات الرسمية.')}
           </p>
         </Reveal>
 
         {/* High-Trust Stats Highlight Bar — one calm colour each */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           {[
-            { value: '+15,000', label: 'طالب تم تدريبهم', icon: Users, cls: 'from-teal-50 border-teal-200/70 hover:border-teal-300 hover:shadow-teal-500/15', num: 'text-teal-600', tile: 'bg-teal-100 text-teal-600' },
-            { value: '98.4%', label: 'نسبة نجاح جوته & تلـك', icon: Award, cls: 'from-amber-50 border-amber-200/70 hover:border-amber-300 hover:shadow-amber-500/15', num: 'text-amber-600', tile: 'bg-amber-100 text-amber-600' },
-            { value: '74+', label: 'شات موثق بالصور', icon: MessageSquare, cls: 'from-violet-50 border-violet-200/70 hover:border-violet-300 hover:shadow-violet-500/15', num: 'text-violet-600', tile: 'bg-violet-100 text-violet-600' },
-            { value: '+10', label: 'سنوات خبرة بالمجال', icon: GraduationCap, cls: 'from-sky-50 border-sky-200/70 hover:border-sky-300 hover:shadow-sky-500/15', num: 'text-sky-600', tile: 'bg-sky-100 text-sky-600' },
+            { value: '+15,000', label: t('طالب تم تدريبهم'), icon: Users, cls: 'from-teal-50 border-teal-200/70 hover:border-teal-300 hover:shadow-teal-500/15', num: 'text-teal-600', tile: 'bg-teal-100 text-teal-600' },
+            { value: '98.4%', label: t('نسبة نجاح جوته & تلـك'), icon: Award, cls: 'from-amber-50 border-amber-200/70 hover:border-amber-300 hover:shadow-amber-500/15', num: 'text-amber-600', tile: 'bg-amber-100 text-amber-600' },
+            { value: '74+', label: t('شات موثق بالصور'), icon: MessageSquare, cls: 'from-violet-50 border-violet-200/70 hover:border-violet-300 hover:shadow-violet-500/15', num: 'text-violet-600', tile: 'bg-violet-100 text-violet-600' },
+            { value: '+10', label: t('سنوات خبرة بالمجال'), icon: GraduationCap, cls: 'from-sky-50 border-sky-200/70 hover:border-sky-300 hover:shadow-sky-500/15', num: 'text-sky-600', tile: 'bg-sky-100 text-sky-600' },
           ].map((s, i) => {
             const Icon = s.icon;
             return (
@@ -149,7 +151,7 @@ export default function ReviewsSection() {
             }`}
           >
             <MessageSquare className="w-4 h-4" />
-            <span>سلايدر محادثات الطلاب (+74 شات)</span>
+            <span>{t('سلايدر محادثات الطلاب (+74 شات)')}</span>
           </button>
 
           <button
@@ -159,7 +161,7 @@ export default function ReviewsSection() {
             }`}
           >
             <Video className="w-4 h-4" />
-            <span>فيديو النجاح وتجارب خريجي الكورسات</span>
+            <span>{t('فيديو النجاح وتجارب خريجي الكورسات')}</span>
           </button>
 
           <button
@@ -169,7 +171,7 @@ export default function ReviewsSection() {
             }`}
           >
             <Building2 className="w-4 h-4" />
-            <span>تجارب العمل بـ Concentrix & Vodafone</span>
+            <span>{t('تجارب العمل بـ Concentrix & Vodafone')}</span>
           </button>
         </Reveal>
 
@@ -182,36 +184,36 @@ export default function ReviewsSection() {
               <div>
                 <div className="inline-flex items-center gap-1.5 bg-teal-50 text-teal-800 border border-teal-300 px-3.5 py-1 rounded-full text-xs font-bold mb-1.5">
                   <FileCheck className="w-3.5 h-3.5 text-teal-600" />
-                  <span>معرض محادثات ورسائل شكر طلاب الأكاديمية (74 صورة)</span>
+                  <span>{t('معرض محادثات ورسائل شكر طلاب الأكاديمية (74 صورة)')}</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-black text-[#0f172a]">
-                  تصفح آراء الطلاب الحقيقية من شات وواتساب هير خالد
+                  {t('تصفح آراء الطلاب الحقيقية من شات وواتساب هير خالد')}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                  اضغط على أي صورة لتكبيرها وقراءة التفاصيل بوضوح كامل.
+                  {t('اضغط على أي صورة لتكبيرها وقراءة التفاصيل بوضوح كامل.')}
                 </p>
               </div>
 
               {/* Swiper Controls & Counter */}
               <div className="flex items-center gap-4 shrink-0">
                 <span className="bg-amber-100 text-amber-900 border border-amber-300 px-4 py-2 rounded-full text-xs font-mono font-black shadow-sm">
-                  صفحة {swiperIndex + 1} من {maxPages} ({swiperIndex * itemsPerPage + 1} - {Math.min((swiperIndex + 1) * itemsPerPage, allReviewScreenshots.length)})
+                  {t('صفحة {p} من {n}', { p: swiperIndex + 1, n: maxPages })} ({swiperIndex * itemsPerPage + 1} - {Math.min((swiperIndex + 1) * itemsPerPage, allReviewScreenshots.length)})
                 </span>
                 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handlePrev}
                     className="w-11 h-11 rounded-full bg-slate-100 text-slate-700 border border-slate-300 flex items-center justify-center hover:bg-teal-600 hover:text-white hover:scale-110 transition-all shadow-sm"
-                    title="السابق"
+                    title={t('السابق')}
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-5 h-5 ltr:-scale-x-100" />
                   </button>
                   <button
                     onClick={handleNext}
                     className="w-11 h-11 rounded-full bg-slate-100 text-slate-700 border border-slate-300 flex items-center justify-center hover:bg-teal-600 hover:text-white hover:scale-110 transition-all shadow-sm"
-                    title="التالي"
+                    title={t('التالي')}
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-5 h-5 ltr:-scale-x-100" />
                   </button>
                 </div>
               </div>
@@ -226,18 +228,20 @@ export default function ReviewsSection() {
                   onClick={() => openLightboxModal(item.image, item.title)}
                   className={`dw-shine group relative rounded-2xl overflow-hidden bg-slate-50 border-2 aspect-[3/4] cursor-pointer shadow-md hover:shadow-2xl hover:-translate-y-1.5 ${SHOT_TONES[n % SHOT_TONES.length]}`}
                 >
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(min-width: 1024px) 18vw, (min-width: 640px) 30vw, 46vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-400/40">
+                  <div className="absolute top-3 start-3 bg-slate-900/80 backdrop-blur-md text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-400/40">
                     {item.badge}
                   </div>
                   <div className="absolute inset-0 bg-slate-950/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <div className="glass-pill-gold px-4 py-2.5 rounded-full text-xs font-black flex items-center gap-2 shadow-xl transform scale-90 group-hover:scale-100 transition-transform">
                       <Maximize2 className="w-4 h-4 text-slate-900" />
-                      <span>تكبير وتصفح المحادثة 🔍</span>
+                      <span>{t('تكبير وتصفح المحادثة 🔍')}</span>
                     </div>
                   </div>
                 </Reveal>
@@ -246,7 +250,7 @@ export default function ReviewsSection() {
 
             {/* Quick Page Jump Buttons Bar */}
             <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-center gap-1.5">
-              <span className="text-xs text-slate-500 font-bold ml-2">انتقل لصفحة:</span>
+              <span className="text-xs text-slate-500 font-bold me-2">{t('انتقل لصفحة:')}</span>
               {Array.from({ length: Math.min(10, maxPages) }, (_, i) => (
                 <button
                   key={i}
@@ -284,7 +288,7 @@ export default function ReviewsSection() {
                     className="w-full aspect-video object-cover rounded-2xl"
                   >
                     <source src="/assets/videos/video_reviews.mp4" type="video/mp4" />
-                    متصفحك لا يدعم تشغيل الفيديو المباشر.
+                    {t('متصفحك لا يدعم تشغيل الفيديو المباشر.')}
                   </video>
                 </div>
               </div>
@@ -293,26 +297,26 @@ export default function ReviewsSection() {
               <div className="lg:col-span-5 space-y-6">
                 <div className="inline-flex items-center gap-2 glass-pill px-4 py-1.5 text-xs font-extrabold text-amber-800 border border-amber-400/50">
                   <Video className="w-4 h-4 text-amber-600" />
-                  <span>تجارب حية ومقابلات فيديو</span>
+                  <span>{t('تجارب حية ومقابلات فيديو')}</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-black text-[#0f172a] leading-tight">
-                  قصص نجاح من قلب المحاضرات والمقابلات
+                  {t('قصص نجاح من قلب المحاضرات والمقابلات')}
                 </h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  استمع مباشرة لخريجي أكاديمية دويتشه فيلت وكيف ساعدهم هير خالد في اجتياز المقابلات الصعبة للعمل في Concentrix و Vodafone DE وتحقيق طلاقة التحدث بالألماني.
+                  {t('استمع مباشرة لخريجي أكاديمية دويتشه فيلت وكيف ساعدهم هير خالد في اجتياز المقابلات الصعبة للعمل في Concentrix و Vodafone DE وتحقيق طلاقة التحدث بالألماني.')}
                 </p>
                 <ul className="space-y-3 text-xs text-teal-950 font-bold">
                   <li className="flex items-center gap-2.5 p-2.5 rounded-xl bg-teal-50 border border-teal-200">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>تأهيل واجتياز مقابلات الـ HR & Technical برواتب مجزية</span>
+                    <span>{t('تأهيل واجتياز مقابلات الـ HR & Technical برواتب مجزية')}</span>
                   </li>
                   <li className="flex items-center gap-2.5 p-2.5 rounded-xl bg-amber-50 border border-amber-200">
                     <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>التحضير المباشر لامتحانات معهد جوته Goethe B1 & B2</span>
+                    <span>{t('التحضير المباشر لامتحانات معهد جوته Goethe B1 & B2')}</span>
                   </li>
                   <li className="flex items-center gap-2.5 p-2.5 rounded-xl bg-teal-50 border border-teal-200">
                     <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" />
-                    <span>كسر حاجز الخوف والطلاقة في التحدث مع الألمان</span>
+                    <span>{t('كسر حاجز الخوف والطلاقة في التحدث مع الألمان')}</span>
                   </li>
                 </ul>
               </div>

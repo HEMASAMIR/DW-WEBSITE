@@ -8,6 +8,7 @@ import { useModal } from '@/context/ModalContext';
 import LevelView from '@/components/course/LevelView';
 import { ArrowRight, Lock, AlertCircle, RefreshCw, LogIn } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 export default function CoursePage() {
   const { id } = useParams();
   const { allCourses, loading, error, requiresLogin, reload } = useCourses();
@@ -29,24 +30,24 @@ export default function CoursePage() {
             </div>
           </div>
         ) : requiresLogin ? (
-          <Notice icon={Lock} text="سجّل الدخول لعرض تفاصيل المستوى ومحاضراته.">
+          <Notice icon={Lock} text={t('سجّل الدخول لعرض تفاصيل المستوى ومحاضراته.')}>
             <button onClick={() => openAuthModal('login')} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
               <LogIn className="w-4 h-4" />
-              تسجيل الدخول
+              {t('تسجيل الدخول')}
             </button>
           </Notice>
         ) : error ? (
           <Notice icon={AlertCircle} text={error}>
             <button onClick={reload} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
               <RefreshCw className="w-4 h-4" />
-              إعادة المحاولة
+              {t('إعادة المحاولة')}
             </button>
           </Notice>
         ) : (
-          <Notice icon={AlertCircle} text="المستوى غير موجود.">
+          <Notice icon={AlertCircle} text={t('المستوى غير موجود.')}>
             <Link href="/courses" className="inline-flex items-center gap-1.5 text-sm font-black text-teal-700">
-              <ArrowRight className="w-4 h-4" />
-              كل المستويات
+              <ArrowRight className="w-4 h-4 ltr:-scale-x-100" />
+              {t('كل المستويات')}
             </Link>
           </Notice>
         )}

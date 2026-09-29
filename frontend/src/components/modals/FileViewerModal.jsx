@@ -6,6 +6,7 @@ import { getErrorMessage } from '@/services/api';
 import { saveFile } from '@/services/courses.service';
 import { X, Loader2, AlertCircle, FileText, Download } from 'lucide-react';
 
+import { t, tRich } from '@/lib/i18n';
 /**
  * In-site viewer for the authenticated /view/ endpoints.
  * Open with openFileViewer({ title, load: (onProgress) => Promise<{ blob, filename, type }> }).
@@ -57,7 +58,7 @@ function DocxView({ blob }) {
         </div>
       )}
       {state === 'error' && (
-        <p className="text-center text-sm text-rose-300 py-16" dir="rtl">تعذر عرض ملف الـ Word.</p>
+        <p className="text-center text-sm text-rose-300 py-16" dir="rtl">{t('تعذر عرض ملف الـ Word.')}</p>
       )}
       <div ref={bodyRef} className="docx-host" />
     </div>
@@ -72,7 +73,7 @@ function Viewer({ title, load, onClose }) {
           <FileText className="w-5 h-5 text-amber-400 shrink-0" />
           <span className="text-sm font-bold text-white truncate">{title}</span>
         </div>
-        <button onClick={onClose} className="p-2 rounded-xl text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700" aria-label="إغلاق">
+        <button onClick={onClose} className="p-2 rounded-xl text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700" aria-label={t('إغلاق')}>
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -94,7 +95,7 @@ export function FileContent({ title, load }) {
     let cancelled = false;
     load((ratio, loaded) => !cancelled && setProgress({ ratio, loaded }))
       .then((f) => !cancelled && setFile(f))
-      .catch((err) => !cancelled && setError(getErrorMessage(err, 'تعذر فتح الملف.')));
+      .catch((err) => !cancelled && setError(getErrorMessage(err, t('تعذر فتح الملف.'))));
     return () => {
       cancelled = true;
     };
@@ -117,7 +118,7 @@ export function FileContent({ title, load }) {
           <div className="text-center space-y-3">
             <Loader2 className="w-9 h-9 text-amber-400 animate-spin mx-auto" />
             <p className="text-sm text-slate-300">
-              جاري فتح الملف
+              {t('جاري فتح الملف')}
               {progress.ratio !== null
                 ? ` ${Math.round(progress.ratio * 100)}%`
                 : progress.loaded > 0
@@ -138,14 +139,14 @@ export function FileContent({ title, load }) {
           <div className="text-center space-y-4 p-6 max-w-sm">
             <FileText className="w-12 h-12 text-slate-400 mx-auto" />
             <p className="text-sm text-slate-200">
-              الملف <span className="font-bold" dir="ltr">{file.filename}</span> من نوع لا يمكن عرضه داخل المتصفح.
+              {tRich('الملف <b>{name}</b> من نوع لا يمكن عرضه داخل المتصفح.', { b: (s) => <span className="font-bold" dir="ltr">{s}</span> }, { name: file.filename })}
             </p>
             <button
               onClick={() => saveFile(file)}
               className="inline-flex items-center gap-2 bg-amber-400 text-slate-950 font-black text-sm px-6 py-2.5 rounded-xl"
             >
               <Download className="w-4 h-4" />
-              فتح الملف على جهازك
+              {t('فتح الملف على جهازك')}
             </button>
           </div>
         )}

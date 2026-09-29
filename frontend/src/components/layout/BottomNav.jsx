@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
 import { Home, BookOpen, Sparkles, MessageCircle, User } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 // One accent colour per tab (full class names so Tailwind generates them).
 const TABS = [
   { key: 'home', label: 'الرئيسية', href: '/', icon: Home, text: 'text-teal-600', pill: 'bg-teal-100', dot: 'bg-teal-500' },
@@ -77,7 +78,7 @@ export default function BottomNav() {
       <div className="h-24 lg:hidden" aria-hidden />
 
       <nav
-        aria-label="التنقل السفلي"
+        aria-label={t('التنقل السفلي')}
         className={`lg:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pointer-events-none transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] ${
           hidden && !activeModal ? 'translate-y-[130%]' : 'translate-y-0'
         }`}
@@ -125,7 +126,7 @@ export default function BottomNav() {
                     )}
                   </span>
                   <span className={`text-[10.5px] font-black leading-none transition-colors duration-300 ${active ? tab.text : 'text-slate-500'}`}>
-                    {tab.label}
+                    {t(tab.label)}
                   </span>
                 </span>
               );
@@ -136,7 +137,7 @@ export default function BottomNav() {
                   {content}
                 </Link>
               ) : (
-                <button key={tab.key} type="button" onClick={() => tap(tab)} className={cls} aria-label={tab.label}>
+                <button key={tab.key} type="button" onClick={() => tap(tab)} className={cls} aria-label={t(tab.label)}>
                   {content}
                 </button>
               );
@@ -164,7 +165,7 @@ function CenterButton({ active, bump }) {
           <Sparkles className="w-6 h-6" />
         </span>
       </span>
-      <span className={`text-[10.5px] font-black leading-none ${active ? 'text-amber-600' : 'text-[#0e2c4e]'}`}>الكورسات</span>
+      <span className={`text-[10.5px] font-black leading-none ${active ? 'text-amber-600' : 'text-[#0e2c4e]'}`}>{t('الكورسات')}</span>
     </span>
   );
 }

@@ -7,6 +7,7 @@ import BookCover, { toneFor } from '@/components/book/BookCover';
 import Reveal from '@/components/common/Reveal';
 import { Lock, Unlock, AlertCircle, RefreshCw, LogIn, CheckCircle2, ChevronLeft, Layers } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 /**
  * Shared list screen (levels / books): dark hero + "unlocked for you" and "locked" groups.
  * renderCard(item) renders one card; each item needs `id` and `hasAccess`.
@@ -32,7 +33,7 @@ export default function AccessGroups({
             backgroundSize: '48px 48px',
           }}
         />
-        <Icon aria-hidden className="absolute -left-10 -bottom-16 w-80 h-80 text-white/[0.04] -rotate-12" />
+        <Icon aria-hidden className="absolute -end-10 -bottom-16 w-80 h-80 text-white/[0.04] -rotate-12" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-20 sm:pb-24 space-y-5">
           <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 text-slate-950 shadow-xl shadow-teal-500/30">
             <Icon className="w-7 h-7" />
@@ -44,8 +45,8 @@ export default function AccessGroups({
           {ready && (
             <div className="flex flex-wrap gap-2.5 pt-1">
               <Chip icon={Icon} value={items.length} label={unit} />
-              {!isGuest && <Chip icon={CheckCircle2} value={unlocked.length} label="مفعّل لك" accent />}
-              {!isGuest && locked.length > 0 && <Chip icon={Lock} value={locked.length} label="متاح للاشتراك" />}
+              {!isGuest && <Chip icon={CheckCircle2} value={unlocked.length} label={t('مفعّل لك')} accent />}
+              {!isGuest && locked.length > 0 && <Chip icon={Lock} value={locked.length} label={t('متاح للاشتراك')} />}
             </div>
           )}
         </div>
@@ -57,13 +58,13 @@ export default function AccessGroups({
             {[0, 1, 2].map((i) => <div key={i} className="h-96 rounded-[2rem] bg-white shadow-xl shadow-slate-900/5" />)}
           </div>
         ) : requiresLogin ? (
-          <Box icon={Lock} text="سجّل الدخول عشان تشوف المفعّل لك والمتاح للاشتراك.">
+          <Box icon={Lock} text={t('سجّل الدخول عشان تشوف المفعّل لك والمتاح للاشتراك.')}>
             <LoginBtn onClick={() => openAuthModal('login')} />
           </Box>
         ) : error ? (
           <Box icon={AlertCircle} text={error}>
             <button onClick={reload} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
-              <RefreshCw className="w-4 h-4" /> إعادة المحاولة
+              <RefreshCw className="w-4 h-4" /> {t('إعادة المحاولة')}
             </button>
           </Box>
         ) : items.length === 0 ? (
@@ -74,7 +75,7 @@ export default function AccessGroups({
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white border border-slate-200 shadow-xl shadow-slate-900/5 rounded-3xl p-4 sm:px-6">
               <span className="inline-flex items-center gap-2 text-sm font-bold text-slate-700">
                 <span className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center"><Lock className="w-4 h-4" /></span>
-                سجّل الدخول عشان تعرف المفعّل لك وتشترك.
+                {t('سجّل الدخول عشان تعرف المفعّل لك وتشترك.')}
               </span>
               <LoginBtn onClick={() => openAuthModal('login')} />
             </div>
@@ -84,11 +85,11 @@ export default function AccessGroups({
           </section>
         ) : (
           <>
-            <Group icon={Unlock} tone="emerald" label="مفعّلة لك" count={unlocked.length} empty="لسه مفيش حاجة متفعّلة على حسابك." gridClass={gridClass}>
+            <Group icon={Unlock} tone="emerald" label={t('مفعّلة لك')} count={unlocked.length} empty={t('لسه مفيش حاجة متفعّلة على حسابك.')} gridClass={gridClass}>
               {unlocked.map((i, n) => <Staggered key={i.id} n={n}>{renderCard(i)}</Staggered>)}
             </Group>
             {locked.length > 0 && (
-              <Group icon={Lock} tone="amber" label="متاحة للاشتراك" count={locked.length} gridClass={gridClass}>
+              <Group icon={Lock} tone="amber" label={t('متاحة للاشتراك')} count={locked.length} gridClass={gridClass}>
                 {locked.map((i, n) => <Staggered key={i.id} n={n}>{renderCard(i)}</Staggered>)}
               </Group>
             )}
@@ -121,7 +122,7 @@ function Chip({ icon: Icon, value, label, accent }) {
 function LoginBtn({ onClick }) {
   return (
     <button onClick={onClick} className="inline-flex items-center gap-2 bg-slate-950 hover:bg-teal-700 text-white px-6 py-2.5 rounded-full text-sm font-black transition-colors">
-      <LogIn className="w-4 h-4" /> تسجيل الدخول
+      <LogIn className="w-4 h-4" /> {t('تسجيل الدخول')}
     </button>
   );
 }
@@ -130,7 +131,7 @@ function Group({ icon: Icon, tone, label, count, empty, gridClass, children }) {
   const colors = tone === 'emerald' ? 'from-emerald-500 to-teal-600 shadow-emerald-600/25' : 'from-amber-400 to-amber-500 shadow-amber-500/25';
   return (
     <section className="space-y-5 first:pt-0">
-      <div className="flex items-center gap-3 bg-white/80 backdrop-blur rounded-2xl w-fit pl-5 pr-2 py-2 shadow-sm border border-slate-200/70">
+      <div className="flex items-center gap-3 bg-white/80 backdrop-blur rounded-2xl w-fit pe-5 ps-2 py-2 shadow-sm border border-slate-200/70">
         <span className={`w-9 h-9 rounded-xl bg-gradient-to-br ${colors} text-white flex items-center justify-center shadow-lg`}>
           <Icon className="w-4 h-4" />
         </span>
@@ -162,11 +163,11 @@ function StatusPill({ hasAccess, guest, dark }) {
   if (guest) return null;
   return hasAccess ? (
     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-black bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
-      <CheckCircle2 className="w-3.5 h-3.5" /> مفعّل لك
+      <CheckCircle2 className="w-3.5 h-3.5" /> {t('مفعّل لك')}
     </span>
   ) : (
     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-black ${dark ? 'bg-white/10 text-slate-200 border border-white/15' : 'bg-white/90 text-slate-600 border border-slate-200'}`}>
-      <Lock className="w-3.5 h-3.5" /> غير مفعّل
+      <Lock className="w-3.5 h-3.5" /> {t('غير مفعّل')}
     </span>
   );
 }
@@ -176,7 +177,7 @@ function PriceTag({ price }) {
   return (
     <span className="flex items-baseline gap-1">
       <span className="text-2xl font-black text-slate-900 tracking-tight" dir="ltr">{price}</span>
-      <span className="text-xs font-black text-slate-500">ج.م</span>
+      <span className="text-xs font-black text-slate-500">{t('ج.م')}</span>
     </span>
   );
 }
@@ -189,7 +190,7 @@ function ActionBtn({ hasAccess, label }) {
       }`}
     >
       {label}
-      <ChevronLeft className="w-4 h-4" />
+      <ChevronLeft className="w-4 h-4 ltr:-scale-x-100" />
     </span>
   );
 }
@@ -210,7 +211,7 @@ export function BookCard({ id, href, name, level, price, hasAccess, guest, actio
           className="absolute inset-0 opacity-40"
           style={{ backgroundImage: 'radial-gradient(circle, rgba(15,23,42,0.08) 1px, transparent 1px)', backgroundSize: '16px 16px' }}
         />
-        <div className="absolute top-4 right-4 z-10"><StatusPill hasAccess={hasAccess} guest={guest} /></div>
+        <div className="absolute top-4 start-4 z-10"><StatusPill hasAccess={hasAccess} guest={guest} /></div>
         <div className="relative group-hover:scale-105 transition-transform duration-500">
           <BookCover id={id} name={name} level={level} size="md" />
         </div>
@@ -218,11 +219,11 @@ export function BookCard({ id, href, name, level, price, hasAccess, guest, actio
       </div>
       <div className="flex-1 flex flex-col gap-4 p-5 sm:p-6">
         <div className="flex-1 space-y-2">
-          <span className={`inline-flex px-2.5 py-0.5 rounded-lg border text-[11px] font-black ${tone.chip}`}>مستوى {level}</span>
+          <span className={`inline-flex px-2.5 py-0.5 rounded-lg border text-[11px] font-black ${tone.chip}`}>{t('مستوى')}{' '}{level}</span>
           <h3 className="font-black text-lg text-slate-900 group-hover:text-teal-800 leading-snug line-clamp-2" dir="auto">{name}</h3>
         </div>
         <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-          {hasAccess ? <span className="text-xs font-black text-emerald-700">جاهز للقراءة</span> : <PriceTag price={price} />}
+          {hasAccess ? <span className="text-xs font-black text-emerald-700">{t('جاهز للقراءة')}</span> : <PriceTag price={price} />}
           <ActionBtn hasAccess={hasAccess} label={actionLabel} />
         </div>
       </div>
@@ -246,13 +247,13 @@ export function LevelCard({ href, code, title, subtitle, price, hasAccess, guest
           style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }}
         />
         <span
-          className="absolute -bottom-8 left-4 text-[8.5rem] font-black leading-none text-transparent [-webkit-text-stroke:2px_rgba(255,255,255,0.14)] group-hover:[-webkit-text-stroke:2px_rgba(94,234,212,0.35)] transition-all select-none"
+          className="absolute -bottom-8 end-4 text-[8.5rem] font-black leading-none text-transparent [-webkit-text-stroke:2px_rgba(255,255,255,0.14)] group-hover:[-webkit-text-stroke:2px_rgba(94,234,212,0.35)] transition-all select-none"
           dir="ltr"
         >
           {code}
         </span>
-        <div className="absolute top-4 right-4"><StatusPill hasAccess={hasAccess} guest={guest} dark /></div>
-        <span className="absolute bottom-4 right-4 px-4 py-2 rounded-2xl bg-gradient-to-br from-teal-300 to-emerald-400 text-slate-950 text-2xl font-black shadow-xl shadow-teal-500/30" dir="ltr">
+        <div className="absolute top-4 start-4"><StatusPill hasAccess={hasAccess} guest={guest} dark /></div>
+        <span className="absolute bottom-4 start-4 px-4 py-2 rounded-2xl bg-gradient-to-br from-teal-300 to-emerald-400 text-slate-950 text-2xl font-black shadow-xl shadow-teal-500/30" dir="ltr">
           {code}
         </span>
       </div>
@@ -262,7 +263,7 @@ export function LevelCard({ href, code, title, subtitle, price, hasAccess, guest
           {subtitle && <p className="text-xs text-slate-500 font-bold" dir="auto">{subtitle}</p>}
         </div>
         <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-          {hasAccess ? <span className="text-xs font-black text-emerald-700">المحاضرات متاحة</span> : <PriceTag price={price} />}
+          {hasAccess ? <span className="text-xs font-black text-emerald-700">{t('المحاضرات متاحة')}</span> : <PriceTag price={price} />}
           <ActionBtn hasAccess={hasAccess} label={actionLabel} />
         </div>
       </div>

@@ -12,9 +12,12 @@ import {
 } from '@/services/comments.service';
 import { MessageSquare, Send, Reply, Pencil, Trash2, Loader2, AlertCircle, X, Check } from 'lucide-react';
 
-const rtf = typeof Intl !== 'undefined' ? new Intl.RelativeTimeFormat('ar', { numeric: 'auto' }) : null;
+import { t, langMeta } from '@/lib/i18n';
+// Built per call: the language can change while the page is open.
+const relativeFormat = () => (typeof Intl !== 'undefined' ? new Intl.RelativeTimeFormat(langMeta().locale, { numeric: 'auto' }) : null);
 
 function timeAgo(iso) {
+  const rtf = relativeFormat();
   if (!iso || !rtf) return '';
   const diff = (new Date(iso).getTime() - Date.now()) / 1000;
   const units = [
@@ -27,7 +30,7 @@ function timeAgo(iso) {
   for (const [unit, secs] of units) {
     if (Math.abs(diff) >= secs) return rtf.format(Math.round(diff / secs), unit);
   }
-  return 'الآن';
+  return t('الآن');
 }
 
 export default function CommentsPanel({ levelId, videoId }) {
@@ -53,7 +56,7 @@ export default function CommentsPanel({ levelId, videoId }) {
     commentsService
       .getComments(levelId, videoId, 1)
       .then((data) => !cancelled && setComments(applyPage(data, 1)))
-      .catch((err) => !cancelled && setError(getErrorMessage(err, 'تعذر تحميل التعليقات.')))
+      .catch((err) => !cancelled && setError(getErrorMessage(err, t('تعذر تحميل التعليقات.'))))
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;
@@ -66,7 +69,7 @@ export default function CommentsPanel({ levelId, videoId }) {
       const results = applyPage(await commentsService.getComments(levelId, videoId, nextPage), nextPage);
       setComments((prev) => [...prev, ...results.filter((r) => !prev.some((p) => p.id === r.id))]);
     } catch (err) {
-      setError(getErrorMessage(err, 'تعذر تحميل المزيد من التعليقات.'));
+      setError(getErrorMessage(err, t('تعذر تحميل المزيد من التعليقات.')));
     } finally {
       setLoadingMore(false);
     }
@@ -84,7 +87,7 @@ export default function CommentsPanel({ levelId, videoId }) {
       setCount((c) => c + 1);
       setText('');
     } catch (err) {
-      setPostError(getErrorMessage(err, 'فشل إرسال التعليق.'));
+      setPostError(getErrorMessage(err, t('فشل إرسال التعليق.')));
     } finally {
       setPosting(false);
     }
@@ -105,7 +108,7 @@ export default function CommentsPanel({ levelId, videoId }) {
     <div className="space-y-5">
       <div className="flex items-center gap-2 text-sm font-black text-slate-900">
         <MessageSquare className="w-4 h-4 text-teal-600" />
-        <span>أسئلة ونقاش المحاضرة</span>
+        <span>{t('أسئلة ونقاش المحاضرة')}</span>
         {count > 0 && <span className="text-xs text-slate-500 font-bold">({count})</span>}
       </div>
 
@@ -116,7 +119,7 @@ export default function CommentsPanel({ levelId, videoId }) {
             value={text}
             maxLength={COMMENT_MAX_LENGTH}
             onChange={(e) => setText(e.target.value)}
-            placeholder="اكتب سؤالك أو تعليقك على المحاضرة..."
+            placeholder={t('اكتب سؤالك أو تعليقك على المحاضرة...')}
             className="w-full bg-transparent px-4 pt-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none resize-none"
           />
           <div className="flex items-center justify-between px-3 pb-3">
@@ -127,7 +130,7 @@ export default function CommentsPanel({ levelId, videoId }) {
               className="inline-flex items-center gap-1.5 bg-teal-600 hover:bg-teal-500 text-white font-black text-xs px-4 py-2 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              نشر
+              {t('نشر')}
             </button>
           </div>
         </div>
@@ -144,7 +147,7 @@ export default function CommentsPanel({ levelId, videoId }) {
           {error}
         </p>
       ) : comments.length === 0 ? (
-        <p className="text-sm text-slate-500 text-center py-6">لا توجد تعليقات بعد. كن أول من يسأل!</p>
+        <p className="text-sm text-slate-500 text-center py-6">{t('لا توجد تعليقات بعد. كن أول من يسأل!')}</p>
       ) : (
         <div className="space-y-3">
           {comments.map((c) => (
@@ -170,7 +173,7 @@ export default function CommentsPanel({ levelId, videoId }) {
               disabled={loadingMore}
               className="w-full text-sm text-teal-700 hover:text-teal-900 py-2 font-black disabled:opacity-50"
             >
-              {loadingMore ? 'جاري التحميل...' : 'عرض المزيد من التعليقات'}
+              {loadingMore ? t('جاري التحميل...') : t('عرض المزيد من التعليقات')}
             </button>
           )}
         </div>
@@ -191,7 +194,7 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
   const removed = comment.content === REMOVED_COMMENT_TEXT;
   const canEdit = canStillEdit(comment);
   const canDelete = !removed && (comment.is_owner || isAdmin);
-  const author = [comment.user?.first_name, comment.user?.last_name].filter(Boolean).join(' ') || 'طالب';
+  const author = [comment.user?.first_name, comment.user?.last_name].filter(Boolean).join(' ') || t('طالب');
   const photo = mediaUrl(comment.user?.profile_photo);
 
   const act = async (fn, fallback) => {
@@ -213,14 +216,14 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
       const updated = await commentsService.editComment(levelId, videoId, comment.id, content);
       onChange(comment.id, (prev) => ({ ...prev, content: updated.content ?? content, updated_at: updated.updated_at ?? prev.updated_at }));
       setEditing(false);
-    }, 'تعذر تعديل التعليق.');
+    }, t('تعذر تعديل التعليق.'));
 
   const remove = () => {
-    if (!window.confirm('هل تريد حذف هذا التعليق؟')) return;
+    if (!window.confirm(t('هل تريد حذف هذا التعليق؟'))) return;
     act(async () => {
       await commentsService.deleteComment(levelId, videoId, comment.id);
       onChange(comment.id, (prev) => ({ ...prev, content: REMOVED_COMMENT_TEXT }));
-    }, 'تعذر حذف التعليق.');
+    }, t('تعذر حذف التعليق.'));
   };
 
   const sendReply = (e) => {
@@ -232,11 +235,11 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
       onReplyAdded(reply);
       setReplyText('');
       setReplying(false);
-    }, 'فشل إرسال الرد.');
+    }, t('فشل إرسال الرد.'));
   };
 
   return (
-    <div className={`${isReply ? 'bg-white border-slate-200 mr-8' : 'bg-slate-50 border-slate-200'} p-4 rounded-2xl border space-y-2`}>
+    <div className={`${isReply ? 'bg-white border-slate-200 ms-8' : 'bg-slate-50 border-slate-200'} p-4 rounded-2xl border space-y-2`}>
       <div className="flex items-center justify-between text-xs gap-2">
         <div className="flex items-center gap-2 min-w-0">
           {photo ? (
@@ -251,7 +254,7 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
         </div>
         <span className="text-[11px] text-slate-400 shrink-0">
           {timeAgo(comment.created_at)}
-          {comment.updated_at && comment.updated_at !== comment.created_at && !removed ? ' • معدّل' : ''}
+          {comment.updated_at && comment.updated_at !== comment.created_at && !removed ? t(' • معدّل') : ''}
         </span>
       </div>
 
@@ -266,16 +269,16 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
           />
           <div className="flex gap-3 justify-end">
             <button onClick={() => setEditing(false)} className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 font-bold">
-              <X className="w-3 h-3" /> إلغاء
+              <X className="w-3 h-3" /> {t('إلغاء')}
             </button>
             <button onClick={saveEdit} disabled={busy} className="text-xs text-teal-700 hover:text-teal-900 flex items-center gap-1 font-black">
-              <Check className="w-3 h-3" /> حفظ
+              <Check className="w-3 h-3" /> {t('حفظ')}
             </button>
           </div>
         </div>
       ) : (
         <p className={`text-sm leading-relaxed whitespace-pre-wrap break-words ${removed ? 'text-slate-400 italic' : 'text-slate-700'}`} dir="auto">
-          {removed ? 'تم حذف هذا التعليق.' : comment.content}
+          {removed ? t('تم حذف هذا التعليق.') : comment.content}
         </p>
       )}
 
@@ -283,17 +286,17 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
         <div className="flex items-center gap-4 text-xs font-bold">
           {!isReply && !removed && (
             <button onClick={() => setReplying((v) => !v)} className="text-slate-500 hover:text-teal-700 flex items-center gap-1">
-              <Reply className="w-3.5 h-3.5" /> رد
+              <Reply className="w-3.5 h-3.5" /> {t('رد')}
             </button>
           )}
           {canEdit && (
             <button onClick={() => { setEditText(comment.content); setEditing(true); }} className="text-slate-500 hover:text-sky-700 flex items-center gap-1">
-              <Pencil className="w-3.5 h-3.5" /> تعديل
+              <Pencil className="w-3.5 h-3.5" /> {t('تعديل')}
             </button>
           )}
           {canDelete && (
             <button onClick={remove} disabled={busy} className="text-slate-500 hover:text-rose-600 flex items-center gap-1">
-              <Trash2 className="w-3 h-3" /> حذف
+              <Trash2 className="w-3 h-3" /> {t('حذف')}
             </button>
           )}
         </div>
@@ -308,7 +311,7 @@ function CommentItem({ comment, levelId, videoId, onChange, onReplyAdded, isRepl
             value={replyText}
             maxLength={COMMENT_MAX_LENGTH}
             onChange={(e) => setReplyText(e.target.value)}
-            placeholder="اكتب ردك..."
+            placeholder={t('اكتب ردك...')}
             className="flex-1 bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-teal-500"
           />
           <button type="submit" disabled={busy || !replyText.trim()} className="bg-teal-600 text-white rounded-xl px-3.5 disabled:opacity-40">

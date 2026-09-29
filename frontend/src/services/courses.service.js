@@ -1,4 +1,5 @@
 import apiClient, { saveBlob, filenameFromResponse } from './api';
+import { langMeta } from '@/lib/i18n';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
 import { withAdminAccess } from './adminAccess';
 const toNumber = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
@@ -97,7 +98,7 @@ export function formatDuration(seconds) {
 
 export function formatPrice(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return null;
-  return Number(value).toLocaleString('ar-EG', { maximumFractionDigits: 2 });
+  return Number(value).toLocaleString(langMeta().locale, { maximumFractionDigits: 2 });
 }
 
 /** Western digits (2,000) — reads better than Arabic-Indic digits at large display sizes. */

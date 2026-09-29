@@ -6,9 +6,11 @@ import { requestsService } from '@/services/requests.service';
 import { getErrorMessage, isMissingEndpoint } from '@/services/api';
 import { useContactInfo, whatsappHref, numberForMethod, CASH_METHOD } from '@/lib/contactInfo';
 import PaymentInfo from '@/components/common/PaymentInfo';
+import { track, priceValue } from '@/lib/analytics';
 import { PayMethodPicker, Field, inputCls, SentState, usePayOptions } from './OrderShell';
 import { Send, Loader2, ImagePlus, X, Clock3, AlertCircle } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 /**
  * Subscribe / buy form shared by the level and book modals.
  * Sends the request to the admin dashboard; approving it there unlocks the item on the student's account.
@@ -36,6 +38,12 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
   const fileRef = useRef(null);
 
   useEffect(() => {
+    track('begin_checkout', { item_type: kind, item_id: itemId, value: priceValue(amount), currency: 'EGP' });
+    // Once per opened form.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     requestsService.mine()
       .then((list) => {
@@ -54,18 +62,20 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
       await requestsService.create({
         kind, item_id: itemId, full_name: name, phone, payment_method: paymentMethod, note, receipt,
       });
+      track('generate_lead', { item_type: kind, item_id: itemId, value: priceValue(amount), currency: 'EGP', channel: 'platform' });
       setSent('platform');
     } catch (err) {
       if (isMissingEndpoint(err)) {
         sendOnWhatsapp();
         return;
       }
-      setError(getErrorMessage(err, 'تعذر إرسال الطلب، حاول مرة أخرى.'));
+      setError(getErrorMessage(err, t('تعذر إرسال الطلب، حاول مرة أخرى.')));
     } finally {
       setSending(false);
     }
   };
 
+  // i18n-keep: the WhatsApp message goes to the academy, always in Arabic
   const sendOnWhatsapp = () => {
     const lines = [
       'مرحباً إدارة دويتشه فيلت 👋',
@@ -81,11 +91,12 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
       note ? `📝 ${note}` : null,
     ].filter((l) => l !== null && l !== undefined);
     window.open(whatsappHref(contact, lines.join('\n')), '_blank', 'noopener,noreferrer');
+    track('generate_lead', { item_type: kind, item_id: itemId, value: priceValue(amount), currency: 'EGP', channel: 'whatsapp' });
     setSent('whatsapp');
   };
 
   if (sent === 'platform') {
-    return <SentState onClose={onClose} title="طلبك وصل للإدارة ✨" text={sentText} showNumber={false} />;
+    return <SentState onClose={onClose} title={t('طلبك وصل للإدارة ✨')} text={sentText} showNumber={false} />;
   }
   if (sent === 'whatsapp') {
     return (
@@ -93,7 +104,7 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         onClose={onClose}
         number={paymentMethod !== CASH_METHOD ? numberForMethod(contact, paymentMethod) : null}
         showNumber={paymentMethod !== CASH_METHOD}
-        text="ابعت الرسالة على واتساب ومعاها صورة التحويل. بعد تأكيد الدفع هيتفعّل على حسابك في الموقع."
+        text={t('ابعت الرسالة على واتساب ومعاها صورة التحويل. بعد تأكيد الدفع هيتفعّل على حسابك في الموقع.')}
       />
     );
   }
@@ -104,12 +115,12 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         <span className="inline-flex w-20 h-20 rounded-full bg-amber-100 text-amber-600 items-center justify-center">
           <Clock3 className="w-10 h-10" />
         </span>
-        <h4 className="text-2xl font-black text-[#0e2c4e]">طلبك قيد المراجعة</h4>
+        <h4 className="text-2xl font-black text-[#0e2c4e]">{t('طلبك قيد المراجعة')}</h4>
         <p className="text-sm text-slate-600 leading-relaxed">
-          بعتّ طلب لنفس العنصر قبل كده والإدارة بتراجعه. أول ما يتقبل هيتفعّل على حسابك تلقائياً.
+          {t('بعتّ طلب لنفس العنصر قبل كده والإدارة بتراجعه. أول ما يتقبل هيتفعّل على حسابك تلقائياً.')}
         </p>
         <button onClick={onClose} className="mt-2 bg-[#0e2c4e] hover:bg-teal-700 text-white font-black text-sm px-8 py-3 rounded-2xl transition-colors">
-          تمام
+          {t('تمام')}
         </button>
       </div>
     );
@@ -120,27 +131,27 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
       <PaymentInfo amount={amount} compact />
 
       <form onSubmit={submit} className="rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-900/[0.05] p-5 sm:p-6 space-y-4">
-        <Field label="الاسم بالكامل">
+        <Field label={t('الاسم بالكامل')}>
           <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
         </Field>
-        <Field label="رقم الواتساب">
+        <Field label={t('رقم الواتساب')}>
           <input
             type="tel"
             required
             inputMode="numeric"
             pattern="[0-9]{11}"
-            title="رقم الهاتف يجب أن يكون 11 رقماً"
+            title={t('رقم الهاتف يجب أن يكون 11 رقماً')}
             value={phone}
             onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
             placeholder="010xxxxxxxx"
             dir="ltr"
-            className={`${inputCls} text-right`}
+            className={`${inputCls} text-start`}
           />
         </Field>
         <PayMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
 
         {paymentMethod !== CASH_METHOD && (
-          <Field label="صورة التحويل (بتسرّع التفعيل)">
+          <Field label={t('صورة التحويل (بتسرّع التفعيل)')}>
             <input
               ref={fileRef}
               type="file"
@@ -156,7 +167,7 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
                   type="button"
                   onClick={() => { setReceipt(null); if (fileRef.current) fileRef.current.value = ''; }}
                   className="p-1 rounded-lg hover:bg-emerald-100 text-emerald-700"
-                  aria-label="إزالة"
+                  aria-label={t('إزالة')}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -167,19 +178,19 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
                 onClick={() => fileRef.current?.click()}
                 className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 hover:border-teal-400 hover:bg-teal-50/50 py-4 text-xs font-black text-slate-500 hover:text-teal-700 transition-colors"
               >
-                <ImagePlus className="w-5 h-5" /> ارفع سكرين التحويل
+                <ImagePlus className="w-5 h-5" /> {t('ارفع سكرين التحويل')}
               </button>
             )}
           </Field>
         )}
 
-        <Field label="ملاحظة (اختياري)">
+        <Field label={t('ملاحظة (اختياري)')}>
           <textarea
             rows={2}
             value={note}
             onChange={(e) => setNote(e.target.value)}
             className={`${inputCls} resize-none`}
-            placeholder="مثلاً: حوّلت من رقم تاني"
+            placeholder={t('مثلاً: حوّلت من رقم تاني')}
           />
         </Field>
 
@@ -195,7 +206,7 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
           className="dw-shine w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-70 text-white font-black text-sm py-4 rounded-2xl shadow-lg shadow-emerald-500/25 transition-colors"
         >
           {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-          <span>{sending ? 'جاري الإرسال...' : 'إرسال الطلب للإدارة'}</span>
+          <span>{sending ? t('جاري الإرسال...') : t('إرسال الطلب للإدارة')}</span>
         </button>
       </form>
     </div>

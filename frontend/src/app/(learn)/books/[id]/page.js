@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useBooks } from '@/hooks/useBooks';
@@ -16,6 +17,7 @@ import {
   Wallet, ShieldCheck,
 } from 'lucide-react';
 
+import { t, tRich } from '@/lib/i18n';
 /** Book overview page. Reading happens on its own page: /books/<id>/read. All data from the backend. */
 export default function BookPage() {
   const { id } = useParams();
@@ -47,21 +49,21 @@ export default function BookPage() {
         {loading ? (
           <div className="h-80 rounded-[2rem] bg-slate-300/70 animate-pulse" />
         ) : requiresLogin ? (
-          <Notice icon={Lock} text="سجّل الدخول لعرض تفاصيل الكتاب.">
+          <Notice icon={Lock} text={t('سجّل الدخول لعرض تفاصيل الكتاب.')}>
             <button onClick={() => openAuthModal('login')} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
-              <LogIn className="w-4 h-4" /> تسجيل الدخول
+              <LogIn className="w-4 h-4" /> {t('تسجيل الدخول')}
             </button>
           </Notice>
         ) : error ? (
           <Notice icon={AlertCircle} text={error}>
             <button onClick={reload} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
-              <RefreshCw className="w-4 h-4" /> إعادة المحاولة
+              <RefreshCw className="w-4 h-4" /> {t('إعادة المحاولة')}
             </button>
           </Notice>
         ) : (
-          <Notice icon={AlertCircle} text="الكتاب غير موجود.">
+          <Notice icon={AlertCircle} text={t('الكتاب غير موجود.')}>
             <Link href="/books" className="inline-flex items-center gap-1.5 text-sm font-black text-teal-700">
-              <ArrowRight className="w-4 h-4" /> كل الكتب
+              <ArrowRight className="w-4 h-4 ltr:-scale-x-100" /> {t('كل الكتب')}
             </Link>
           </Notice>
         )}
@@ -78,10 +80,10 @@ function OtherBooks({ books, lift }) {
       <Reveal className="text-center space-y-3 mb-10">
         <span className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-xs font-black text-[#0e2c4e]">
           <BookOpen className="w-4 h-4 text-teal-600" />
-          مكتبة الأكاديمية
+          {t('مكتبة الأكاديمية')}
         </span>
         <h2 className="text-3xl sm:text-4xl font-black text-[#0e2c4e]">
-          كتب <span className="text-teal-600">أخرى</span> ممكن تعجبك
+          {tRich('كتب <b>أخرى</b> ممكن تعجبك', { b: (s) => <span className="text-teal-600">{s}</span> })}
         </h2>
         <div className="flex h-1.5 w-24 mx-auto rounded-full overflow-hidden" dir="ltr">
           <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
@@ -103,7 +105,7 @@ function OtherBooks({ books, lift }) {
               price={formatPriceLatin(b.price)}
               hasAccess={b.hasAccess}
               guest={!isAuthenticated}
-              actionLabel={b.hasAccess ? 'اقرأ الكتاب' : 'تفاصيل الكتاب'}
+              actionLabel={b.hasAccess ? t('اقرأ الكتاب') : t('تفاصيل الكتاب')}
             />
           </Reveal>
         ))}
@@ -145,25 +147,25 @@ function BookHero({ book }) {
         {/* Info */}
         <div className="lg:col-span-7 space-y-7 order-2 lg:order-1">
           <nav className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
-            <Link href="/books" className="hover:text-teal-300 transition-colors">الكتب</Link>
-            <ChevronLeft className="w-3.5 h-3.5" />
-            <span className="text-teal-300">مستوى {book.level}</span>
+            <Link href="/books" className="hover:text-teal-300 transition-colors">{t('الكتب')}</Link>
+            <ChevronLeft className="w-3.5 h-3.5 ltr:-scale-x-100" />
+            <span className="text-teal-300">{t('مستوى')}{' '}{book.level}</span>
           </nav>
 
           <div className="flex flex-wrap items-center gap-2">
             <span className={`px-3.5 py-1.5 rounded-full bg-gradient-to-r ${tone.badge} text-white text-xs font-black shadow-lg`}>
-              مستوى {book.level}
+              {t('مستوى {code}', { code: book.level })}
             </span>
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-black text-slate-200">
-              <BookOpen className="w-3.5 h-3.5" /> كتاب رقمي • يُقرأ أونلاين
+              <BookOpen className="w-3.5 h-3.5" /> {t('كتاب رقمي • يُقرأ أونلاين')}
             </span>
             {isAuthenticated && (book.hasAccess ? (
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-400/15 border border-emerald-300/30 text-xs font-black text-emerald-200">
-                <CheckCircle2 className="w-3.5 h-3.5" /> مفعّل لك
+                <CheckCircle2 className="w-3.5 h-3.5" /> {t('مفعّل لك')}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-black text-slate-300">
-                <Lock className="w-3.5 h-3.5" /> غير مفعّل على حسابك
+                <Lock className="w-3.5 h-3.5" /> {t('غير مفعّل على حسابك')}
               </span>
             ))}
           </div>
@@ -181,9 +183,9 @@ function BookHero({ book }) {
             <div className="flex flex-wrap items-center gap-4">
               <Link href={`/books/${book.id}/read`} className={primaryBtn}>
                 <BookOpenText className="w-5 h-5" />
-                اقرأ الكتاب
+                {t('اقرأ الكتاب')}
               </Link>
-              <span className="text-xs font-bold text-slate-400">بيتفتح جوه الموقع</span>
+              <span className="text-xs font-bold text-slate-400">{t('بيتفتح جوه الموقع')}</span>
             </div>
           ) : (
             <div className="relative max-w-xl">
@@ -192,32 +194,32 @@ function BookHero({ book }) {
                 <div className="flex flex-wrap items-end justify-between gap-5">
                   {price && (
                     <div>
-                      <span className="block text-xs font-bold text-slate-400 mb-1">سعر الكتاب</span>
+                      <span className="block text-xs font-bold text-slate-400 mb-1">{t('سعر الكتاب')}</span>
                       <span className="flex items-baseline gap-2">
                         <span className="text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-amber-200 to-amber-400 bg-clip-text text-transparent" dir="ltr">
                           {price}
                         </span>
-                        <span className="text-base font-black text-slate-300">ج.م</span>
+                        <span className="text-base font-black text-slate-300">{t('ج.م')}</span>
                       </span>
                     </div>
                   )}
                   <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
                     <button onClick={order} className={`${primaryBtn} justify-center`}>
                       {isAuthenticated ? <ShoppingCart className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
-                      {isAuthenticated ? 'اطلب الكتاب' : 'سجّل دخول للطلب'}
+                      {isAuthenticated ? t('اطلب الكتاب') : t('سجّل دخول للطلب')}
                     </button>
                     <a
                       href="#payment"
                       className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-sm font-black transition-colors"
                     >
                       <Wallet className="w-4 h-4 text-amber-300" />
-                      طرق الدفع
+                      {t('طرق الدفع')}
                     </a>
                   </div>
                 </div>
                 <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] sm:text-xs font-bold text-slate-400">
                   <PayMethodBadges />
-                  <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-300" /> تفعيل على حسابك بعد تأكيد الدفع</span>
+                  <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />{' '}{t('تفعيل على حسابك بعد تأكيد الدفع')}</span>
                 </div>
               </div>
             </div>
@@ -260,8 +262,7 @@ function HeroBook({ book, tone }) {
               />
               {/* cover */}
               <div className="absolute inset-0 rounded-l-md rounded-r-xl overflow-hidden shadow-[0_40px_70px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
-                {/* eslint-disable-next-line @next/next/no-img-element -- static pre-rendered cover */}
-                <img src={src} alt={book.name} onError={() => setFailed(true)} className="w-full h-full object-cover object-top" />
+                <Image src={src} alt={book.name} fill sizes="(min-width: 640px) 288px, 240px" quality={85} loading="eager" fetchPriority="high" onError={() => setFailed(true)} className="object-cover object-top" />
                 <div className="absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-black/50 via-black/15 to-transparent" />
                 <div className="absolute inset-y-0 left-6 w-px bg-white/40" />
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/35 mix-blend-soft-light" />
@@ -289,13 +290,15 @@ function CoverBackdrop({ id }) {
   if (failed || !bookCoverUrl(id)) return null;
   return (
     <>
-      {/* eslint-disable-next-line @next/next/no-img-element -- static pre-rendered cover */}
-      <img
+      {/* Blurred anyway — a tiny version is enough */}
+      <Image
         src={bookCoverUrl(id)}
         alt=""
         aria-hidden
+        fill
+        sizes="96px"
         onError={() => setFailed(true)}
-        className="absolute inset-0 w-full h-full object-cover scale-125 blur-3xl opacity-60"
+        className="object-cover scale-125 blur-3xl opacity-60"
       />
       <div className="absolute inset-0 bg-gradient-to-l from-[#071427] via-[#071427]/85 to-[#071427]/45" />
     </>

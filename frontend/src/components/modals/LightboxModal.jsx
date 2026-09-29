@@ -4,10 +4,11 @@ import React from 'react';
 import { useModal } from '@/context/ModalContext';
 import { X } from 'lucide-react';
 
+import { t } from '@/lib/i18n';
 export default function LightboxModal() {
   const { activeModal, modalData, closeModal } = useModal();
   const imageSrc = modalData?.imageSrc;
-  const counterText = modalData?.counterText || 'عرض الصورة بالحجم الكامل';
+  const counterText = modalData?.counterText || t('عرض الصورة بالحجم الكامل');
 
   if (activeModal !== 'lightbox' || !imageSrc) return null;
 
@@ -20,7 +21,7 @@ export default function LightboxModal() {
         
         <button
           onClick={closeModal}
-          className="absolute top-4 left-4 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors z-10"
+          className="absolute top-4 end-4 p-2 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>
