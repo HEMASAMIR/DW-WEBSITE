@@ -35,6 +35,7 @@ const DEFAULTS = {
     order: i + 1,
   })),
   announcement: () => null,
+  requests: () => [],
 };
 
 const fileFor = (key) => path.join(DATA_DIR, `${key}.json`);
@@ -53,6 +54,45 @@ export async function writeStore(key, value) {
   await fs.writeFile(tmp, JSON.stringify(value, null, 2), 'utf8');
   await fs.rename(tmp, fileFor(key)); // atomic replace
   return value;
+}
+
+// Serialises read-modify-write per file so two requests at once can't overwrite each other.
+const locks = new Map();
+export function withLock(key, fn) {
+  const prev = locks.get(key) || Promise.resolve();
+  const next = prev.catch(() => {}).then(fn);
+  locks.set(key, next.catch(() => {}));
+  return next;
+}
+
+export const dataPath = (...parts) => path.join(DATA_DIR, ...parts);
+
+/**
+ * The logged-in user behind the request's Bearer token: the backend validates the token
+ * (profile endpoint), then the user id is read from the token's own payload.
+ * Returns { id, name, token } or null.
+ */
+export async function getRequestUser(request) {
+  const auth = request.headers.get('authorization') || '';
+  const m = auth.match(/^Bearer\s+(\S+)$/i);
+  if (!m) return null;
+  try {
+    const res = await http.get('/api/users/profile/', { headers: { Authorization: auth }, validateStatus: () => true });
+    if (res.status !== 200) return null;
+    const payload = JSON.parse(Buffer.from(m[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+    const id = Number(payload.user_id ?? payload.id);
+    if (!id) return null;
+    const u = res.data?.user || res.data || {};
+    return { id, name: [u.first_name, u.last_name].filter(Boolean).join(' '), phone: u.phone_number || '', token: auth };
+  } catch {
+    return null;
+  }
+}
+
+/** GET on the backend as the caller (their own token). */
+export async function backendGet(pathname, auth) {
+  const res = await http.get(pathname, { headers: { Authorization: auth }, validateStatus: () => true });
+  return res.status === 200 ? res.data : null;
 }
 
 /** True when the request's Bearer token belongs to an admin on the backend. */

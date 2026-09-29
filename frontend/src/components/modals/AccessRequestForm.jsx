@@ -15,8 +15,8 @@ import { Send, Loader2, ImagePlus, X, Clock3, AlertCircle } from 'lucide-react';
  * kind: 'level' | 'book'
  * itemLine: one line describing the item, used for the WhatsApp fallback message.
  *
- * Until the backend is updated with /api/requests/, submitting falls back to the previous
- * WhatsApp flow so students can still subscribe.
+ * Requests go to the backend's /api/requests/, or to the website's own store while the backend
+ * has none (see requests.service). WhatsApp is only a last resort if neither exists.
  */
 export default function AccessRequestForm({ kind, itemId, amount, onClose, sentText, itemLine }) {
   const { user } = useAuth();

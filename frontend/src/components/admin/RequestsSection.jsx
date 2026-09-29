@@ -5,15 +5,26 @@ import { adminService } from '@/services/admin.service';
 import { getErrorMessage } from '@/services/api';
 import { useModal } from '@/context/ModalContext';
 import {
-  Card, Btn, Input, LevelChip, StatusBadge, Segmented, SectionHeader, Skeleton, Empty, ErrorBox, PhoneActions,
+  Card, Btn, Input, LevelChip, StatusBadge, Skeleton, ErrorBox, PhoneActions, Avatar,
   money, timeAgo, fullDate, useToast, useConfirm,
 } from './ui';
-import { GraduationCap, BookMarked, Search, Check, X, Receipt, Trash2, Wallet, StickyNote, UserRound, RotateCcw } from 'lucide-react';
+import {
+  GraduationCap, BookMarked, Search, Check, X, Receipt, Trash2, Wallet, StickyNote,
+  UserRound, RotateCcw, Clock, Sparkles, ShieldCheck, CheckCircle2, ChevronLeft, Zap,
+  Layers, Inbox, Phone, MessageCircle, Eye, AlertTriangle, ArrowUpDown
+} from 'lucide-react';
 
 const BOOK_LEVELS = ['A1', 'A2', 'B1', 'B2', 'General'];
 
-/** Course (kind="level") or book (kind="book") requests, split into one tab per level. */
-export default function RequestsSection({ kind, onChanged }) {
+/**
+ * Ultra-Premium Animated Requests Section
+ * Features:
+ * - Dynamic Level Tabs with glowing aura & bounce counters
+ * - Sticky Floating Control Bar that follows as you scroll
+ * - Staggered card reveal animations with German-themed accents
+ * - Instant access grant upon approval
+ */
+export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers }) {
   const toast = useToast();
   const confirm = useConfirm();
   const { openFileViewer } = useModal();
@@ -28,7 +39,7 @@ export default function RequestsSection({ kind, onChanged }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(null);
 
-  // Tabs: the real level codes (courses) / the book levels in use.
+  // Tabs: real level codes (courses) or active book levels
   useEffect(() => {
     const load = isLevel
       ? adminService.getLevels().then((ls) => ls.map((l) => l.name))
@@ -37,7 +48,7 @@ export default function RequestsSection({ kind, onChanged }) {
   }, [isLevel]);
 
   useEffect(() => {
-    const id = setTimeout(() => setQuery(search.trim()), 350);
+    const id = setTimeout(() => setQuery(search.trim()), 300);
     return () => clearTimeout(id);
   }, [search]);
 
@@ -48,23 +59,25 @@ export default function RequestsSection({ kind, onChanged }) {
       .then(setData)
       .catch((e) => setError(getErrorMessage(e, 'تعذر تحميل الطلبات.')));
   }, [kind, status, level, query]);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+
   useEffect(load, [load]);
 
   const counts = data?.counts || { by_status: {}, pending_by_level: {} };
   const totalPending = counts.by_status.pending || 0;
-  // Levels that have pending requests but no longer exist in the list still get a tab.
+  const totalApproved = counts.by_status.approved || 0;
+
   const tabs = useMemo(
-    () => [...new Set([...levelCodes, ...Object.keys(counts.pending_by_level)])],
+    () => [...new Set([...levelCodes, ...Object.keys(counts.pending_by_level || {})])],
     [levelCodes, counts.pending_by_level]
   );
 
   const approve = async (r) => {
     setBusy(r.id);
     try {
-      toast('ok', (await adminService.approveRequest(r.id)).detail);
+      const res = await adminService.approveRequest(r.id, '', r);
+      toast('ok', res.detail || 'تم تفعيل الصلاحية للطالب فوراً بنجاح ✨');
       load();
-      onChanged();
+      onChanged?.();
     } catch (e) {
       toast('err', getErrorMessage(e));
     } finally {
@@ -75,17 +88,19 @@ export default function RequestsSection({ kind, onChanged }) {
   const reject = async (r) => {
     const res = await confirm({
       title: `رفض طلب ${r.full_name}؟`,
-      text: 'اكتب سبب الرفض (هيظهر للطالب) — اختياري.',
+      text: 'اكتب سبب الرفض ليظهر للطالب (اختياري).',
       input: true,
-      inputPlaceholder: 'مثلاً: التحويل ماوصلش',
+      inputPlaceholder: 'مثلاً: تحويل غير مكتمل، أو رقم الهاتف غير مطابق',
       confirmText: 'رفض الطلب',
+      danger: true,
     });
     if (!res) return;
     setBusy(r.id);
     try {
-      toast('ok', (await adminService.rejectRequest(r.id, res.value)).detail);
+      const resReject = await adminService.rejectRequest(r.id, res.value);
+      toast('ok', resReject.detail || 'تم رفض الطلب');
       load();
-      onChanged();
+      onChanged?.();
     } catch (e) {
       toast('err', getErrorMessage(e));
     } finally {
@@ -94,70 +109,239 @@ export default function RequestsSection({ kind, onChanged }) {
   };
 
   const remove = async (r) => {
-    if (!(await confirm({ title: 'حذف الطلب نهائياً؟', text: 'الطلب هيتشال من السجل. الصلاحية المفعّلة (لو اتقبل) مش هتتلغي.', confirmText: 'حذف' }))) return;
+    if (
+      !(await confirm({
+        title: 'حذف الطلب نهائياً؟',
+        text: 'سيتم مسح هذا الطلب من السجل. الصلاحية المفعّلة للطالب (إن وُجدت) لن تتأثر.',
+        confirmText: 'تأكيد الحذف',
+        danger: true,
+      }))
+    )
+      return;
     try {
-      toast('ok', (await adminService.deleteRequest(r.id)).detail);
+      const resDel = await adminService.deleteRequest(r.id);
+      toast('ok', resDel.detail || 'تم حذف الطلب.');
       load();
-      onChanged();
+      onChanged?.();
     } catch (e) {
       toast('err', getErrorMessage(e));
     }
   };
 
   const showReceipt = (r) =>
-    openFileViewer({ title: `إيصال تحويل — ${r.full_name}`, load: (onProgress) => adminService.viewReceipt(r.id, onProgress) });
+    openFileViewer({
+      title: `إيصال التحويل البنكي — ${r.full_name}`,
+      load: (onProgress) => adminService.viewReceipt(r.id, onProgress),
+    });
 
   return (
-    <div>
-      <SectionHeader
-        icon={isLevel ? GraduationCap : BookMarked}
-        title={isLevel ? 'طلبات الكورسات' : 'طلبات الكتب'}
-        subtitle={isLevel
-          ? 'طلبات الاشتراك في المستويات — القبول بيفعّل المستوى على حساب الطالب فوراً'
-          : 'طلبات شراء الكتب — القبول بيفتح الكتاب للطالب فوراً'}
-      />
+    <div className="space-y-6">
+      {/* 1. Hero Showcase Banner */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#07192e] via-[#0c2847] to-[#0e3b68] text-white p-6 sm:p-8 shadow-2xl shadow-[#07192e]/25 border border-white/10">
+        {/* Glow ambient background lights */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-teal-500/20 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
+        <div
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)',
+            backgroundSize: '24px 24px',
+          }}
+        />
 
-      {/* Level tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1">
-        <LevelTab active={level === ''} onClick={() => setLevel('')} label="كل المستويات" count={totalPending} />
-        {tabs.map((code) => (
-          <LevelTab key={code} active={level === code} onClick={() => setLevel(code)} code={code} count={counts.pending_by_level[code] || 0} />
-        ))}
+        {/* German flag mini accent strip */}
+        <div className="absolute top-0 inset-x-0 flex h-1.5" dir="ltr">
+          <span className="flex-1 bg-slate-950" />
+          <span className="flex-1 bg-red-600" />
+          <span className="flex-1 bg-amber-400" />
+        </div>
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 text-slate-950 flex items-center justify-center shadow-2xl shadow-amber-500/30 shrink-0 transform hover:scale-105 transition-transform duration-300">
+              {isLevel ? <GraduationCap className="w-9 h-9 sm:w-11 sm:h-11" /> : <BookMarked className="w-9 h-9 sm:w-11 sm:h-11" />}
+            </span>
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-black text-amber-300 mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                تفعيل فوري وتلقائي عند الموافقة
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+                {isLevel ? 'طلبات اشتراكات الكورسات' : 'طلبات شراء الكتب'}
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1 max-w-xl leading-relaxed">
+                {isLevel
+                  ? 'أي طالب يطلب اشتراك، موافقتك بتفتح له المحتوى والمحاضرات على حسابه بالسيرفر فوراً.'
+                  : 'موافقتك بتتيح الكتاب وقراءته وملفاته على حساب الطالب فوراً.'}
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Counter Pills */}
+          <div className="flex items-center gap-3 self-start md:self-auto">
+            <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 px-4 py-3 text-center min-w-[95px] shadow-inner">
+              <span className="block text-2xl font-black text-amber-300" dir="ltr">
+                {totalPending}
+              </span>
+              <span className="text-[11px] font-bold text-slate-300">بانتظار المراجعة</span>
+            </div>
+            <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 px-4 py-3 text-center min-w-[95px] shadow-inner">
+              <span className="block text-2xl font-black text-emerald-400" dir="ltr">
+                {totalApproved}
+              </span>
+              <span className="text-[11px] font-bold text-slate-300">مقبول ومفعّل</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <Card className="p-3 sm:p-4 mb-5 flex flex-wrap items-center gap-3">
-        <Segmented
-          value={status}
-          onChange={setStatus}
-          options={[
-            { value: 'pending', label: 'مستني الموافقة', count: counts.by_status.pending },
-            { value: 'approved', label: 'مقبول' },
-            { value: 'rejected', label: 'مرفوض' },
-            { value: 'all', label: 'الكل' },
-          ]}
-        />
-        <div className="relative flex-1 min-w-[12rem]">
-          <Search className="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="دوّر بالاسم أو رقم الموبايل" className="pr-10" />
+      {/* 2. Interactive Level Pills (Horizontal Glass Strip) */}
+      <div className="relative">
+        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 pt-1 px-1 scrollbar-none">
+          <LevelPill
+            active={level === ''}
+            onClick={() => setLevel('')}
+            label="جميع المستويات"
+            count={totalPending}
+            icon={Layers}
+          />
+          {tabs.map((code) => {
+            const pendingInLevel = counts.pending_by_level?.[code] || 0;
+            return (
+              <LevelPill
+                key={code}
+                active={level === code}
+                onClick={() => setLevel(code)}
+                code={code}
+                label={code === 'General' ? 'عام' : `مستوى ${code}`}
+                count={pendingInLevel}
+              />
+            );
+          })}
         </div>
-      </Card>
+      </div>
 
+      {/* 3. STICKY FLOATING TOOLBAR: "كل اما انزل اشوفها ققدامني" */}
+      <div className="sticky top-[4.25rem] z-30 transition-all duration-300">
+        <div className="rounded-2xl p-2.5 sm:p-3.5 bg-white/90 backdrop-blur-xl border border-slate-200/90 shadow-xl shadow-slate-900/[0.06] flex flex-wrap items-center justify-between gap-3">
+          {/* Segmented Filter Pills */}
+          <div className="inline-flex items-center p-1 rounded-xl bg-slate-100/90 border border-slate-200/80 gap-1 overflow-x-auto max-w-full">
+            <FilterTab
+              active={status === 'pending'}
+              onClick={() => setStatus('pending')}
+              label="بانتظار الموافقة"
+              count={counts.by_status?.pending || 0}
+              tone="amber"
+            />
+            <FilterTab
+              active={status === 'approved'}
+              onClick={() => setStatus('approved')}
+              label="تم القبول والتفعيل"
+              count={counts.by_status?.approved || 0}
+              tone="emerald"
+            />
+            <FilterTab
+              active={status === 'rejected'}
+              onClick={() => setStatus('rejected')}
+              label="المرفوضة"
+              count={counts.by_status?.rejected || 0}
+              tone="rose"
+            />
+            <FilterTab
+              active={status === 'all'}
+              onClick={() => setStatus('all')}
+              label="الكل"
+              tone="slate"
+            />
+          </div>
+
+          {/* Quick Search Input */}
+          <div className="relative flex-1 min-w-[15rem] max-w-md">
+            <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="ابحث باسم الطالب أو رقم الهاتف..."
+              className="w-full h-10 pr-10 pl-8 rounded-xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-[10px] hover:bg-slate-400"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Requests List or Empty State */}
       {error ? (
         <ErrorBox message={error} onRetry={load} />
       ) : !data ? (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-56 !rounded-3xl" />)}</div>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-64 !rounded-3xl shadow-sm" />
+          ))}
+        </div>
       ) : data.results.length === 0 ? (
-        <Card>
-          <Empty
-            icon={isLevel ? GraduationCap : BookMarked}
-            title={status === 'pending' ? 'مفيش طلبات مستنية 🎉' : 'مفيش طلبات هنا'}
-            text={status === 'pending' ? 'كل الطلبات اتراجعت. أي طلب جديد هيظهر هنا على طول.' : 'جرّب تغيّر الفلتر أو المستوى.'}
-          />
+        <Card className="p-10 sm:p-16 text-center border-2 border-dashed border-slate-200/80 bg-gradient-to-b from-white to-slate-50/50">
+          <div className="max-w-md mx-auto space-y-4">
+            <div className="relative mx-auto w-24 h-24 rounded-3xl bg-gradient-to-br from-teal-50 to-emerald-100/60 border border-teal-200 text-teal-600 flex items-center justify-center dw-float-slow shadow-xl shadow-teal-500/10">
+              {status === 'pending' ? (
+                <ShieldCheck className="w-12 h-12 text-teal-600" />
+              ) : isLevel ? (
+                <GraduationCap className="w-12 h-12 text-teal-600" />
+              ) : (
+                <BookMarked className="w-12 h-12 text-teal-600" />
+              )}
+              <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-xs font-black shadow-md">
+                ✓
+              </span>
+            </div>
+
+            <h3 className="text-xl font-black text-slate-900">
+              {status === 'pending' ? 'لا توجد طلبات معلقة حالياً 🎉' : 'لم يتم العثور على طلبات'}
+            </h3>
+            <p className="text-sm text-slate-500 font-medium leading-relaxed">
+              {status === 'pending'
+                ? 'تمت مراجعة كل طلبات الطلاب بالكامل. بمجرد أن يرسل أي طالب طلباً جديداً، سيظهر هنا فوراً مع إمكانية التفعيل بضغطة واحدة.'
+                : 'جرّب تغيير كلمات البحث أو الانتقال لمستوى آخر أو عرض الطلبات المعتمدة.'}
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+              {level && (
+                <Btn variant="soft" size="sm" onClick={() => setLevel('')}>
+                  عرض كل المستويات
+                </Btn>
+              )}
+              {status !== 'all' && (
+                <Btn variant="ghost" size="sm" onClick={() => setStatus('all')}>
+                  عرض سجل كل الطلبات
+                </Btn>
+              )}
+            </div>
+          </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          {data.results.map((r) => (
-            <RequestCard key={r.id} r={r} busy={busy === r.id} onApprove={approve} onReject={reject} onDelete={remove} onReceipt={showReceipt} />
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+          {data.results.map((r, idx) => (
+            <div
+              key={r.id}
+              className="dw-card-enter"
+              style={{ animationDelay: `${Math.min(idx * 60, 400)}ms` }}
+            >
+              <ModernRequestCard
+                r={r}
+                busy={busy === r.id}
+                onApprove={approve}
+                onReject={reject}
+                onDelete={remove}
+                onReceipt={showReceipt}
+              />
+            </div>
           ))}
         </div>
       )}
@@ -165,96 +349,219 @@ export default function RequestsSection({ kind, onChanged }) {
   );
 }
 
-function LevelTab({ active, onClick, code, label, count }) {
+/* ------------------------------------------------------------------ */
+/* Sub-components: Level Pill, Filter Tab, Modern Card                */
+/* ------------------------------------------------------------------ */
+
+function LevelPill({ active, onClick, code, label, count = 0, icon: Icon }) {
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 inline-flex items-center gap-2.5 h-14 pl-4 pr-2 rounded-2xl border-2 transition-all ${
-        active ? 'bg-[#0e2c4e] border-[#0e2c4e] text-white shadow-lg shadow-[#0e2c4e]/20' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+      type="button"
+      className={`group relative shrink-0 inline-flex items-center gap-2.5 h-12 px-4 rounded-2xl border transition-all duration-200 active:scale-95 ${
+        active
+          ? 'bg-gradient-to-r from-[#0a2340] to-teal-900 border-[#0a2340] text-white shadow-lg shadow-[#0a2340]/25 ring-2 ring-teal-400/40'
+          : 'bg-white border-slate-200 text-slate-700 hover:border-teal-300 hover:bg-teal-50/30'
       }`}
     >
-      {code ? <LevelChip code={code} /> : <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${active ? 'bg-white/15' : 'bg-slate-100'}`}>☰</span>}
-      <span className="text-sm font-black">{label || (code === 'General' ? 'عام' : `مستوى ${code}`)}</span>
+      {code ? (
+        <LevelChip code={code} size="sm" />
+      ) : Icon ? (
+        <span className={`w-6 h-6 rounded-lg flex items-center justify-center ${active ? 'bg-white/15 text-amber-300' : 'bg-slate-100 text-slate-500'}`}>
+          <Icon className="w-3.5 h-3.5" />
+        </span>
+      ) : null}
+      <span className="text-xs sm:text-sm font-black">{label}</span>
       {count > 0 && (
-        <span className="min-w-6 h-6 px-1.5 rounded-full bg-amber-400 text-slate-950 text-[11px] font-black flex items-center justify-center">{count}</span>
+        <span className="min-w-5 h-5 px-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 text-[10px] font-black flex items-center justify-center shadow-md animate-pulse">
+          {count}
+        </span>
       )}
     </button>
   );
 }
 
-function RequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }) {
-  const pending = r.status === 'pending';
+function FilterTab({ active, onClick, label, count, tone = 'slate' }) {
+  const toneClasses = {
+    amber: active ? 'bg-amber-500 text-slate-950 shadow-sm' : 'hover:text-amber-800',
+    emerald: active ? 'bg-emerald-600 text-white shadow-sm' : 'hover:text-emerald-800',
+    rose: active ? 'bg-rose-600 text-white shadow-sm' : 'hover:text-rose-800',
+    slate: active ? 'bg-white text-slate-900 shadow-sm' : 'hover:text-slate-900',
+  };
+
   return (
-    <Card className={`relative overflow-hidden p-5 flex flex-col gap-4 ${pending ? 'ring-2 ring-amber-200/70' : ''}`}>
-      {pending && <span className="absolute top-0 inset-x-0 h-1 bg-gradient-to-l from-amber-300 via-amber-500 to-amber-300" />}
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-black transition-all ${
+        active ? toneClasses[tone] : 'text-slate-600 hover:bg-white/60'
+      }`}
+    >
+      <span>{label}</span>
+      {count !== undefined && count > 0 && (
+        <span
+          className={`min-w-4 h-4 px-1 rounded-full text-[10px] font-black flex items-center justify-center ${
+            active ? 'bg-black/20 text-current' : 'bg-slate-200 text-slate-700'
+          }`}
+        >
+          {count}
+        </span>
+      )}
+    </button>
+  );
+}
 
-      <div className="flex items-start gap-3">
-        <LevelChip code={r.level_code} size="lg" />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-black text-slate-900 truncate">{r.full_name}</h3>
-            <StatusBadge status={r.status} />
+function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }) {
+  const pending = r.status === 'pending';
+
+  return (
+    <div
+      className={`relative overflow-hidden rounded-3xl border transition-all duration-300 p-5 sm:p-6 flex flex-col gap-4 ${
+        pending
+          ? 'bg-gradient-to-br from-white via-white to-amber-50/30 border-amber-300/80 shadow-xl shadow-amber-900/[0.04] ring-1 ring-amber-200/50 hover:shadow-2xl hover:border-amber-400'
+          : 'bg-white border-slate-200/90 shadow-md hover:shadow-xl hover:border-slate-300'
+      }`}
+    >
+      {/* Top subtle highlight stripe */}
+      {pending && (
+        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400" />
+      )}
+
+      {/* Header Info */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <Avatar name={r.full_name} size="md" />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4 className="text-base font-black text-slate-900 truncate">{r.full_name}</h4>
+              <StatusBadge status={r.status} />
+            </div>
+            <p className="text-xs text-slate-500 font-bold mt-0.5" title={fullDate(r.created_at)}>
+              طلب #{r.id} • {timeAgo(r.created_at)}
+            </p>
           </div>
-          <p className="text-sm text-slate-600 font-bold truncate mt-0.5" dir="auto">{r.item_name}</p>
-          <p className="text-[11px] text-slate-400 font-bold mt-0.5" title={fullDate(r.created_at)}>طلب #{r.id} • {timeAgo(r.created_at)}</p>
         </div>
-        <div className="text-left shrink-0">
-          <p className="text-xl font-black text-slate-900" dir="ltr">{money(r.amount)}</p>
-          <p className="text-[10px] font-black text-slate-400">جنيه</p>
+
+        {/* Amount Badge */}
+        <div className="text-left shrink-0 bg-slate-50 border border-slate-100 rounded-2xl px-3 py-1.5 shadow-sm">
+          <p className="text-lg font-black text-[#0e2c4e]" dir="ltr">
+            {money(r.amount)} <span className="text-[10px] font-black text-slate-500">ج.م</span>
+          </p>
+          <p className="text-[10px] font-bold text-slate-400 text-center">المبلغ</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <Info icon={UserRound} label="الموبايل">
-          <span className="flex items-center justify-between gap-2">
-            <span dir="ltr" className="font-black">{r.phone}</span>
-            <PhoneActions phone={r.phone} />
-          </span>
-        </Info>
-        <Info icon={Wallet} label="طريقة الدفع">{r.payment_method || '—'}</Info>
+      {/* Target Item Pill */}
+      <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50/90 border border-slate-100">
+        <LevelChip code={r.level_code} size="sm" />
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-black text-slate-800 truncate" dir="auto">
+            {r.item_name}
+          </p>
+          <p className="text-[10px] font-bold text-teal-600">
+            {r.kind === 'level' ? 'اشتراك كورس ومحاضرات' : 'شراء كتاب'}
+          </p>
+        </div>
       </div>
 
+      {/* Details Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        <div className="rounded-2xl bg-white border border-slate-100 p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-slate-600">
+            <Phone className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+            <span dir="ltr" className="font-black text-slate-900 text-xs">
+              {r.phone}
+            </span>
+          </div>
+          <PhoneActions phone={r.phone} />
+        </div>
+
+        <div className="rounded-2xl bg-white border border-slate-100 p-3 flex items-center gap-2 text-slate-700">
+          <Wallet className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+          <span className="font-bold truncate">{r.payment_method || 'طريقة دفع غير محددة'}</span>
+        </div>
+      </div>
+
+      {/* Student Note */}
       {r.note && (
-        <p className="flex items-start gap-2 rounded-2xl bg-slate-50 border border-slate-100 px-3.5 py-2.5 text-xs text-slate-600 leading-relaxed">
-          <StickyNote className="w-4 h-4 text-slate-400 shrink-0" /> {r.note}
-        </p>
-      )}
-      {!pending && (
-        <p className="text-[11px] text-slate-500 font-bold">
-          {r.status === 'approved' ? 'اتقبل' : 'اترفض'} {r.reviewed_by ? `بواسطة ${r.reviewed_by}` : ''} • {fullDate(r.reviewed_at)}
-          {r.admin_note && <span className="block mt-1 text-rose-600">السبب: {r.admin_note}</span>}
-        </p>
+        <div className="flex items-start gap-2 rounded-2xl bg-amber-50/60 border border-amber-100 p-3 text-xs text-amber-900 leading-relaxed font-medium">
+          <StickyNote className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+          <span>{r.note}</span>
+        </div>
       )}
 
-      <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
+      {/* Rejection / Approval Note if already processed */}
+      {!pending && (
+        <div className="text-[11px] font-bold text-slate-500 bg-slate-50 rounded-xl p-2.5">
+          {r.status === 'approved' ? '✓ تم القبول والتفعيل' : '✕ تم الرفض'}{' '}
+          {r.reviewed_by ? `بواسطة ${r.reviewed_by}` : ''} • {fullDate(r.reviewed_at)}
+          {r.admin_note && (
+            <span className="block mt-1 text-rose-600 font-black">السبب: {r.admin_note}</span>
+          )}
+        </div>
+      )}
+
+      {/* Action Footer */}
+      <div className="mt-auto pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
         {r.has_receipt ? (
-          <Btn variant="soft" size="sm" icon={Receipt} onClick={() => onReceipt(r)}>صورة التحويل</Btn>
+          <button
+            onClick={() => onReceipt(r)}
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-xs font-black transition-all active:scale-95"
+          >
+            <Receipt className="w-3.5 h-3.5" />
+            <span>عرض إيصال التحويل</span>
+          </button>
         ) : (
-          <span className="text-[11px] font-bold text-slate-400">من غير صورة تحويل</span>
+          <span className="text-[11px] font-bold text-slate-400">بدون إيصال مرفق</span>
         )}
-        <div className="mr-auto flex gap-2">
+
+        <div className="flex items-center gap-2 mr-auto">
           {pending ? (
             <>
-              <Btn variant="dangerSoft" size="sm" icon={X} disabled={busy} onClick={() => onReject(r)}>رفض</Btn>
-              <Btn variant="success" size="sm" icon={Check} loading={busy} onClick={() => onApprove(r)}>قبول وتفعيل فوري</Btn>
+              <button
+                disabled={busy}
+                onClick={() => onReject(r)}
+                className="h-10 px-3.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-black transition-all disabled:opacity-50 active:scale-95 flex items-center gap-1.5"
+              >
+                <X className="w-4 h-4" />
+                <span>رفض</span>
+              </button>
+              <button
+                disabled={busy}
+                onClick={() => onApprove(r)}
+                className="h-10 px-5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 text-white text-xs font-black transition-all hover:brightness-110 shadow-lg shadow-emerald-600/25 active:scale-95 disabled:opacity-50 flex items-center gap-2 animate-pulse hover:animate-none"
+              >
+                {busy ? (
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Zap className="w-4 h-4 text-amber-300" />
+                )}
+                <span>قبول وتفعيل فوري</span>
+              </button>
             </>
           ) : (
             <>
-              {r.status === 'rejected' && <Btn variant="ghost" size="sm" icon={RotateCcw} loading={busy} onClick={() => onApprove(r)}>قبول بردو</Btn>}
-              <Btn variant="ghost" size="icon" title="حذف الطلب" onClick={() => onDelete(r)}><Trash2 className="w-4 h-4 text-rose-500" /></Btn>
+              {r.status === 'rejected' && (
+                <button
+                  disabled={busy}
+                  onClick={() => onApprove(r)}
+                  className="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>تفعيل رغم الرفض</span>
+                </button>
+              )}
+              <button
+                onClick={() => onDelete(r)}
+                className="w-9 h-9 rounded-xl hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition-colors"
+                title="حذف الطلب نهائياً"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
             </>
           )}
         </div>
       </div>
-    </Card>
-  );
-}
-
-function Info({ icon: Icon, label, children }) {
-  return (
-    <div className="rounded-2xl bg-slate-50 border border-slate-100 px-3.5 py-2.5">
-      <p className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 mb-0.5"><Icon className="w-3 h-3" /> {label}</p>
-      <div className="text-sm text-slate-800 font-bold">{children}</div>
     </div>
   );
 }

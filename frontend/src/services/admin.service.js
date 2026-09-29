@@ -35,15 +35,60 @@ export const adminService = {
   // ---- Overview ----
   getOverview: pick(() => get(API_ENDPOINTS.ADMIN_OVERVIEW), legacyAdmin.getOverview),
   /** → { pending, level, book } */
-  getPendingCount: pick(() => get(API_ENDPOINTS.ADMIN_PENDING_COUNT), async () => ({ pending: 0, level: 0, book: 0 })),
+  getPendingCount: pick(
+    () => get(API_ENDPOINTS.ADMIN_PENDING_COUNT),
+    async () => (await apiClient.get('/site-data/requests/count')).data
+  ),
 
   // ---- Access requests ----
   /** params: { kind: 'level'|'book', status, level, search } → { counts, results } */
-  getRequests: (params) => get(API_ENDPOINTS.ADMIN_REQUESTS, params),
-  approveRequest: (id, adminNote = '') => post(API_ENDPOINTS.ADMIN_REQUEST_ACTION(id, 'approve'), { admin_note: adminNote }),
-  rejectRequest: (id, adminNote = '') => post(API_ENDPOINTS.ADMIN_REQUEST_ACTION(id, 'reject'), { admin_note: adminNote }),
-  deleteRequest: (id) => del(API_ENDPOINTS.ADMIN_REQUEST(id)),
-  viewReceipt: (id, onProgress) => fetchFile(API_ENDPOINTS.ADMIN_REQUEST_RECEIPT(id), `receipt-${id}`, onProgress),
+  getRequests: pick(
+    (params) => get(API_ENDPOINTS.ADMIN_REQUESTS, params),
+    async (params) => (await apiClient.get('/site-data/requests', { params })).data
+  ),
+  approveRequest: pick(
+    (id, adminNote = '') => post(API_ENDPOINTS.ADMIN_REQUEST_ACTION(id, 'approve'), { admin_note: adminNote }),
+    async (id, adminNote = '', req) => {
+      let r = req;
+      if (!r || !r.item_id || !(r.user?.id || r.user_id)) {
+        try {
+          const { data } = await apiClient.get(`/site-data/requests/${id}`);
+          r = data;
+        } catch {
+          // ignore error if already loaded
+        }
+      }
+      const userId = r?.user?.id || r?.user_id;
+      const itemId = r?.item_id;
+      const kind = r?.kind || 'level';
+
+      if (userId && itemId) {
+        await legacyAdmin.setUserAccess(userId, kind, itemId, true);
+      }
+      await apiClient.patch(`/site-data/requests/${id}`, { status: 'approved', admin_note: adminNote });
+      return { detail: 'تم قبول الطلب وتفعيل الصلاحية للطالب فوراً.' };
+    }
+  ),
+  rejectRequest: pick(
+    (id, adminNote = '') => post(API_ENDPOINTS.ADMIN_REQUEST_ACTION(id, 'reject'), { admin_note: adminNote }),
+    async (id, adminNote = '') => {
+      await apiClient.patch(`/site-data/requests/${id}`, { status: 'rejected', admin_note: adminNote });
+      return { detail: 'تم رفض الطلب.' };
+    }
+  ),
+  deleteRequest: pick(
+    (id) => del(API_ENDPOINTS.ADMIN_REQUEST(id)),
+    async (id) => {
+      await apiClient.delete(`/site-data/requests/${id}`);
+      return { detail: 'تم حذف الطلب.' };
+    }
+  ),
+  viewReceipt: (id, onProgress) => {
+    return getAdminMode().then((mode) => {
+      const url = mode === 'legacy' ? `/site-data/requests/${id}/receipt/` : API_ENDPOINTS.ADMIN_REQUEST_RECEIPT(id);
+      return fetchFile(url, `receipt-${id}`, onProgress);
+    });
+  },
 
   // ---- Users ----
   /** params: { search, role, status, level, page } → { count, page, pages, results } */

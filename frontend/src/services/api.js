@@ -44,9 +44,18 @@ const apiClient = axios.create({
   timeout: 20000,
 });
 
+// Public auth endpoints: a stale token in the header would make DRF reject them with 401.
+const PUBLIC_URLS = [
+  API_ENDPOINTS.LOGIN,
+  API_ENDPOINTS.REGISTER,
+  API_ENDPOINTS.GOOGLE_SIGNIN,
+  API_ENDPOINTS.FORGOT_PASSWORD,
+  API_ENDPOINTS.RESET_PASSWORD,
+];
+
 apiClient.interceptors.request.use((config) => {
   const token = tokenStorage.getAccess();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token && !PUBLIC_URLS.includes(config.url)) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
@@ -61,7 +70,7 @@ async function refreshAccessToken() {
   return data.access;
 }
 
-const NO_REFRESH_URLS = [API_ENDPOINTS.LOGIN, API_ENDPOINTS.REFRESH_TOKEN, API_ENDPOINTS.GOOGLE_SIGNIN, API_ENDPOINTS.REGISTER];
+const NO_REFRESH_URLS = [...PUBLIC_URLS, API_ENDPOINTS.REFRESH_TOKEN];
 
 apiClient.interceptors.response.use(
   (response) => response,

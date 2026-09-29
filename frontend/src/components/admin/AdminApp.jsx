@@ -7,8 +7,7 @@ import { useModal } from '@/context/ModalContext';
 import { adminService, getAdminMode } from '@/services/admin.service';
 import { ToastProvider, ConfirmProvider, Avatar, Btn } from './ui';
 import OverviewSection from './OverviewSection';
-import SubscriptionsSection from './SubscriptionsSection';
-import RequestsSection from './RequestsSection';
+import CombinedRequestsSection from './CombinedRequestsSection';
 import UsersSection from './UsersSection';
 import CoursesSection from './CoursesSection';
 import BooksSection from './BooksSection';
@@ -53,9 +52,7 @@ const NAV_TONES = {
 
 const ALL_KEYS = NAV.flatMap((g) => g.items.map((i) => i.key));
 const LABELS = Object.fromEntries(NAV.flatMap((g) => g.items.map((i) => [i.key, i.label])));
-// On the live backend (no requests API) these tabs show who each level / book is unlocked for.
-const LEGACY_LABELS = { 'requests-level': 'اشتراكات الكورسات', 'requests-book': 'اشتراكات الكتب' };
-const labelFor = (key, legacy) => (legacy && LEGACY_LABELS[key]) || LABELS[key];
+const labelFor = (key) => LABELS[key];
 
 export default function AdminApp() {
   const { user, loading, isAuthenticated, isAdmin } = useAuth();
@@ -122,10 +119,8 @@ function Shell({ user }) {
   const sectionProps = { onChanged: refreshCounts, goTo: setTab, legacy };
   let section;
   if (!mode) section = <div className="flex justify-center py-24"><Loader2 className="w-8 h-8 text-teal-600 animate-spin" /></div>;
-  else if (legacy && tab === 'requests-level') section = <SubscriptionsSection kind="level" {...sectionProps} />;
-  else if (legacy && tab === 'requests-book') section = <SubscriptionsSection kind="book" {...sectionProps} />;
-  else if (tab === 'requests-level') section = <RequestsSection kind="level" {...sectionProps} />;
-  else if (tab === 'requests-book') section = <RequestsSection kind="book" {...sectionProps} />;
+  else if (tab === 'requests-level') section = <CombinedRequestsSection kind="level" {...sectionProps} />;
+  else if (tab === 'requests-book') section = <CombinedRequestsSection kind="book" {...sectionProps} />;
   else if (tab === 'users') section = <UsersSection {...sectionProps} />;
   else if (tab === 'courses') section = <CoursesSection {...sectionProps} />;
   else if (tab === 'books') section = <BooksSection {...sectionProps} />;
@@ -192,7 +187,7 @@ function Shell({ user }) {
                     }`}>
                       <Icon className="w-4 h-4" />
                     </span>
-                    <span className="flex-1 text-right truncate">{labelFor(item.key, legacy)}</span>
+                    <span className="flex-1 text-right truncate">{labelFor(item.key)}</span>
                     {count > 0 ? (
                       <span className="min-w-5 h-5 px-1.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black flex items-center justify-center animate-pulse">
                         {count}
@@ -253,7 +248,7 @@ function Shell({ user }) {
             </button>
             <div className="min-w-0">
               <p className="text-[11px] font-bold text-slate-400">لوحة التحكم</p>
-              <h1 className="text-sm sm:text-base font-black text-slate-900 truncate">{labelFor(tab, legacy)}</h1>
+              <h1 className="text-sm sm:text-base font-black text-slate-900 truncate">{labelFor(tab)}</h1>
             </div>
 
             <div className="mr-auto flex items-center gap-2">

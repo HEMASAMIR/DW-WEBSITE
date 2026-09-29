@@ -141,13 +141,20 @@ function Tab({ active, onClick, code, label, count }) {
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 inline-flex items-center gap-2.5 h-14 pl-4 pr-2 rounded-2xl border-2 transition-all ${
-        active ? 'bg-[#0e2c4e] border-[#0e2c4e] text-white shadow-lg shadow-[#0e2c4e]/20' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+      type="button"
+      className={`group relative shrink-0 inline-flex items-center gap-2.5 h-12 px-4 rounded-2xl border transition-all duration-200 active:scale-95 ${
+        active
+          ? 'bg-gradient-to-r from-[#0a2340] to-teal-900 border-[#0a2340] text-white shadow-lg shadow-[#0a2340]/25 ring-2 ring-teal-400/40'
+          : 'bg-white border-slate-200 text-slate-700 hover:border-teal-300 hover:bg-teal-50/30'
       }`}
     >
-      {code ? <LevelChip code={code} /> : <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${active ? 'bg-white/15' : 'bg-slate-100'}`}>☰</span>}
-      <span className="text-sm font-black">{label || (code === 'General' ? 'عام' : `مستوى ${code}`)}</span>
-      <span className={`min-w-6 h-6 px-1.5 rounded-full text-[11px] font-black flex items-center justify-center ${active ? 'bg-white/15 text-white' : 'bg-slate-100 text-slate-600'}`}>{count}</span>
+      {code ? (
+        <LevelChip code={code} size="sm" />
+      ) : (
+        <span className={`w-6 h-6 rounded-lg flex items-center justify-center ${active ? 'bg-white/15 text-amber-300' : 'bg-slate-100 text-slate-500'}`}>☰</span>
+      )}
+      <span className="text-xs sm:text-sm font-black">{label || (code === 'General' ? 'عام' : `مستوى ${code}`)}</span>
+      <span className={`min-w-5 h-5 px-1.5 rounded-full text-[10px] font-black flex items-center justify-center ${active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>{count}</span>
     </button>
   );
 }

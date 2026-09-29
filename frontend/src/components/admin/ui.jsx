@@ -213,11 +213,11 @@ export function Card({ className = '', children, ...props }) {
 /** Page banner: navy with the site's teal/gold light, German flag stripe and a gold icon tile. */
 export function SectionHeader({ title, subtitle, icon: Icon, actions }) {
   return (
-    <div className="relative overflow-hidden rounded-[2rem] bg-[#0a2340] text-white px-5 sm:px-7 py-6 sm:py-7 mb-6 shadow-xl shadow-[#0a2340]/15">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_120%_at_100%_0%,rgba(20,184,166,0.42),transparent_60%),radial-gradient(ellipse_50%_100%_at_0%_100%,rgba(245,158,11,0.26),transparent_60%)]" />
+    <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#07192e] via-[#0c2847] to-[#0e3b68] text-white px-6 sm:px-8 py-6 sm:py-7 mb-6 shadow-xl shadow-[#07192e]/20 border border-white/10">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_120%_at_100%_0%,rgba(20,184,166,0.35),transparent_60%),radial-gradient(ellipse_50%_100%_at_0%_100%,rgba(245,158,11,0.22),transparent_60%)] pointer-events-none" />
       <div
-        className="absolute inset-0 opacity-[0.07] [mask-image:linear-gradient(to_left,black,transparent)]"
-        style={{ backgroundImage: 'linear-gradient(to right,#fff 1px,transparent 1px),linear-gradient(to bottom,#fff 1px,transparent 1px)', backgroundSize: '32px 32px' }}
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '24px 24px' }}
       />
       <div className="absolute top-0 inset-x-0 flex h-1" dir="ltr">
         <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
@@ -225,13 +225,13 @@ export function SectionHeader({ title, subtitle, icon: Icon, actions }) {
       <div className="relative flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4 min-w-0">
           {Icon && (
-            <span className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-[#0a2340] flex items-center justify-center shadow-lg shadow-amber-500/30 shrink-0">
-              <Icon className="w-7 h-7" />
+            <span className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/25 shrink-0">
+              <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
             </span>
           )}
           <div className="min-w-0">
-            <h2 className="text-2xl sm:text-3xl font-black leading-tight">{title}</h2>
-            {subtitle && <p className="text-sm text-slate-300 font-medium mt-1">{subtitle}</p>}
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black leading-tight">{title}</h2>
+            {subtitle && <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1 leading-relaxed">{subtitle}</p>}
           </div>
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
