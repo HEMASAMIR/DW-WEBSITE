@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useModal } from '@/context/ModalContext';
 import { X } from 'lucide-react';
 
@@ -26,10 +27,14 @@ export default function LightboxModal() {
           <X className="w-5 h-5" />
         </button>
 
-        <img
+        {/* Only local /assets images open here (review screenshots). The real size comes from the file. */}
+        <Image
           src={imageSrc}
           alt={counterText}
-          className="max-h-[80vh] w-auto object-contain rounded-2xl border border-slate-800 shadow-xl"
+          width={1200}
+          height={1600}
+          sizes="(max-width: 896px) 100vw, 896px"
+          className="max-h-[80vh] max-w-full w-auto h-auto object-contain rounded-2xl border border-slate-800 shadow-xl"
         />
 
         <span className="text-xs text-slate-400 mt-3 font-medium bg-slate-950 px-4 py-1.5 rounded-full border border-slate-800">

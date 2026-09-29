@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useModal } from '@/context/ModalContext';
 import { TEACHER_CV_DATA } from '@/constants/siteContent';
@@ -23,12 +23,12 @@ export default function CvModal() {
   const { activeModal, modalData, closeModal } = useModal();
   const contact = useContactInfo();
   const [activeTab, setActiveTab] = useState('overview');
-
-  useEffect(() => {
-    if (modalData?.tab) {
-      setActiveTab(modalData.tab);
-    }
-  }, [modalData]);
+  // Opening the modal with a tab selects it — adjusted during render, not in an effect.
+  const [openedWith, setOpenedWith] = useState(modalData);
+  if (modalData !== openedWith) {
+    setOpenedWith(modalData);
+    if (modalData?.tab) setActiveTab(modalData.tab);
+  }
 
   if (activeModal !== 'cv') return null;
 

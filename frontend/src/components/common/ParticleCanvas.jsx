@@ -1,17 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export default function ParticleCanvas() {
   const canvasRef = useRef(null);
-  const [mounted, setMounted] = useState(false);
-
+  // Effects only run in the browser, so the canvas is drawn after hydration without a mounted flag.
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -78,9 +72,7 @@ export default function ParticleCanvas() {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [mounted]);
-
-  if (!mounted) return null;
+  }, []);
 
   return (
     <canvas
