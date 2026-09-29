@@ -657,6 +657,128 @@ const DE = {
     'Alles gut – machen wir so weiter.',
   'الدنيا تمام الحمد لله':
     'Alles gut, Gott sei Dank.',
+  'الحمد لله من اول يوم والمكان طلع مريح وكويس جدا وهير خالد الله يجازيه خير مش مقصر معانا وبجد صبور جدا ولحد الان الأمور تمام الحمد لله... محتاجه بس لو أمكن يكون فيه وقت خاص بس بتعلم النطق هو طبعا مهتم بالنقطه دي أن احنا ننطق كويس بس ياريت لو نزود ليها وقت اكتر علشان نثبت النطق الصحيح وشكراً جدا ع كل حاجه 🤍':
+    'Gott sei Dank – vom ersten Tag an war der Ort angenehm und richtig gut, und Herr Khaled, Gott vergelte es ihm, gibt uns alles und ist wirklich sehr geduldig. Bisher läuft alles gut, Gott sei Dank … Ich würde mir nur, wenn möglich, eine eigene Zeit nur für die Aussprache wünschen. Er legt natürlich viel Wert darauf, dass wir gut aussprechen, aber es wäre schön, dafür mehr Zeit zu haben, um die richtige Aussprache zu festigen. Vielen Dank für alles 🤍',
+  'Sehr gut 😂 الصراحه الهير خالد محترم جدا وشرحه كويس جدا والمكان برضو حلو 🤍':
+    'Sehr gut 😂 Ehrlich gesagt ist Herr Khaled sehr respektvoll, er erklärt sehr gut, und der Ort ist auch schön 🤍',
+  'خلاصه الموضوع، الهير ربنا يبارك فيه بيحاول وبيعمل اللي عليه عشان يوصلنا المعلومه، الباقي كله علينا احنا. الفكره مش هيجي الهير يخلينا نتكلم الا لما نكون احنا بنذاكر وبنجتهد وبنتعب عشان نعرف نتكلم ونسمع كويس، ف الاخير ربنا يبارك ف الهير ويكون ف عونه':
+    'Unterm Strich: Der Lehrer, Gott segne ihn, gibt sich Mühe und tut seinen Teil, um uns den Stoff zu vermitteln – der Rest liegt bei uns. Er kann uns nicht zum Sprechen bringen, wenn wir nicht lernen, fleißig sind und uns anstrengen, gut zu sprechen und zu hören. Letztendlich: Gott segne ihn und stehe ihm bei.',
+  'انا مع هير خالد من A1 و بدأنا النهارده معاه A2 و ان شاء الله لما نخلص هكمل B2. بصراحه انا مبسوط من اللي وصلتله مع الهير خلال اول ليقيل بس و ان شاء الله نكمل زي ما احنا و نوصل لحاجه كويسه و هير خالد بجد مش بيسيبنا و بذل مجهود معانا ف اول ليقل يشكر عليه':
+    'Ich bin seit A1 bei Herr Khaled, heute haben wir mit ihm A2 begonnen, und so Gott will mache ich danach bis B2 weiter. Ehrlich gesagt bin ich schon nach dem ersten Niveau zufrieden mit dem, was ich bei ihm erreicht habe. So Gott will machen wir so weiter und kommen weit. Herr Khaled lässt uns wirklich nicht allein – er hat sich im ersten Niveau sehr für uns eingesetzt, dafür gebührt ihm Dank.',
+  'للامانه الموضوع كان جديد عليا حوار الالماني الماني في حاجات مفهمتهاش وكدا بس ممكن نقول خارجه فاهمه بنسبه ٧٥٪ مثلا. طريقه هير خالد مش هقدر اعلق عليها بجد هو رائع جدا!!!':
+    'Ehrlich gesagt war dieses „nur Deutsch“ neu für mich – manches habe ich nicht verstanden, aber ich würde sagen, ich bin mit etwa 75 % Verständnis rausgegangen. Zu Herr Khaleds Art zu unterrichten fehlen mir die Worte – er ist wirklich großartig!!!',
+  'السيشن في تطور ملحوظ جدا ومجهود كبير من الهير عشان يحسن من الوضع ان شاء الله دايما ف نجاح وتطور':
+    'Die Stunden werden spürbar besser, und der Lehrer gibt sich große Mühe, alles zu verbessern. So Gott will, immer weiter Erfolg und Fortschritt.',
+  'مبدأيا كدة الحمدله السيشن النهاردة كان كويس وكان فية اكبر قدر من الاستفادة بصراحة الاسلوب والشرح كان افضل من A1 واستفدت بنسبة كبيرة الحمدله. ملاحظاتى بس نهتم ب schreiben اكتر لأن النقطة دى بنواجة فيها صعوبات شوية':
+    'Zunächst einmal, Gott sei Dank, war die heutige Stunde gut und wir haben sehr viel mitgenommen. Ehrlich gesagt waren Stil und Erklärung besser als in A1, und ich habe viel gelernt, Gott sei Dank. Meine einzige Anmerkung: mehr Fokus auf Schreiben, denn da haben wir noch etwas Schwierigkeiten.',
+  'المحاضره فهمت منها والحمدلله كله زي الفل':
+    'Ich habe die Stunde verstanden, und Gott sei Dank ist alles bestens.',
+  'الكورس كان كويس اوي و مستوي هير خالد فوق التقيم انا كنت براجع معاه ال a1 يوتيوب':
+    'Der Kurs war richtig gut, und Herr Khaleds Niveau ist über jede Bewertung erhaben – ich habe A1 mit ihm auf YouTube wiederholt.',
+  'الدنيا تمام الحمد لله و السيشن و المكان كويسين ماشاء الله':
+    'Alles gut, Gott sei Dank – die Stunde und der Ort sind beide toll, maschallah.',
+  'طبعاً هير خالد غني عن التعريف. ما شاء الله تبارك الله، الشرح فوق الممتاز وسيشن رائع جدا بجد والله واتمنى نفضل علي هذا المنوال':
+    'Herr Khaled braucht natürlich keine Vorstellung. Maschallah, die Erklärung ist mehr als ausgezeichnet und es war eine wirklich tolle Stunde. Ich hoffe, wir machen so weiter.',
+  'هير خالد فوق الممتاز طبعاً، محدش يقدر يقول غير كده':
+    'Herr Khaled ist natürlich mehr als ausgezeichnet – niemand kann etwas anderes sagen.',
+  'والله كل حاجه فوق الممتاز':
+    'Ehrlich, alles ist mehr als ausgezeichnet.',
+  'احلي سيشن والله واستفدت كتير الحمد لله':
+    'Die beste Stunde überhaupt – ich habe viel gelernt, Gott sei Dank.',
+  'ماشاء الله هير خالد ممتاز انا حضرت معاه من اول a1':
+    'Maschallah, Herr Khaled ist ausgezeichnet – ich bin seit A1 bei ihm.',
+  'هير خالد شرحه حلو جداا وده اللي خلاني احجز معاه وعرفت اظبط مواعيد علشان فعلا انا كنت عايز احضر معاه. شخصية كويسة جدا ومحترم جداا جداا ربنا يسنده ويقويه. ويطول باله ويستحملنا بقاا في الكورس ده 😂':
+    'Herr Khaled erklärt richtig, richtig gut – deshalb habe ich bei ihm gebucht und meine Termine umgestellt, weil ich unbedingt bei ihm lernen wollte. Ein sehr guter und sehr, sehr respektvoller Mensch. Gott unterstütze und stärke ihn – und gebe ihm die Geduld, uns in diesem Kurs auszuhalten 😂',
+  'أن شاء الله تكون بداية خير. Herr Khaled غني عن التعريف بأمانة، شرح ممتاز':
+    'So Gott will ist es ein guter Anfang. Herr Khaled braucht ehrlich gesagt keine Vorstellung – ausgezeichnete Erklärung.',
+  'كله تمام، ماشاء الله على هير خالد والله شرحه مبسط وجميل جدا جدا':
+    'Alles gut – maschallah, Herr Khaled erklärt so einfach und wirklich, wirklich schön.',
+  'متحرمش من زوقكم حقيقي كلكم تتشالوا ع الراس واهتمامك بينا ملموس عند هير خالد كمان وبيوصله تعبك. ربنا يكرمكم بجد':
+    'Danke für eure Freundlichkeit – ihr verdient ehrlich gesagt alle den größten Respekt. Eure Fürsorge ist spürbar, auch Herr Khaled merkt sie, und eure Mühe kommt bei ihm an. Gott segne euch, wirklich.',
+  'الهير ممتاز ما شاء الله، ربنا يبارك فيه يا رب ❤️':
+    'Der Lehrer ist ausgezeichnet, maschallah – Gott segne ihn ❤️',
+  'كانت طريقة التعليمة جميلة، طريقة "ألماني - ألماني" تناسبني أخذ المعلومة أسرع و be more familiar with the language':
+    'Die Unterrichtsmethode war schön – der Ansatz „nur Deutsch“ passt zu mir: Ich nehme den Stoff schneller auf und werde vertrauter mit der Sprache.',
+  'الحمد لله استفدت بس الجزء اللي بعد البريك ماحضرتهوش اللينك مكنش راضي يفتح':
+    'Gott sei Dank habe ich etwas mitgenommen – aber den Teil nach der Pause habe ich verpasst, weil sich der Link nicht öffnen ließ.',
+  'تحفهه 🫶':
+    'Großartig 🫶',
+  'ماشاء الله الهير زوق جدا ف التعامل بيوصل المعلومة بأكتر من شكل وطريقه علشان يبقي الكل مشارك معاه ف السيشن. شاطر جدا وممتاز وفعلا بدايته كويسه وبيجتهد أنه يطور من نفسه ويطور مننا احنا شخصيا':
+    'Maschallah, der Lehrer ist sehr freundlich im Umgang. Er erklärt den Stoff auf mehr als eine Art, damit alle in der Stunde mitmachen. Sehr kompetent und ausgezeichnet – ein wirklich guter Anfang, und er arbeitet daran, sich selbst und auch uns persönlich weiterzubringen.',
+
+  // ---- Locked level page (components/course/LevelView.jsx)
+  'كل محاضرات المستوى مسجّلة وتتفرج عليها في أي وقت':
+    'Alle Lektionen des Niveaus als Aufzeichnung – jederzeit ansehen',
+  'ملفات ومذكرات المستوى بتتفتح جوه الموقع':
+    'Dateien und Skripte des Niveaus direkt auf der Website',
+  'جروب واتساب خاص بطلاب المستوى':
+    'Eine eigene WhatsApp-Gruppe für die Schüler des Niveaus',
+  'بيتفعّل على حسابك أنت بس، من أي جهاز':
+    'Freigeschaltet auf deinem eigenen Konto, auf jedem Gerät',
+  'في انتظار اشتراكك':
+    'Wartet auf deine Anmeldung',
+  'في انتظار تفعيل الإدارة':
+    'Wartet auf Freischaltung durch die Akademie',
+  'الطلب محتاج مراجعة':
+    'Deine Anfrage braucht Aufmerksamkeit',
+  'طلبك وصل للإدارة':
+    'Deine Anfrage ist bei der Akademie',
+  'هيتفعّل أول ما التحويل يتأكد':
+    'Wird freigeschaltet, sobald die Zahlung bestätigt ist',
+  'تواصل مع الإدارة':
+    'Akademie kontaktieren',
+  'سجّل دخول واشترك':
+    'Anmelden und buchen',
+  'محاضرات المستوى {code} مستنياك':
+    'Die {code}-Lektionen warten auf dich',
+  'حوّل قيمة الاشتراك بأي طريقة من طرق الدفع، وابعت الطلب بصورة التحويل — والإدارة هتفعّل المستوى على حسابك في أسرع وقت.':
+    'Überweise die Gebühr mit einer beliebigen Zahlungsmethode und sende die Anfrage mit dem Beleg – die Akademie schaltet das Niveau so schnell wie möglich auf deinem Konto frei.',
+  'ابعت طلب الاشتراك':
+    'Anfrage senden',
+  'اشتراك المستوى':
+    'Niveau-Buchung',
+  'وفّر {n}%':
+    'Spare {n} %',
+  'دفعة واحدة للمستوى كامل':
+    'Eine Zahlung für das ganze Niveau',
+  'مش محتاج تعمل حاجة تاني — هيتفعّل لوحده.':
+    'Du musst nichts weiter tun – es wird automatisch freigeschaltet.',
+  'حوّل قيمة الاشتراك':
+    'Gebühr überweisen',
+  'بأي طريقة من طرق الدفع المتاحة أو كاش في الفرع.':
+    'Mit einer der verfügbaren Zahlungsmethoden oder bar in der Filiale.',
+  'من زرار «اشترك الآن» ومعاه صورة التحويل.':
+    'Über „Jetzt buchen“, zusammen mit dem Überweisungsbeleg.',
+  'الإدارة تفعّل المستوى':
+    'Die Akademie schaltet frei',
+  'بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً.':
+    'Nach Bestätigung der Zahlung sind die Lektionen sofort in deinem Konto verfügbar.',
+  'الاشتراك في 3 خطوات بس':
+    'In nur 3 Schritten buchen',
+  'من غير تعقيد — وكل خطوة واضحة':
+    'Unkompliziert – jeder Schritt ist klar',
+  'تم ✓':
+    'Erledigt ✓',
+  'جاري المراجعة الآن':
+    'Wird gerade geprüft',
+  'تاريخ الطلب':
+    'Anfragedatum',
+  'المبلغ':
+    'Betrag',
+  'طلبك في أيد أمينة ✨':
+    'Deine Anfrage ist in guten Händen ✨',
+  'استلمنا طلب اشتراكك بنجاح، وفريق الإدارة بيراجع التحويل دلوقتي. أول ما يتأكد، المستوى هيتفعّل على حسابك تلقائياً وهتلاقي المحاضرات مستنياك هنا — مش محتاج تعمل أي حاجة تانية.':
+    'Wir haben deine Anfrage erhalten, und das Team der Akademie prüft gerade deine Überweisung. Sobald sie bestätigt ist, wird das Niveau automatisch auf deinem Konto freigeschaltet und deine Lektionen warten genau hier auf dich – du musst nichts weiter tun.',
+  'حالة الطلب':
+    'Status der Anfrage',
+  'قيد المراجعة':
+    'In Prüfung',
+  'طلبك السابق ماتقبلش':
+    'Deine letzte Anfrage wurde nicht angenommen',
+  'ممكن تكون صورة التحويل مش واضحة أو المبلغ مختلف. ابعت طلب جديد أو كلّم الإدارة.':
+    'Vielleicht war der Beleg unklar oder der Betrag stimmte nicht. Sende eine neue Anfrage oder kontaktiere die Akademie.',
+  'ابعت طلب جديد':
+    'Neue Anfrage senden',
 };
 
 export default DE;

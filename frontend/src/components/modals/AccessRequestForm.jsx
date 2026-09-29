@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { requestsService } from '@/services/requests.service';
+import { requestsService, ACCESS_REQUEST_EVENT } from '@/services/requests.service';
 import { getErrorMessage, isMissingEndpoint } from '@/services/api';
 import { useContactInfo, whatsappHref, numberForMethod, CASH_METHOD } from '@/lib/contactInfo';
 import PaymentInfo from '@/components/common/PaymentInfo';
@@ -63,6 +63,7 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         kind, item_id: itemId, full_name: name, phone, payment_method: paymentMethod, note, receipt,
       });
       track('generate_lead', { item_type: kind, item_id: itemId, value: priceValue(amount), currency: 'EGP', channel: 'platform' });
+      window.dispatchEvent(new CustomEvent(ACCESS_REQUEST_EVENT, { detail: { kind, itemId } }));
       setSent('platform');
     } catch (err) {
       if (isMissingEndpoint(err)) {

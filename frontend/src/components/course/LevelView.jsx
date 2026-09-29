@@ -1,20 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
 import { coursesService, formatDuration, formatPrice, formatPriceLatin } from '@/services/courses.service';
+import { requestsService, ACCESS_REQUEST_EVENT } from '@/services/requests.service';
 import { useLevelContent, formatTotal, totalSeconds } from './useLevelContent';
 import Reveal from '@/components/common/Reveal';
 import PaymentInfo from '@/components/common/PaymentInfo';
-import { useContactInfo, groupLink } from '@/lib/contactInfo';
+import { useContactInfo, groupLink, whatsappHref } from '@/lib/contactInfo';
 import {
   PlayCircle, Play, FileText, AlertCircle, RefreshCw, Lock, LogIn, MessageCircle, Clock, ListVideo,
-  Eye, CheckCircle2, ChevronLeft, FileType2, Sparkles,
+  Eye, CheckCircle2, ChevronLeft, FileType2, Sparkles, Hourglass, Wallet, Send, BadgeCheck, ShieldCheck,
+  GraduationCap,
 } from 'lucide-react';
 
-import { t } from '@/lib/i18n';
+import { t, langMeta } from '@/lib/i18n';
 /**
  * Level overview page (cinematic hero + lecture grid + files sidebar). Watching happens on its
  * own page: /courses/<levelId>/watch/<videoId>. Everything shown comes from the backend.
@@ -381,94 +383,424 @@ function FileRow({ file, onOpen }) {
   );
 }
 
+
 /* ------------------------------------------------------------------ */
 /* Locked                                                              */
 /* ------------------------------------------------------------------ */
+
+/** The student's latest request for this level (null when none / logged out). */
+function useLevelRequest(levelId, enabled) {
+  const [request, setRequest] = useState(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!enabled) return undefined;
+    let cancelled = false;
+    const load = () =>
+      requestsService.mine()
+        .then((list) => {
+          if (cancelled) return;
+          const mine = list
+            .filter((r) => r.kind === 'level' && String(r.item_id) === String(levelId))
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          setRequest(mine.find((r) => r.status === 'pending') || mine[0] || null);
+        })
+        .catch(() => {})
+        .finally(() => !cancelled && setLoaded(true));
+    load();
+    window.addEventListener(ACCESS_REQUEST_EVENT, load);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(ACCESS_REQUEST_EVENT, load);
+    };
+  }, [levelId, enabled]);
+
+  return enabled ? { request, loaded } : { request: null, loaded: true };
+}
+
+const formatDate = (iso) => {
+  try {
+    return new Date(iso).toLocaleDateString(langMeta().locale, { day: 'numeric', month: 'long', year: 'numeric' });
+  } catch {
+    return '';
+  }
+};
+
 function LockedLevel({ level }) {
   const { isAuthenticated } = useAuth();
   const { openEnrollModal, openLoginPromptModal } = useModal();
   const contact = useContactInfo();
+  const { request, loaded } = useLevelRequest(level.id, isAuthenticated);
   const price = formatPrice(level.price);
-  const oldPrice = level.oldPrice && level.oldPrice > (level.price || 0) ? formatPrice(level.oldPrice) : null;
+  const oldPrice = level.oldPrice && level.oldPrice > (level.price || 0) ? level.oldPrice : null;
+  const discount = oldPrice ? Math.round((1 - (level.price || 0) / oldPrice) * 100) : 0;
+  const hasGroup = !!groupLink(contact, level.code);
+
+  // guest → ready → pending → (approved: the page turns into UnlockedLevel) | rejected → ready again
+  const status = !isAuthenticated ? 'guest' : request?.status === 'pending' ? 'pending' : request?.status === 'rejected' ? 'rejected' : 'ready';
 
   const subscribe = () =>
     isAuthenticated
       ? openEnrollModal(level)
       : openLoginPromptModal({ type: 'course', title: level.title, price, item: level });
 
+  // i18n-keep: the WhatsApp message goes to the academy, always in Arabic
+  const askAdmin = whatsappHref(contact, `مرحباً إدارة دويتشه فيلت 👋\nبعت طلب اشتراك في المستوى ${level.code} ومستني التفعيل على حسابي.`);
+
+  const perks = [
+    { icon: PlayCircle, text: t('كل محاضرات المستوى مسجّلة وتتفرج عليها في أي وقت') },
+    { icon: FileText, text: t('ملفات ومذكرات المستوى بتتفتح جوه الموقع') },
+    ...(hasGroup ? [{ icon: MessageCircle, text: t('جروب واتساب خاص بطلاب المستوى') }] : []),
+    { icon: ShieldCheck, text: t('بيتفعّل على حسابك أنت بس، من أي جهاز') },
+  ];
+
+  const badge = {
+    guest: (
+      <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-black text-slate-200">
+        <Lock className="w-3.5 h-3.5" />
+        {t('للمشتركين')}
+      </span>
+    ),
+    ready: (
+      <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-black text-slate-200">
+        <Lock className="w-3.5 h-3.5" />
+        {t('في انتظار اشتراكك')}
+      </span>
+    ),
+    pending: (
+      <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/15 border border-amber-300/40 text-xs font-black text-amber-200">
+        <span className="relative flex w-2 h-2">
+          <span className="absolute inset-0 rounded-full bg-amber-300 animate-ping" />
+          <span className="relative w-2 h-2 rounded-full bg-amber-300" />
+        </span>
+        {t('في انتظار تفعيل الإدارة')}
+      </span>
+    ),
+    rejected: (
+      <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-400/15 border border-rose-300/40 text-xs font-black text-rose-200">
+        <AlertCircle className="w-3.5 h-3.5" />
+        {t('الطلب محتاج مراجعة')}
+      </span>
+    ),
+  }[status];
+
   return (
-    <div className="pb-16">
+    <div className="pb-20">
       <LevelHero
         level={level}
-        badge={
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-black text-slate-200">
-            <Lock className="w-3.5 h-3.5" />
-            {isAuthenticated ? t('غير مفعّل على حسابك') : t('للمشتركين')}
-          </span>
-        }
+        badge={badge}
         actions={
-          <button onClick={subscribe} className={primaryBtn}>
-            {isAuthenticated ? <MessageCircle className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
-            {t('اشترك الآن')}
-          </button>
+          status === 'pending' ? (
+            <>
+              <span className="inline-flex items-center gap-3 ps-3 pe-6 py-3 rounded-2xl bg-amber-300/10 border border-amber-300/30 backdrop-blur">
+                <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-slate-950 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                  <Hourglass className="w-5 h-5 dw-float" />
+                </span>
+                <span className="text-start">
+                  <span className="block text-sm font-black text-amber-100">{t('طلبك وصل للإدارة')}</span>
+                  <span className="block text-xs font-bold text-amber-200/80">{t('هيتفعّل أول ما التحويل يتأكد')}</span>
+                </span>
+              </span>
+              <a href={askAdmin} target="_blank" rel="noopener noreferrer" className={ghostBtn}>
+                <MessageCircle className="w-4 h-4" />
+                {t('تواصل مع الإدارة')}
+              </a>
+            </>
+          ) : (
+            <>
+              <button onClick={subscribe} className={primaryBtn}>
+                {isAuthenticated ? <Sparkles className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
+                {isAuthenticated ? t('اشترك الآن') : t('سجّل دخول واشترك')}
+                <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 ltr:-scale-x-100 ltr:group-hover:translate-x-1" />
+              </button>
+              <a href="#level-pay" className={ghostBtn}>
+                <Wallet className="w-4 h-4" />
+                {t('طرق الدفع')}
+              </a>
+            </>
+          )
         }
         side={
-          price && (
-            <div className="relative">
-              <div className="absolute -inset-3 rounded-[2.2rem] bg-gradient-to-br from-amber-400/40 via-transparent to-teal-400/30 blur-2xl" />
-              <div className="relative rounded-[1.75rem] bg-white text-slate-900 p-7 sm:p-8 shadow-2xl space-y-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-slate-500">{t('سعر المستوى')}</span>
-                  <span className="px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-black" dir="ltr">{level.code}</span>
-                </div>
-                <div>
-                  {oldPrice && (
-                    <span className="block text-base text-slate-400 line-through font-bold">
-                      {Number(level.oldPrice).toLocaleString('en-US', { maximumFractionDigits: 2 })} {t('ج.م')}
-                    </span>
-                  )}
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-6xl font-black text-teal-600 tracking-tight" dir="ltr">
-                      {Number(level.price).toLocaleString('en-US', { maximumFractionDigits: 2 })}
-                    </span>
-                    <span className="text-lg font-black text-slate-500">{t('ج.م')}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={subscribe}
-                  className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-950 hover:bg-teal-700 text-white text-sm font-black transition-colors"
-                >
-                  {isAuthenticated ? <MessageCircle className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                  {isAuthenticated ? t('اشترك في المستوى') : t('سجّل دخول للاشتراك')}
-                </button>
-              </div>
-            </div>
-          )
+          <PriceCard
+            level={level}
+            price={price}
+            oldPrice={oldPrice}
+            discount={discount}
+            perks={perks}
+            status={status}
+            loaded={loaded}
+            onSubscribe={subscribe}
+          />
         }
       />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-6 relative grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 sm:p-10 text-center space-y-4 shadow-xl shadow-slate-900/[0.05]">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/30">
-            <Lock className="w-7 h-7 text-slate-950" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-8 relative space-y-8">
+        {status === 'pending' && request ? (
+          <PendingPanel level={level} request={request} hasGroup={hasGroup} askAdmin={askAdmin} />
+        ) : status === 'rejected' && request ? (
+          <RejectedPanel request={request} onRetry={subscribe} />
+        ) : null}
+
+        <Steps status={status} />
+
+        {status !== 'pending' && (
+          <div id="level-pay" className="scroll-mt-24 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#0e2c4e] to-slate-950 text-white p-8 sm:p-10 shadow-2xl shadow-slate-900/20">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_100%_0%,rgba(20,184,166,0.35),transparent_60%)]" />
+              <Lock className="absolute -bottom-8 -end-8 w-44 h-44 text-white/[0.04] -rotate-12" />
+              <div className="relative space-y-5">
+                <span className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                  <Lock className="w-6 h-6 text-slate-950" />
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black leading-tight">
+                  {isAuthenticated ? t('محاضرات المستوى {code} مستنياك', { code: level.code }) : t('محاضرات المستوى {code} متاحة للمشتركين', { code: level.code })}
+                </h2>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                  {isAuthenticated
+                    ? t('حوّل قيمة الاشتراك بأي طريقة من طرق الدفع، وابعت الطلب بصورة التحويل — والإدارة هتفعّل المستوى على حسابك في أسرع وقت.')
+                    : t('للاشتراك لازم تسجّل الدخول أو تعمل حساب جديد الأول، وبعد تأكيد الدفع هيتفعّل المستوى على حسابك.')}
+                </p>
+                <button
+                  onClick={subscribe}
+                  className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-white text-slate-950 hover:bg-amber-300 text-sm font-black transition-colors"
+                >
+                  {isAuthenticated ? <Sparkles className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
+                  {isAuthenticated ? t('ابعت طلب الاشتراك') : t('سجّل دخول للاشتراك')}
+                </button>
+              </div>
+            </div>
+            <PaymentInfo amount={formatPriceLatin(level.price)} />
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900">
-            {isAuthenticated ? t('محاضرات المستوى {code} مقفولة', { code: level.code }) : t('محاضرات المستوى {code} متاحة للمشتركين', { code: level.code })}
-          </h2>
-          <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto leading-relaxed">
-            {isAuthenticated
-              ? t('اشترك في المستوى وبعد تأكيد الدفع هيتفعّل على حسابك وتقدر تشوف كل المحاضرات والملفات وتشارك في المناقشة.')
-              : t('للاشتراك لازم تسجّل الدخول أو تعمل حساب جديد الأول، وبعد تأكيد الدفع هيتفعّل المستوى على حسابك.')}
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Price + what's included, in the hero. Turns into a status card while the request is reviewed. */
+function PriceCard({ level, price, oldPrice, discount, perks, status, loaded, onSubscribe }) {
+  const pending = status === 'pending';
+  return (
+    <div className="relative">
+      <div className={`absolute -inset-3 rounded-[2.4rem] blur-2xl opacity-80 bg-gradient-to-br ${pending ? 'from-amber-400/50 via-transparent to-amber-200/20' : 'from-amber-400/40 via-transparent to-teal-400/40'}`} />
+      <div className="relative rounded-[2rem] bg-white text-slate-900 shadow-2xl overflow-hidden">
+        <div className={`h-1.5 bg-gradient-to-r ${pending ? 'from-amber-300 via-amber-500 to-amber-300 dw-pan' : 'from-teal-400 via-emerald-400 to-amber-400'}`} />
+        <div className="p-6 sm:p-8 space-y-6">
+          <div className="flex items-center justify-between gap-3">
+            <span className="inline-flex items-center gap-2 text-sm font-black text-slate-500">
+              <GraduationCap className="w-4 h-4 text-teal-600" />
+              {t('اشتراك المستوى')}
+            </span>
+            <span className="px-3 py-1 rounded-full bg-slate-950 text-white text-xs font-black" dir="ltr">{level.code}</span>
+          </div>
+
+          {price && (
+            <div>
+              {oldPrice && (
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-base text-slate-400 line-through font-bold" dir="ltr">
+                    {Number(oldPrice).toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                  </span>
+                  {discount > 0 && (
+                    <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 text-[11px] font-black">
+                      {t('وفّر {n}%', { n: discount })}
+                    </span>
+                  )}
+                </div>
+              )}
+              <div className="flex items-baseline gap-2">
+                <span className="text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-br from-teal-600 to-emerald-700 bg-clip-text text-transparent" dir="ltr">
+                  {Number(level.price).toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                </span>
+                <span className="text-lg font-black text-slate-500">{t('ج.م')}</span>
+              </div>
+              <span className="text-xs font-bold text-slate-400">{t('دفعة واحدة للمستوى كامل')}</span>
+            </div>
+          )}
+
+          {pending ? (
+            <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4 flex items-start gap-3">
+              <span className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center shrink-0">
+                <Hourglass className="w-5 h-5" />
+              </span>
+              <div>
+                <p className="text-sm font-black text-amber-900">{t('في انتظار تفعيل الإدارة')}</p>
+                <p className="text-xs font-bold text-amber-800/80 leading-relaxed mt-0.5">{t('مش محتاج تعمل حاجة تاني — هيتفعّل لوحده.')}</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <ul className="space-y-2.5 border-t border-dashed border-slate-200 pt-5">
+                {perks.map(({ text }) => (
+                  <li key={text} className="flex items-start gap-2.5 text-sm font-bold text-slate-700">
+                    <CheckCircle2 className="w-[18px] h-[18px] text-emerald-500 shrink-0 mt-0.5" />
+                    {text}
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={onSubscribe}
+                disabled={!loaded}
+                className="dw-shine w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-950 hover:bg-teal-700 disabled:opacity-60 text-white text-sm font-black transition-colors"
+              >
+                {status === 'guest' ? <LogIn className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+                {status === 'guest' ? t('سجّل دخول للاشتراك') : t('اشترك في المستوى')}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** How subscribing works — the current step lights up. */
+function Steps({ status }) {
+  const steps = [
+    { icon: Wallet, title: t('حوّل قيمة الاشتراك'), text: t('بأي طريقة من طرق الدفع المتاحة أو كاش في الفرع.') },
+    { icon: Send, title: t('ابعت طلب الاشتراك'), text: t('من زرار «اشترك الآن» ومعاه صورة التحويل.') },
+    { icon: BadgeCheck, title: t('الإدارة تفعّل المستوى'), text: t('بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً.') },
+  ];
+  const current = status === 'pending' ? 2 : 0;
+
+  return (
+    <section className="rounded-[2rem] bg-white border border-slate-200/80 shadow-xl shadow-slate-900/[0.04] p-6 sm:p-8">
+      <div className="flex items-center gap-3 mb-6">
+        <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center shadow-lg shadow-teal-600/25 shrink-0">
+          <Sparkles className="w-5 h-5" />
+        </span>
+        <div>
+          <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">{t('الاشتراك في 3 خطوات بس')}</h2>
+          <p className="text-xs font-bold text-slate-500 mt-0.5">{t('من غير تعقيد — وكل خطوة واضحة')}</p>
+        </div>
+      </div>
+      <ol className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {steps.map(({ icon: Icon, title, text }, i) => {
+          const done = i < current;
+          const active = i === current && status !== 'guest';
+          return (
+            <li
+              key={title}
+              className={`relative rounded-2xl border p-5 transition-all ${
+                active
+                  ? status === 'pending'
+                    ? 'border-amber-300 bg-gradient-to-br from-amber-50 to-white shadow-lg shadow-amber-500/10'
+                    : 'border-teal-300 bg-gradient-to-br from-teal-50 to-white shadow-lg shadow-teal-500/10'
+                  : done
+                    ? 'border-emerald-200 bg-emerald-50/50'
+                    : 'border-slate-200 bg-slate-50/60'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                    done ? 'bg-emerald-500 text-white' : active ? (status === 'pending' ? 'bg-amber-400 text-slate-950' : 'bg-teal-600 text-white') : 'bg-white border border-slate-200 text-slate-500'
+                  }`}
+                >
+                  {done ? <CheckCircle2 className="w-6 h-6" /> : active && status === 'pending' ? <Hourglass className="w-6 h-6 dw-float" /> : <Icon className="w-6 h-6" />}
+                </span>
+                <span className="text-4xl font-black text-slate-900/[0.06]" dir="ltr">0{i + 1}</span>
+              </div>
+              <h3 className="text-base font-black text-slate-900">{title}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed mt-1">{text}</p>
+              {done && <span className="mt-3 inline-flex text-[11px] font-black text-emerald-700">{t('تم ✓')}</span>}
+              {active && status === 'pending' && (
+                <span className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-black text-amber-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  {t('جاري المراجعة الآن')}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
+/** The request is with the admin. */
+function PendingPanel({ level, request, hasGroup, askAdmin }) {
+  const details = [
+    { label: t('تاريخ الطلب'), value: formatDate(request.created_at) },
+    ...(request.payment_method ? [{ label: t('طريقة الدفع'), value: t(request.payment_method) }] : []),
+    ...(request.amount && Number(request.amount) > 0
+      ? [{ label: t('المبلغ'), value: `${Number(request.amount).toLocaleString('en-US', { maximumFractionDigits: 2 })} ${t('ج.م')}` }]
+      : []),
+  ];
+  return (
+    <section className="dw-pop relative overflow-hidden rounded-[2rem] bg-white border border-amber-200 shadow-2xl shadow-amber-900/10">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_100%_0%,rgba(251,191,36,0.18),transparent_60%),radial-gradient(ellipse_50%_70%_at_0%_100%,rgba(20,184,166,0.10),transparent_60%)]" />
+      <div className="relative grid grid-cols-1 lg:grid-cols-5 gap-8 p-6 sm:p-10 items-center">
+        <div className="lg:col-span-3 space-y-5">
+          <div className="flex items-center gap-4">
+            <span className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-slate-950 flex items-center justify-center shadow-xl shadow-amber-500/30 shrink-0">
+              <span className="absolute inset-0 rounded-2xl bg-amber-300 animate-ping opacity-25" />
+              <Hourglass className="relative w-8 h-8 dw-float" />
+            </span>
+            <div>
+              <span className="text-xs font-black text-amber-700">{t('المستوى {code}', { code: level.code })}</span>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">{t('طلبك في أيد أمينة ✨')}</h2>
+            </div>
+          </div>
+          <p className="text-base text-slate-600 leading-loose">
+            {t('استلمنا طلب اشتراكك بنجاح، وفريق الإدارة بيراجع التحويل دلوقتي. أول ما يتأكد، المستوى هيتفعّل على حسابك تلقائياً وهتلاقي المحاضرات مستنياك هنا — مش محتاج تعمل أي حاجة تانية.')}
           </p>
-          {groupLink(contact, level.code) && (
+          {hasGroup && (
             <p className="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-2">
               <MessageCircle className="w-4 h-4" />
               {t('بعد التفعيل هيظهرلك رابط جروب الواتساب الخاص بالمستوى')}
             </p>
           )}
         </div>
-        <PaymentInfo amount={formatPriceLatin(level.price)} />
+
+        <div className="lg:col-span-2 rounded-3xl bg-slate-950 text-white p-6 space-y-4 shadow-xl">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black text-slate-400">{t('حالة الطلب')}</span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-300/30 text-[11px] font-black text-amber-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+              {t('قيد المراجعة')}
+            </span>
+          </div>
+          <dl className="divide-y divide-white/10">
+            {details.map((d) => (
+              <div key={d.label} className="flex items-center justify-between gap-3 py-2.5">
+                <dt className="text-xs font-bold text-slate-400">{d.label}</dt>
+                <dd className="text-sm font-black text-white" dir="auto">{d.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <a
+            href={askAdmin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-black transition-colors"
+          >
+            <MessageCircle className="w-4 h-4 fill-white" />
+            {t('تواصل مع الإدارة')}
+          </a>
+        </div>
       </div>
-    </div>
+    </section>
+  );
+}
+
+/** The admin rejected the last request — show why, and let the student send a new one. */
+function RejectedPanel({ request, onRetry }) {
+  return (
+    <section className="dw-pop rounded-[2rem] bg-white border border-rose-200 shadow-xl shadow-rose-900/5 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-5">
+      <span className="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+        <AlertCircle className="w-7 h-7" />
+      </span>
+      <div className="flex-1 space-y-1">
+        <h2 className="text-lg font-black text-slate-900">{t('طلبك السابق ماتقبلش')}</h2>
+        <p className="text-sm text-slate-600 leading-relaxed">
+          {request.admin_note ? <span dir="auto">{request.admin_note}</span> : t('ممكن تكون صورة التحويل مش واضحة أو المبلغ مختلف. ابعت طلب جديد أو كلّم الإدارة.')}
+        </p>
+      </div>
+      <button onClick={onRetry} className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-slate-950 hover:bg-teal-700 text-white text-sm font-black transition-colors shrink-0">
+        <RefreshCw className="w-4 h-4" />
+        {t('ابعت طلب جديد')}
+      </button>
+    </section>
   );
 }

@@ -12,6 +12,9 @@ function toFormData(fields) {
   return fd;
 }
 
+/** Fired on window after a request is sent, so open pages can switch to "under review". */
+export const ACCESS_REQUEST_EVENT = 'dw:access-request';
+
 /** A student's request to unlock a level or a book. It waits in the admin dashboard until approved. */
 export const requestsService = {
   /** fields: { kind: 'level'|'book', item_id, full_name, phone, payment_method, note?, receipt?: File } */

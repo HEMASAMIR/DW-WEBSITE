@@ -657,6 +657,128 @@ const EN = {
     'Everything is good and fine — let’s keep going like this.',
   'الدنيا تمام الحمد لله':
     'All good, thank God.',
+  'الحمد لله من اول يوم والمكان طلع مريح وكويس جدا وهير خالد الله يجازيه خير مش مقصر معانا وبجد صبور جدا ولحد الان الأمور تمام الحمد لله... محتاجه بس لو أمكن يكون فيه وقت خاص بس بتعلم النطق هو طبعا مهتم بالنقطه دي أن احنا ننطق كويس بس ياريت لو نزود ليها وقت اكتر علشان نثبت النطق الصحيح وشكراً جدا ع كل حاجه 🤍':
+    'Thank God — from day one the place turned out comfortable and really good, and Herr Khaled, God reward him, never holds back with us and is truly very patient. So far everything is fine, thank God… I’d just like, if possible, some time set aside only for pronunciation. He does care a lot that we pronounce well, but I wish we could give it more time to lock in the correct pronunciation. Thank you so much for everything 🤍',
+  'Sehr gut 😂 الصراحه الهير خالد محترم جدا وشرحه كويس جدا والمكان برضو حلو 🤍':
+    'Sehr gut 😂 Honestly, Herr Khaled is very respectful, his explanation is very good, and the place is nice too 🤍',
+  'خلاصه الموضوع، الهير ربنا يبارك فيه بيحاول وبيعمل اللي عليه عشان يوصلنا المعلومه، الباقي كله علينا احنا. الفكره مش هيجي الهير يخلينا نتكلم الا لما نكون احنا بنذاكر وبنجتهد وبنتعب عشان نعرف نتكلم ونسمع كويس، ف الاخير ربنا يبارك ف الهير ويكون ف عونه':
+    'Bottom line: the teacher, God bless him, tries and does his part to get the information across to us — the rest is on us. He can’t make us speak unless we study, work hard and put in the effort to speak and listen well. In the end, God bless him and help him.',
+  'انا مع هير خالد من A1 و بدأنا النهارده معاه A2 و ان شاء الله لما نخلص هكمل B2. بصراحه انا مبسوط من اللي وصلتله مع الهير خلال اول ليقيل بس و ان شاء الله نكمل زي ما احنا و نوصل لحاجه كويسه و هير خالد بجد مش بيسيبنا و بذل مجهود معانا ف اول ليقل يشكر عليه':
+    'I’ve been with Herr Khaled since A1 and today we started A2 with him, and God willing, when we finish I’ll continue to B2. Honestly I’m happy with where I got with him in just the first level. God willing we keep going like this and get somewhere good. Herr Khaled really doesn’t leave us behind — he put real effort into the first level and deserves thanks for it.',
+  'للامانه الموضوع كان جديد عليا حوار الالماني الماني في حاجات مفهمتهاش وكدا بس ممكن نقول خارجه فاهمه بنسبه ٧٥٪ مثلا. طريقه هير خالد مش هقدر اعلق عليها بجد هو رائع جدا!!!':
+    'Honestly, the German-only thing was new to me — there were things I didn’t get, but I’d say I left understanding about 75%. As for Herr Khaled’s way of teaching, I really can’t say enough — he’s truly amazing!!!',
+  'السيشن في تطور ملحوظ جدا ومجهود كبير من الهير عشان يحسن من الوضع ان شاء الله دايما ف نجاح وتطور':
+    'The sessions are improving noticeably, with a big effort from the teacher to make things better. God willing, always more success and progress.',
+  'مبدأيا كدة الحمدله السيشن النهاردة كان كويس وكان فية اكبر قدر من الاستفادة بصراحة الاسلوب والشرح كان افضل من A1 واستفدت بنسبة كبيرة الحمدله. ملاحظاتى بس نهتم ب schreiben اكتر لأن النقطة دى بنواجة فيها صعوبات شوية':
+    'To begin with, thank God, today’s session was good and we got the most out of it. Honestly, the style and the explanation were better than in A1, and I learned a lot, thank God. My only note: let’s focus more on Schreiben, because that’s where we have some difficulty.',
+  'المحاضره فهمت منها والحمدلله كله زي الفل':
+    'I understood the lecture, and thank God everything is great.',
+  'الكورس كان كويس اوي و مستوي هير خالد فوق التقيم انا كنت براجع معاه ال a1 يوتيوب':
+    'The course was really good and Herr Khaled’s level is beyond any rating — I used to review A1 with him on YouTube.',
+  'الدنيا تمام الحمد لله و السيشن و المكان كويسين ماشاء الله':
+    'All good, thank God — the session and the place are both great, mashallah.',
+  'طبعاً هير خالد غني عن التعريف. ما شاء الله تبارك الله، الشرح فوق الممتاز وسيشن رائع جدا بجد والله واتمنى نفضل علي هذا المنوال':
+    'Of course, Herr Khaled needs no introduction. Mashallah, the explanation is beyond excellent and it was a really wonderful session. I hope we keep going like this.',
+  'هير خالد فوق الممتاز طبعاً، محدش يقدر يقول غير كده':
+    'Herr Khaled is beyond excellent, of course — nobody could say otherwise.',
+  'والله كل حاجه فوق الممتاز':
+    'Honestly, everything is beyond excellent.',
+  'احلي سيشن والله واستفدت كتير الحمد لله':
+    'Best session ever — I learned a lot, thank God.',
+  'ماشاء الله هير خالد ممتاز انا حضرت معاه من اول a1':
+    'Mashallah, Herr Khaled is excellent — I’ve been attending with him since A1.',
+  'هير خالد شرحه حلو جداا وده اللي خلاني احجز معاه وعرفت اظبط مواعيد علشان فعلا انا كنت عايز احضر معاه. شخصية كويسة جدا ومحترم جداا جداا ربنا يسنده ويقويه. ويطول باله ويستحملنا بقاا في الكورس ده 😂':
+    'Herr Khaled’s explanation is really, really good — that’s what made me book with him and rearrange my schedule, because I really wanted to attend with him. A very good and very, very respectful person. God support him and give him strength — and the patience to put up with us in this course 😂',
+  'أن شاء الله تكون بداية خير. Herr Khaled غني عن التعريف بأمانة، شرح ممتاز':
+    'God willing it’s a good start. Herr Khaled needs no introduction, honestly — excellent explanation.',
+  'كله تمام، ماشاء الله على هير خالد والله شرحه مبسط وجميل جدا جدا':
+    'All good — mashallah Herr Khaled, his explanation is so simple and really, really beautiful.',
+  'متحرمش من زوقكم حقيقي كلكم تتشالوا ع الراس واهتمامك بينا ملموس عند هير خالد كمان وبيوصله تعبك. ربنا يكرمكم بجد':
+    'Thank you for your kindness — honestly, you all deserve the greatest respect. Your care for us shows, Herr Khaled notices it too, and your effort reaches him. God bless you, truly.',
+  'الهير ممتاز ما شاء الله، ربنا يبارك فيه يا رب ❤️':
+    'The teacher is excellent, mashallah — God bless him ❤️',
+  'كانت طريقة التعليمة جميلة، طريقة "ألماني - ألماني" تناسبني أخذ المعلومة أسرع و be more familiar with the language':
+    'The teaching method was lovely — the “German-only” approach suits me: I pick up information faster and become more familiar with the language.',
+  'الحمد لله استفدت بس الجزء اللي بعد البريك ماحضرتهوش اللينك مكنش راضي يفتح':
+    'Thank God I benefited — but I missed the part after the break because the link wouldn’t open.',
+  'تحفهه 🫶':
+    'Amazing 🫶',
+  'ماشاء الله الهير زوق جدا ف التعامل بيوصل المعلومة بأكتر من شكل وطريقه علشان يبقي الكل مشارك معاه ف السيشن. شاطر جدا وممتاز وفعلا بدايته كويسه وبيجتهد أنه يطور من نفسه ويطور مننا احنا شخصيا':
+    'Mashallah, the teacher is so kind in how he deals with us. He explains things in more than one way so everyone takes part in the session. Very smart and excellent — a really good start, and he works hard to improve himself and to improve us personally.',
+
+  // ---- Locked level page (components/course/LevelView.jsx)
+  'كل محاضرات المستوى مسجّلة وتتفرج عليها في أي وقت':
+    'Every lecture of the level, recorded — watch any time',
+  'ملفات ومذكرات المستوى بتتفتح جوه الموقع':
+    'The level’s files and notes open right on the site',
+  'جروب واتساب خاص بطلاب المستوى':
+    'A private WhatsApp group for the level’s students',
+  'بيتفعّل على حسابك أنت بس، من أي جهاز':
+    'Unlocked on your own account, on any device',
+  'في انتظار اشتراكك':
+    'Waiting for you to subscribe',
+  'في انتظار تفعيل الإدارة':
+    'Awaiting activation by the academy',
+  'الطلب محتاج مراجعة':
+    'Your request needs attention',
+  'طلبك وصل للإدارة':
+    'Your request reached the academy',
+  'هيتفعّل أول ما التحويل يتأكد':
+    'It unlocks as soon as the payment is confirmed',
+  'تواصل مع الإدارة':
+    'Contact the academy',
+  'سجّل دخول واشترك':
+    'Log in and subscribe',
+  'محاضرات المستوى {code} مستنياك':
+    'The {code} lectures are waiting for you',
+  'حوّل قيمة الاشتراك بأي طريقة من طرق الدفع، وابعت الطلب بصورة التحويل — والإدارة هتفعّل المستوى على حسابك في أسرع وقت.':
+    'Transfer the fee with any payment method and send your request with the receipt — the academy will unlock the level on your account as soon as possible.',
+  'ابعت طلب الاشتراك':
+    'Send subscription request',
+  'اشتراك المستوى':
+    'Level subscription',
+  'وفّر {n}%':
+    'Save {n}%',
+  'دفعة واحدة للمستوى كامل':
+    'One payment for the whole level',
+  'مش محتاج تعمل حاجة تاني — هيتفعّل لوحده.':
+    'Nothing else to do — it unlocks on its own.',
+  'حوّل قيمة الاشتراك':
+    'Transfer the fee',
+  'بأي طريقة من طرق الدفع المتاحة أو كاش في الفرع.':
+    'With any available payment method, or cash at the branch.',
+  'من زرار «اشترك الآن» ومعاه صورة التحويل.':
+    'Via the “Subscribe now” button, with the transfer receipt.',
+  'الإدارة تفعّل المستوى':
+    'The academy unlocks the level',
+  'بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً.':
+    'Once the payment is confirmed, the lectures open on your account right away.',
+  'الاشتراك في 3 خطوات بس':
+    'Subscribe in just 3 steps',
+  'من غير تعقيد — وكل خطوة واضحة':
+    'No hassle — every step is clear',
+  'تم ✓':
+    'Done ✓',
+  'جاري المراجعة الآن':
+    'Being reviewed now',
+  'تاريخ الطلب':
+    'Request date',
+  'المبلغ':
+    'Amount',
+  'طلبك في أيد أمينة ✨':
+    'Your request is in good hands ✨',
+  'استلمنا طلب اشتراكك بنجاح، وفريق الإدارة بيراجع التحويل دلوقتي. أول ما يتأكد، المستوى هيتفعّل على حسابك تلقائياً وهتلاقي المحاضرات مستنياك هنا — مش محتاج تعمل أي حاجة تانية.':
+    'We’ve received your subscription request, and the academy team is checking your transfer right now. As soon as it’s confirmed, the level unlocks on your account automatically and your lectures will be waiting for you right here — there’s nothing else you need to do.',
+  'حالة الطلب':
+    'Request status',
+  'قيد المراجعة':
+    'Under review',
+  'طلبك السابق ماتقبلش':
+    'Your last request wasn’t approved',
+  'ممكن تكون صورة التحويل مش واضحة أو المبلغ مختلف. ابعت طلب جديد أو كلّم الإدارة.':
+    'The receipt may have been unclear or the amount different. Send a new request or contact the academy.',
+  'ابعت طلب جديد':
+    'Send a new request',
 };
 
 export default EN;
