@@ -166,6 +166,19 @@ nextjs-portal,
 .dw-step-in { animation: dw-step-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .dw-shake { animation: dw-shake 0.4s ease-in-out; }
 .dw-pop { animation: dw-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Language / theme confirmation (components/common/PrefToast.jsx) */
+@keyframes dw-toast-in { from { opacity: 0; transform: translateY(-18px) scale(0.94); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes dw-toast-out { to { opacity: 0; transform: translateY(-12px) scale(0.97); } }
+@keyframes dw-toast-bar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes dw-toast-icon { 0% { transform: rotate(-35deg) scale(0.6); opacity: 0; } 60% { transform: rotate(10deg) scale(1.1); opacity: 1; } 100% { transform: none; } }
+.dw-toast-in { animation: dw-toast-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.dw-toast-out { animation: dw-toast-out 0.32s ease-in both; }
+.dw-toast-bar { animation-name: dw-toast-bar; animation-timing-function: linear; animation-fill-mode: forwards; }
+.dw-toast-icon { animation: dw-toast-icon 0.6s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .dw-toast-in, .dw-toast-out, .dw-toast-icon { animation-duration: 0.01ms; }
+}
 @media (prefers-reduced-motion: reduce) {
   .dw-auth-in, .dw-step-in, .dw-shake, .dw-pop { animation: none; }
 }

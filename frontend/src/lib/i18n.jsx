@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, Fragment, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Languages } from 'lucide-react';
+import PrefToast, { usePrefToast } from '@/components/common/PrefToast';
 import EN from './i18n/site.en';
 import DE from './i18n/site.de';
 
@@ -79,14 +81,30 @@ export function SiteLangProvider({ children }) {
   // eslint-disable-next-line react-hooks/globals
   activeLang = lang;
 
+  const [toast, showToast] = usePrefToast();
+
+  // Called by the language menu only, so the saved language restored on load stays silent.
   const setLang = useCallback((next) => {
     if (next !== 'ar' && !DICTS[next]) return;
     setLangState(next);
     try { localStorage.setItem(STORAGE_KEY, next); } catch { /* private mode */ }
-  }, []);
+    const meta = langMeta(next);
+    showToast({
+      icon: Languages,
+      tone: 'from-teal-400 to-emerald-600',
+      dir: meta.dir,
+      title: () => t('تم تغيير اللغة'),
+      text: () => t('الموقع دلوقتي باللغة {name}', { name: meta.name }),
+    });
+  }, [showToast]);
 
   const value = useMemo(() => ({ lang, dir: langMeta(lang).dir, setLang }), [lang, setLang]);
-  return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
+  return (
+    <LangContext.Provider value={value}>
+      {children}
+      <PrefToast toast={toast} top="top-24" />
+    </LangContext.Provider>
+  );
 }
 
 /** Remounts its children when the language changes (see the note at the top). */

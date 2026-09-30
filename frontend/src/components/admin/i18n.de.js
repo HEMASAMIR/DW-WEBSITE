@@ -504,6 +504,14 @@ const DE = {
   'إنستا باي': 'InstaPay',
   'تحويل بنكي': 'Banküberweisung',
   'طريقة تانية': 'Andere',
+
+  // ---- Language / theme confirmation (components/common/PrefToast.jsx)
+  'تم تغيير لغة لوحة التحكم': 'Sprache des Dashboards geändert',
+  'لوحة التحكم دلوقتي باللغة {name}': 'Das Dashboard ist jetzt auf {name}',
+  'تم تفعيل الوضع الليلي': 'Dunkelmodus aktiviert',
+  'تم تفعيل الوضع الفاتح': 'Hellmodus aktiviert',
+  'أهدى على العين في الإضاءة الخافتة': 'Angenehmer für die Augen bei wenig Licht',
+  'واضح ومريح للشغل طول اليوم': 'Klar und angenehm – den ganzen Tag',
 };
 
 export default DE;

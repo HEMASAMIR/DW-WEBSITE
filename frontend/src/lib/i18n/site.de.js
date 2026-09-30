@@ -781,6 +781,10 @@ const DE = {
     'Vielleicht war der Beleg unklar oder der Betrag stimmte nicht. Sende eine neue Anfrage oder kontaktiere die Akademie.',
   'ابعت طلب جديد':
     'Neue Anfrage senden',
+
+  // ---- Language confirmation (components/common/PrefToast.jsx)
+  'تم تغيير اللغة': 'Sprache geändert',
+  'الموقع دلوقتي باللغة {name}': 'Die Website ist jetzt auf {name}',
 };
 
 export default DE;

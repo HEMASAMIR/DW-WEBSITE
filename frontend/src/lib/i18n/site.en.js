@@ -781,6 +781,10 @@ const EN = {
     'The receipt may have been unclear or the amount different. Send a new request or contact the academy.',
   'ابعت طلب جديد':
     'Send a new request',
+
+  // ---- Language confirmation (components/common/PrefToast.jsx)
+  'تم تغيير اللغة': 'Language updated',
+  'الموقع دلوقتي باللغة {name}': 'You’re now browsing in {name}',
 };
 
 export default EN;
