@@ -426,7 +426,7 @@ function FeedbackWall({ onShot }) {
           key={level}
           ref={trackRef}
           onScroll={onScroll}
-          className="flex gap-5 overflow-x-auto snap-x snap-mandatory dw-no-scrollbar scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 pt-1 pb-4"
+          className="flex items-start gap-5 overflow-x-auto snap-x snap-mandatory dw-no-scrollbar scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 pt-1 pb-4"
           aria-roledescription="carousel"
         >
           {items.map((f, i) => (
@@ -512,12 +512,11 @@ function ShotButton({ item, onShot, dark }) {
   );
 }
 
-const LONG_TEXT = 200;
-
-function FeedbackText({ item, className, clamp = 'line-clamp-6', dark }) {
+// Roughly what fits in 4 lines of a slide — longer messages get "read the full message".
+function FeedbackText({ item, className, clamp = 'line-clamp-4', limit = 150, dark }) {
   const ar = isArabic(item.text);
   const [open, setOpen] = useState(false);
-  const long = t(item.text).length > LONG_TEXT;
+  const long = t(item.text).length > limit;
   return (
     <>
       <p className={`${className} ${long && !open ? clamp : ''}`} dir={ar ? undefined : 'ltr'} lang={ar ? undefined : 'de'}>{t(item.text)}</p>
@@ -555,8 +554,8 @@ function SpotlightCard({ item, onShot }) {
           <span className="px-4 py-1.5 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-slate-950 text-xl font-black shadow-lg shadow-amber-500/30" dir="ltr">{item.score}</span>
         )}
       </div>
-      <div className="relative flex-1 mt-5 flex flex-col gap-2">
-        <FeedbackText item={item} dark clamp="line-clamp-5" className="text-[15px] sm:text-base leading-loose font-semibold text-slate-100" />
+      <div className="relative mt-5 flex flex-col gap-2">
+        <FeedbackText item={item} dark clamp="line-clamp-4" limit={120} className="text-[15px] sm:text-base leading-loose font-semibold text-slate-100" />
       </div>
       <div className="relative mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
         <WhoLine item={item} dark />
@@ -584,7 +583,7 @@ function FeedbackCard({ item, onShot, highlight }) {
         </span>
         <Stars className="w-3.5 h-3.5" />
       </div>
-      <div className="flex-1 flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1.5">
         <FeedbackText item={item} className="text-sm sm:text-[15px] text-slate-700 leading-relaxed font-medium" />
       </div>
       <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
