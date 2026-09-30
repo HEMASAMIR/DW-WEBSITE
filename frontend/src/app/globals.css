@@ -179,6 +179,15 @@ nextjs-portal,
 @media (prefers-reduced-motion: reduce) {
   .dw-toast-in, .dw-toast-out, .dw-toast-icon { animation-duration: 0.01ms; }
 }
+
+/* Level page: the "learning ticket" and its review stamp (components/course/LevelView.jsx) */
+@keyframes dw-ticket-in { from { opacity: 0; transform: translateY(24px) rotate(-2deg) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes dw-stamp { 0% { opacity: 0; transform: rotate(-12deg) scale(2.2); } 60% { opacity: 1; transform: rotate(-12deg) scale(0.92); } 100% { opacity: 1; transform: rotate(-12deg) scale(1); } }
+.dw-ticket-in { animation: dw-ticket-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.dw-stamp { animation: dw-stamp 0.55s 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .dw-ticket-in, .dw-stamp { animation-duration: 0.01ms; animation-delay: 0s; }
+}
 @media (prefers-reduced-motion: reduce) {
   .dw-auth-in, .dw-step-in, .dw-shake, .dw-pop { animation: none; }
 }

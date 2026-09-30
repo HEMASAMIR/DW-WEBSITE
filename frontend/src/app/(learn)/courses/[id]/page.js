@@ -16,7 +16,7 @@ export default function CoursePage() {
 
   const level = allCourses.find((c) => String(c.id) === String(id));
 
-  if (level) return <LevelView level={level} />;
+  if (level) return <LevelView level={level} levels={allCourses} />;
 
   return (
     <div className="min-h-[70vh] bg-gradient-to-b from-slate-100 to-slate-50 py-6 sm:py-10">

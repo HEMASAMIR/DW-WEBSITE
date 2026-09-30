@@ -785,6 +785,21 @@ const EN = {
   // ---- Language confirmation (components/common/PrefToast.jsx)
   'تم تغيير اللغة': 'Language updated',
   'الموقع دلوقتي باللغة {name}': 'You’re now browsing in {name}',
+
+  // ---- Level page: ticket + journey (components/course/LevelView.jsx)
+  'المحاضرات': 'Lectures',
+  'مسجّلة': 'Recorded',
+  'الدفع': 'Payment',
+  'مرة واحدة': 'One-time',
+  'التفعيل': 'Access',
+  'على حسابك': 'On your account',
+  'تذكرة رحلتك للألماني': 'Your ticket to German',
+  'من': 'From',
+  'البداية': 'Start',
+  'إلى': 'To',
+  'رحلتك في الألماني': 'Your German journey',
+  'كل مستوى بيوصلك للي بعده — وده مكانك دلوقتي': 'Each level leads to the next — here’s where you are now',
+  'انت هنا': 'You are here',
 };
 
 export default EN;

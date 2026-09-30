@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useModal } from '@/context/ModalContext';
 import { useAuth } from '@/context/AuthContext';
 import { coursesService, formatDuration, formatPrice, formatPriceLatin } from '@/services/courses.service';
@@ -13,16 +14,17 @@ import { useContactInfo, groupLink, whatsappHref } from '@/lib/contactInfo';
 import {
   PlayCircle, Play, FileText, AlertCircle, RefreshCw, Lock, LogIn, MessageCircle, Clock, ListVideo,
   Eye, CheckCircle2, ChevronLeft, FileType2, Sparkles, Hourglass, Wallet, Send, BadgeCheck, ShieldCheck,
-  GraduationCap,
+  GraduationCap, Plane, Route,
 } from 'lucide-react';
+import { toneFor } from '@/constants/levelTones';
 
 import { t, langMeta } from '@/lib/i18n';
 /**
  * Level overview page (cinematic hero + lecture grid + files sidebar). Watching happens on its
  * own page: /courses/<levelId>/watch/<videoId>. Everything shown comes from the backend.
  */
-export default function LevelView({ level }) {
-  if (!level.hasAccess) return <LockedLevel level={level} />;
+export default function LevelView({ level, levels = [] }) {
+  if (!level.hasAccess) return <LockedLevel level={level} levels={levels} />;
   return <UnlockedLevel level={level} />;
 }
 
@@ -32,6 +34,34 @@ export default function LevelView({ level }) {
 function LevelHero({ level, backdrop, badge, stats, actions, side }) {
   return (
     <section className="relative overflow-hidden bg-slate-950 text-white">
+      <div className="absolute top-0 inset-x-0 z-10 flex h-1" dir="ltr" aria-hidden>
+        <span className="flex-1 bg-slate-700" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+      </div>
+      {/* The academy's logo + name as a large watermark behind the title */}
+      <div
+        className="absolute inset-y-0 start-0 w-full lg:w-[62%] flex items-center justify-center pointer-events-none select-none [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,black_40%,transparent_85%)]"
+        aria-hidden
+      >
+        <Image
+          src="/assets/images/logo-full-white.png"
+          alt=""
+          width={954}
+          height={622}
+          sizes="(max-width: 1024px) 90vw, 760px"
+          className="w-[88%] max-w-[46rem] h-auto opacity-[0.11] dw-float-slow"
+        />
+      </div>
+      <div className="absolute inset-0 hidden md:block pointer-events-none select-none" aria-hidden dir="ltr">
+        {HERO_WORDS.map((w) => (
+          <span
+            key={w.text}
+            className="absolute font-black text-white dw-float-slow whitespace-nowrap"
+            style={{ top: w.top, left: w.left, fontSize: w.size, opacity: w.opacity, animationDelay: w.delay }}
+          >
+            {w.text}
+          </span>
+        ))}
+      </div>
       {/* Backdrop: blurred first-lecture thumbnail + light + grid */}
       {backdrop && (
         // eslint-disable-next-line @next/next/no-img-element -- external Bunny CDN thumbnail
@@ -46,13 +76,6 @@ function LevelHero({ level, backdrop, badge, stats, actions, side }) {
           backgroundSize: '48px 48px',
         }}
       />
-      <span
-        aria-hidden
-        className="absolute -bottom-16 -end-4 text-[12rem] sm:text-[20rem] font-black leading-none text-transparent select-none pointer-events-none [-webkit-text-stroke:2px_rgba(255,255,255,0.06)]"
-        dir="ltr"
-      >
-        {level.code}
-      </span>
       <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-slate-50/[0.04] to-transparent" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -97,6 +120,16 @@ function LevelHero({ level, backdrop, badge, stats, actions, side }) {
     </section>
   );
 }
+
+// Everyday German words drifting behind the hero — decoration only, never translated.
+const HERO_WORDS = [
+  { text: 'Hallo!', top: '14%', left: '46%', size: '1.6rem', opacity: 0.07, delay: '0s' },
+  { text: 'Willkommen', top: '72%', left: '40%', size: '2.4rem', opacity: 0.05, delay: '1.2s' },
+  { text: 'Danke', top: '30%', left: '3%', size: '1.3rem', opacity: 0.06, delay: '0.6s' },
+  { text: 'Los geht’s', top: '86%', left: '6%', size: '1.5rem', opacity: 0.06, delay: '2s' },
+  { text: 'Wunderbar', top: '8%', left: '20%', size: '1.1rem', opacity: 0.05, delay: '1.6s' },
+  { text: 'Guten Tag', top: '52%', left: '52%', size: '1.2rem', opacity: 0.05, delay: '0.9s' },
+];
 
 const primaryBtn =
   'group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-300 to-amber-500 text-slate-950 text-sm sm:text-base font-black shadow-xl shadow-amber-500/30 hover:shadow-amber-400/50 transition-all hover:-translate-y-0.5';
@@ -426,7 +459,7 @@ const formatDate = (iso) => {
   }
 };
 
-function LockedLevel({ level }) {
+function LockedLevel({ level, levels }) {
   const { isAuthenticated } = useAuth();
   const { openEnrollModal, openLoginPromptModal } = useModal();
   const contact = useContactInfo();
@@ -435,6 +468,8 @@ function LockedLevel({ level }) {
   const oldPrice = level.oldPrice && level.oldPrice > (level.price || 0) ? level.oldPrice : null;
   const discount = oldPrice ? Math.round((1 - (level.price || 0) / oldPrice) * 100) : 0;
   const hasGroup = !!groupLink(contact, level.code);
+  const ordered = [...levels].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const prevCode = ordered[ordered.findIndex((l) => String(l.id) === String(level.id)) - 1]?.code || null;
 
   // guest → ready → pending → (approved: the page turns into UnlockedLevel) | rejected → ready again
   const status = !isAuthenticated ? 'guest' : request?.status === 'pending' ? 'pending' : request?.status === 'rejected' ? 'rejected' : 'ready';
@@ -521,8 +556,9 @@ function LockedLevel({ level }) {
           )
         }
         side={
-          <PriceCard
+          <TicketCard
             level={level}
+            prevCode={prevCode}
             price={price}
             oldPrice={oldPrice}
             discount={discount}
@@ -540,6 +576,8 @@ function LockedLevel({ level }) {
         ) : status === 'rejected' && request ? (
           <RejectedPanel request={request} onRetry={subscribe} />
         ) : null}
+
+        <Journey level={level} levels={levels} />
 
         <Steps status={status} />
 
@@ -577,51 +615,109 @@ function LockedLevel({ level }) {
   );
 }
 
-/** Price + what's included, in the hero. Turns into a status card while the request is reviewed. */
-function PriceCard({ level, price, oldPrice, discount, perks, status, loaded, onSubscribe }) {
+/**
+ * The level as a "learning ticket" to Germany (boarding-pass style): route from the previous level,
+ * price, what's included and the subscribe button. While the request is reviewed it gets a stamp.
+ */
+function TicketCard({ level, prevCode, price, oldPrice, discount, perks, status, loaded, onSubscribe }) {
   const pending = status === 'pending';
+  const details = [
+    { label: t('المحاضرات'), value: t('مسجّلة') },
+    { label: t('الدفع'), value: t('مرة واحدة') },
+    { label: t('التفعيل'), value: t('على حسابك') },
+  ];
+
   return (
-    <div className="relative">
-      <div className={`absolute -inset-3 rounded-[2.4rem] blur-2xl opacity-80 bg-gradient-to-br ${pending ? 'from-amber-400/50 via-transparent to-amber-200/20' : 'from-amber-400/40 via-transparent to-teal-400/40'}`} />
-      <div className="relative rounded-[2rem] bg-white text-slate-900 shadow-2xl overflow-hidden">
-        <div className={`h-1.5 bg-gradient-to-r ${pending ? 'from-amber-300 via-amber-500 to-amber-300 dw-pan' : 'from-teal-400 via-emerald-400 to-amber-400'}`} />
-        <div className="p-6 sm:p-8 space-y-6">
-          <div className="flex items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 text-sm font-black text-slate-500">
-              <GraduationCap className="w-4 h-4 text-teal-600" />
-              {t('اشتراك المستوى')}
-            </span>
-            <span className="px-3 py-1 rounded-full bg-slate-950 text-white text-xs font-black" dir="ltr">{level.code}</span>
+    <div className="relative dw-ticket-in">
+      <div className={`absolute -inset-4 rounded-[2.6rem] blur-3xl opacity-70 bg-gradient-to-br ${pending ? 'from-amber-400/50 via-transparent to-amber-200/20' : 'from-teal-400/40 via-transparent to-amber-400/40'}`} />
+
+      <div className="relative rounded-[1.75rem] bg-white text-slate-900 shadow-2xl shadow-black/40 overflow-hidden">
+        {/* Header */}
+        <div className="relative bg-gradient-to-br from-[#0e2c4e] to-[#07192e] text-white px-6 py-4 flex items-center justify-between gap-3 overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_120%_at_0%_0%,rgba(20,184,166,0.35),transparent_60%)]" />
+          <div className="relative min-w-0">
+            <span className="block text-[10px] font-black tracking-[0.25em] text-teal-300 uppercase" dir="ltr">Deutsche Welt · Lernticket</span>
+            <span className="block text-base font-black mt-0.5">{t('تذكرة رحلتك للألماني')}</span>
+          </div>
+          <span className="relative px-3.5 py-1.5 rounded-xl bg-white text-[#0e2c4e] text-lg font-black shadow-lg" dir="ltr">{level.code}</span>
+        </div>
+        <div className="flex h-1" dir="ltr">
+          <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+        </div>
+
+        {/* Route + details + price */}
+        <div className="relative px-6 pt-6 pb-5 space-y-5">
+          <div className="flex items-center gap-3">
+            <div className="text-center shrink-0">
+              <span className="block text-[10px] font-black text-slate-400">{t('من')}</span>
+              <span className="block text-2xl font-black text-slate-400" dir="ltr">{prevCode || t('البداية')}</span>
+            </div>
+            <div className="relative flex-1 flex items-center">
+              <span className="w-full border-t-2 border-dashed border-slate-200" />
+              <span className="absolute inset-x-0 mx-auto w-9 h-9 rounded-full bg-teal-50 border border-teal-200 text-teal-600 flex items-center justify-center">
+                <Plane className="w-4 h-4 rotate-45 rtl:-scale-x-100" />
+              </span>
+            </div>
+            <div className="text-center shrink-0">
+              <span className="block text-[10px] font-black text-teal-600">{t('إلى')}</span>
+              <span className="block text-2xl font-black bg-gradient-to-br from-teal-600 to-emerald-700 bg-clip-text text-transparent" dir="ltr">{level.code}</span>
+            </div>
           </div>
 
-          {price && (
-            <div>
-              {oldPrice && (
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-base text-slate-400 line-through font-bold" dir="ltr">
-                    {Number(oldPrice).toLocaleString('en-US', { maximumFractionDigits: 2 })}
-                  </span>
-                  {discount > 0 && (
-                    <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 text-[11px] font-black">
-                      {t('وفّر {n}%', { n: discount })}
-                    </span>
-                  )}
-                </div>
-              )}
-              <div className="flex items-baseline gap-2">
-                <span className="text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-br from-teal-600 to-emerald-700 bg-clip-text text-transparent" dir="ltr">
-                  {Number(level.price).toLocaleString('en-US', { maximumFractionDigits: 2 })}
-                </span>
-                <span className="text-lg font-black text-slate-500">{t('ج.م')}</span>
+          <dl className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-50 border border-slate-100 p-3">
+            {details.map((d) => (
+              <div key={d.label} className="text-center">
+                <dt className="text-[10px] font-bold text-slate-400">{d.label}</dt>
+                <dd className="text-xs font-black text-slate-800 mt-0.5">{d.value}</dd>
               </div>
-              <span className="text-xs font-bold text-slate-400">{t('دفعة واحدة للمستوى كامل')}</span>
+            ))}
+          </dl>
+
+          {price && (
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                {oldPrice && (
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-sm text-slate-400 line-through font-bold" dir="ltr">
+                      {Number(oldPrice).toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                    </span>
+                    {discount > 0 && (
+                      <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 text-[11px] font-black">{t('وفّر {n}%', { n: discount })}</span>
+                    )}
+                  </div>
+                )}
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-black tracking-tight bg-gradient-to-br from-teal-600 to-emerald-700 bg-clip-text text-transparent" dir="ltr">
+                    {Number(level.price).toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                  </span>
+                  <span className="text-base font-black text-slate-500">{t('ج.م')}</span>
+                </div>
+              </div>
+              {!pending && <span className="text-[11px] font-bold text-slate-400 text-end leading-snug max-w-[8rem]">{t('دفعة واحدة للمستوى كامل')}</span>}
             </div>
           )}
 
+          {pending && (
+            <span className="dw-stamp absolute bottom-4 end-5 rotate-[-12deg] inline-flex flex-col items-center px-4 py-1.5 rounded-xl border-[3px] border-amber-500 text-amber-600 bg-amber-50/70 backdrop-blur-[1px] pointer-events-none">
+              <span className="text-sm font-black leading-tight">{t('قيد المراجعة')}</span>
+              <span className="text-[9px] font-black tracking-widest" dir="ltr">DW · {level.code}</span>
+            </span>
+          )}
+        </div>
+
+        {/* Perforation */}
+        <div className="relative h-0">
+          <span className="absolute -top-3 -start-3 w-6 h-6 rounded-full bg-[#0a1120]" />
+          <span className="absolute -top-3 -end-3 w-6 h-6 rounded-full bg-[#0a1120]" />
+          <span className="absolute inset-x-6 top-0 border-t-2 border-dashed border-slate-200" />
+        </div>
+
+        {/* Stub */}
+        <div className="px-6 pt-5 pb-5 space-y-4">
           {pending ? (
             <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4 flex items-start gap-3">
               <span className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center shrink-0">
-                <Hourglass className="w-5 h-5" />
+                <Hourglass className="w-5 h-5 dw-float" />
               </span>
               <div>
                 <p className="text-sm font-black text-amber-900">{t('في انتظار تفعيل الإدارة')}</p>
@@ -630,10 +726,10 @@ function PriceCard({ level, price, oldPrice, discount, perks, status, loaded, on
             </div>
           ) : (
             <>
-              <ul className="space-y-2.5 border-t border-dashed border-slate-200 pt-5">
+              <ul className="grid gap-2">
                 {perks.map(({ text }) => (
-                  <li key={text} className="flex items-start gap-2.5 text-sm font-bold text-slate-700">
-                    <CheckCircle2 className="w-[18px] h-[18px] text-emerald-500 shrink-0 mt-0.5" />
+                  <li key={text} className="flex items-start gap-2 text-[13px] font-bold text-slate-700">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                     {text}
                   </li>
                 ))}
@@ -648,9 +744,83 @@ function PriceCard({ level, price, oldPrice, discount, perks, status, loaded, on
               </button>
             </>
           )}
+          {/* Decorative barcode */}
+          <div className="flex items-center gap-3 pt-1" aria-hidden>
+            <span
+              className="flex-1 h-8 opacity-80"
+              style={{ backgroundImage: 'repeating-linear-gradient(90deg,#0f172a 0 2px,transparent 2px 4px,#0f172a 4px 5px,transparent 5px 8px,#0f172a 8px 11px,transparent 11px 13px)' }}
+            />
+            <span className="text-[10px] font-black tracking-widest text-slate-400" dir="ltr">DW-{level.code}-{new Date().getFullYear()}</span>
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+/** Where this level sits among all levels — unlocked ones are ticked, this one glows. */
+function Journey({ level, levels }) {
+  const list = [...levels].sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.code).localeCompare(String(b.code)));
+  if (list.length < 2) return null;
+
+  return (
+    <section className="rounded-[2rem] bg-white border border-slate-200/80 shadow-xl shadow-slate-900/[0.04] p-6 sm:p-8">
+      <SectionTitle icon={Route} title={t('رحلتك في الألماني')} sub={t('كل مستوى بيوصلك للي بعده — وده مكانك دلوقتي')} />
+      <div className="mt-7 overflow-x-auto dw-no-scrollbar pb-2 -mx-2 px-2">
+        <ol className="flex items-start w-max mx-auto">
+        {list.map((l, i) => {
+          const current = String(l.id) === String(level.id);
+          const done = l.hasAccess;
+          const tone = toneFor(l.code);
+          const node = (
+            <span className="flex flex-col items-center gap-2 w-24 sm:w-28 text-center">
+              <span className="relative">
+                {current && <span className="absolute -inset-2 rounded-full bg-amber-400/30 animate-ping" />}
+                <span
+                  className={`relative w-14 h-14 rounded-full flex items-center justify-center text-sm font-black shadow-lg transition-transform ${
+                    current
+                      ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-slate-950 ring-4 ring-amber-200 scale-110'
+                      : done
+                        ? `bg-gradient-to-br ${tone?.badge || 'from-emerald-400 to-teal-600'} text-white`
+                        : 'bg-white border-2 border-slate-200 text-slate-500 group-hover:border-teal-300 group-hover:text-teal-700'
+                  }`}
+                  dir="ltr"
+                >
+                  {l.code}
+                </span>
+                {done && !current && (
+                  <span className="absolute -bottom-0.5 -end-0.5 w-5 h-5 rounded-full bg-emerald-500 ring-2 ring-white flex items-center justify-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                  </span>
+                )}
+              </span>
+              <span className={`text-[11px] font-black leading-tight line-clamp-2 ${current ? 'text-slate-900' : 'text-slate-500'}`} dir="auto">{l.title}</span>
+              <span
+                className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                  current ? 'bg-amber-100 text-amber-800' : done ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                {current ? t('انت هنا') : done ? t('مفعّل لك') : t('المستوى {code}', { code: l.code })}
+              </span>
+            </span>
+          );
+          return (
+            <li key={l.id} className="flex items-start shrink-0">
+              {current ? node : <Link href={`/courses/${l.id}`} className="group">{node}</Link>}
+              {i < list.length - 1 && (
+                <span
+                  aria-hidden
+                  className={`mt-7 h-1 w-10 sm:w-16 rounded-full shrink-0 ${
+                    done ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : 'bg-[repeating-linear-gradient(90deg,#cbd5e1_0_6px,transparent_6px_12px)]'
+                  }`}
+                />
+              )}
+            </li>
+          );
+        })}
+        </ol>
+      </div>
+    </section>
   );
 }
 
