@@ -598,6 +598,8 @@ const EN = {
   'رسالة حقيقية على واتساب': 'Real WhatsApp message',
   'الرسالة الأصلية': 'Original message',
   'مترجمة من العربية': 'Translated from Arabic',
+  'اقرأ الرسالة كاملة': 'Read the full message',
+  'عرض أقل': 'Show less',
   'أعلى تقييم': 'Top rated',
   'ماشاء الله هير خالد الحلواني ممتاز وأقيمه 10/10 وطريقة شرحه بسيطه حتى لو مش فاهمين نقطه فبنقوله فبيقعد يعيد ويزيد كذا مره من غير حتى مايضايق ولا مره وأنا بالفعل رشحته في بوستات كتير على الفيسبوك اما بشوف حد بيسأل على كورسات ألماني. شغالين ألماني ألماني من أول يوم، في البدايه الدنيا كانت تقيله شويه بس بعد كدا اتعودنا واحنا اللي طلبنا منه يكمل ألماني ألماني من غير عربي ودا فرق مع المجموعة ككل':
     'Herr Khaled El-Halawany is excellent — I rate him 10/10. He explains simply, and if we don’t get a point he repeats it again and again without ever getting annoyed. I’ve actually recommended him in lots of Facebook posts whenever someone asks about German courses. We’ve been German-only from day one; it was a bit heavy at first, but we got used to it, and we were the ones who asked him to keep going in German without Arabic — and it made a real difference for the whole group.',

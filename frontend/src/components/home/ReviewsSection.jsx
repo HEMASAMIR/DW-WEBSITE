@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useModal } from '@/context/ModalContext';
 import Reveal from '@/components/common/Reveal';
@@ -295,30 +295,104 @@ export default function ReviewsSection() {
 
 function FeedbackWall({ onShot }) {
   const [level, setLevel] = useState('all');
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [nudge, setNudge] = useState(0); // bumped on manual moves → restarts the autoplay timer
+  const trackRef = useRef(null);
 
   const filters = [
     { key: 'all', label: t('كل المستويات'), count: STUDENT_FEEDBACK.length },
     ...FEEDBACK_LEVELS.map((code) => ({ key: code, code, label: t('مستوى {code}', { code }), count: STUDENT_FEEDBACK.filter((f) => f.level === code).length })),
   ];
 
-  const featured = level === 'all' ? STUDENT_FEEDBACK.filter((f) => f.featured) : [];
-  const rest = STUDENT_FEEDBACK.filter((f) => !featured.includes(f) && (level === 'all' || f.level === level));
+  // Featured messages first, then the rest — one row of slides.
+  const items = STUDENT_FEEDBACK
+    .filter((f) => level === 'all' || f.level === level)
+    .sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
+
+  // One slide width + gap, and +1 / -1 for the scroll direction (RTL scrolls to negative scrollLeft).
+  const metrics = () => {
+    const el = trackRef.current;
+    const slide = el?.firstElementChild;
+    if (!el || !slide) return null;
+    const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+    return { el, step: slide.offsetWidth + gap, sign: getComputedStyle(el).direction === 'rtl' ? -1 : 1 };
+  };
+
+  const go = (delta) => {
+    const m = metrics();
+    if (!m) return;
+    const { el, step, sign } = m;
+    const atEnd = Math.abs(el.scrollLeft) + el.clientWidth >= el.scrollWidth - 4;
+    const atStart = Math.abs(el.scrollLeft) <= 4;
+    if (delta > 0 && atEnd) el.scrollTo({ left: 0, behavior: 'smooth' });
+    else if (delta < 0 && atStart) el.scrollTo({ left: sign * el.scrollWidth, behavior: 'smooth' });
+    else el.scrollBy({ left: sign * delta * step, behavior: 'smooth' });
+  };
+
+  const onScroll = () => {
+    const m = metrics();
+    if (m) setIndex(Math.min(items.length - 1, Math.round(Math.abs(m.el.scrollLeft) / m.step)));
+  };
+
+  // Arrow clicks: move, and give the visitor a full 5s before autoplay moves again.
+  const step = (delta) => {
+    go(delta);
+    setNudge((n) => n + 1);
+  };
+
+  const pick = (key) => {
+    setLevel(key);
+    setIndex(0);
+    trackRef.current?.scrollTo({ left: 0 });
+  };
+
+  // Autoplay: one slide every 5s — stops while the visitor hovers / touches / focuses the slider,
+  // when the tab is hidden, and for people who prefer reduced motion.
+  useEffect(() => {
+    if (paused || items.length < 2) return undefined;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const id = setInterval(() => { if (!document.hidden) go(1); }, 5000);
+    return () => clearInterval(id);
+    // go() reads the DOM on each tick; restarting on every render isn't needed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paused, level, items.length, nudge]);
+
+  const arrowCls =
+    'w-11 h-11 rounded-full bg-white border border-slate-200 text-[#0e2c4e] shadow-md hover:bg-[#0e2c4e] hover:text-white hover:border-[#0e2c4e] active:scale-95 transition-all flex items-center justify-center';
 
   return (
-    <div className="space-y-8 animate-fadeIn">
-      {/* Intro */}
-      <div className="text-center space-y-3 max-w-2xl mx-auto">
-        <h3 className="text-2xl sm:text-3xl font-black text-[#0f172a]">{t('رسائل الطلاب بعد السيشنات')}</h3>
-        <p className="text-sm text-slate-600 font-medium leading-relaxed">
-          {t('كلام الطلاب بنفسهم بعد المحاضرات، ومع كل رأي صورة الرسالة زي ما وصلت على واتساب.')}
-        </p>
-        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-teal-200 text-teal-800 text-xs font-black shadow-sm">
-          <MessageCircle className="w-3.5 h-3.5" /> {t('{n} رسالة من الطلاب', { n: STUDENT_FEEDBACK.length })}
-        </span>
+    <div
+      className="space-y-6 animate-fadeIn"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+    >
+      {/* Header: title + count + arrows */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-2 text-center md:text-start">
+          <h3 className="text-2xl sm:text-3xl font-black text-[#0f172a]">{t('رسائل الطلاب بعد السيشنات')}</h3>
+          <p className="text-sm text-slate-600 font-medium leading-relaxed max-w-xl">
+            {t('كلام الطلاب بنفسهم بعد المحاضرات، ومع كل رأي صورة الرسالة زي ما وصلت على واتساب.')}
+          </p>
+        </div>
+        <div className="flex items-center justify-center gap-3 shrink-0">
+          <span className="inline-flex items-center gap-2 px-4 h-11 rounded-full bg-white border border-teal-200 text-teal-800 text-xs font-black shadow-sm">
+            <MessageCircle className="w-3.5 h-3.5" /> {t('{n} رسالة من الطلاب', { n: STUDENT_FEEDBACK.length })}
+          </span>
+          <button type="button" onClick={() => step(-1)} className={arrowCls} aria-label={t('السابق')}>
+            <ChevronLeft className="w-5 h-5 rtl:-scale-x-100" />
+          </button>
+          <button type="button" onClick={() => step(1)} className={arrowCls} aria-label={t('التالي')}>
+            <ChevronRight className="w-5 h-5 rtl:-scale-x-100" />
+          </button>
+        </div>
       </div>
 
       {/* Level filter */}
-      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 sm:justify-center" role="tablist">
+      <div className="flex gap-2 overflow-x-auto dw-no-scrollbar pb-1 -mx-1 px-1 md:justify-start" role="tablist">
         {filters.map((f) => {
           const active = level === f.key;
           const tone = f.code ? toneFor(f.code) : null;
@@ -328,8 +402,8 @@ function FeedbackWall({ onShot }) {
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => setLevel(f.key)}
-              className={`shrink-0 inline-flex items-center gap-2 h-11 ps-2 pe-4 rounded-full border text-xs sm:text-sm font-black transition-all active:scale-95 ${
+              onClick={() => pick(f.key)}
+              className={`shrink-0 inline-flex items-center gap-2 h-10 ps-1.5 pe-4 rounded-full border text-xs font-black transition-all active:scale-95 ${
                 active ? 'bg-[#0e2c4e] border-[#0e2c4e] text-white shadow-lg shadow-[#0e2c4e]/20' : 'bg-white border-slate-200 text-slate-700 hover:border-teal-300'
               }`}
             >
@@ -346,23 +420,39 @@ function FeedbackWall({ onShot }) {
         })}
       </div>
 
-      {/* Spotlight */}
-      {featured.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-          <SpotlightCard item={featured[0]} onShot={onShot} />
-          <div className="lg:col-span-2 grid gap-5">
-            {featured.slice(1).map((f) => <FeedbackCard key={f.id} item={f} onShot={onShot} highlight />)}
-          </div>
+      {/* Slider — native scroll-snap, so touch swipe and trackpads just work */}
+      <div>
+        <div
+          key={level}
+          ref={trackRef}
+          onScroll={onScroll}
+          className="flex gap-5 overflow-x-auto snap-x snap-mandatory dw-no-scrollbar scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 pt-1 pb-4"
+          aria-roledescription="carousel"
+        >
+          {items.map((f, i) => (
+            <div
+              key={f.id}
+              className="snap-start shrink-0 basis-[86%] sm:basis-[calc((100%-1.25rem)/2)] lg:basis-[calc((100%-2.5rem)/3)] flex dw-card-enter"
+              style={{ animationDelay: `${Math.min(i, 3) * 80}ms` }}
+              aria-label={`${i + 1} / ${items.length}`}
+            >
+              {i === 0 && f.featured ? <SpotlightCard item={f} onShot={onShot} /> : <FeedbackCard item={f} onShot={onShot} highlight={f.featured} />}
+            </div>
+          ))}
         </div>
-      )}
 
-      {/* Wall */}
-      <div key={level} className="columns-1 sm:columns-2 lg:columns-3 gap-5">
-        {rest.map((f, i) => (
-          <div key={f.id} className="break-inside-avoid mb-5 dw-card-enter" style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}>
-            <FeedbackCard item={f} onShot={onShot} />
+        {/* Progress */}
+        <div className="flex items-center gap-4 mt-2">
+          <div className="flex-1 h-1.5 rounded-full bg-slate-200/80 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-[width] duration-300"
+              style={{ width: `${((index + 1) / Math.max(items.length, 1)) * 100}%` }}
+            />
           </div>
-        ))}
+          <span className="text-xs font-black text-slate-500 tabular-nums" dir="ltr">
+            {index + 1} / {items.length}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -422,11 +512,24 @@ function ShotButton({ item, onShot, dark }) {
   );
 }
 
-function FeedbackText({ item, className }) {
+const LONG_TEXT = 200;
+
+function FeedbackText({ item, className, clamp = 'line-clamp-6', dark }) {
   const ar = isArabic(item.text);
+  const [open, setOpen] = useState(false);
+  const long = t(item.text).length > LONG_TEXT;
   return (
     <>
-      <p className={className} dir={ar ? undefined : 'ltr'} lang={ar ? undefined : 'de'}>{t(item.text)}</p>
+      <p className={`${className} ${long && !open ? clamp : ''}`} dir={ar ? undefined : 'ltr'} lang={ar ? undefined : 'de'}>{t(item.text)}</p>
+      {long && (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className={`self-start text-xs font-black underline-offset-4 hover:underline ${dark ? 'text-amber-300' : 'text-teal-700'}`}
+        >
+          {open ? t('عرض أقل') : t('اقرأ الرسالة كاملة')}
+        </button>
+      )}
       {translated(item.text) && (
         <p className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400">
           <Languages className="w-3 h-3" /> {t('مترجمة من العربية')}
@@ -438,7 +541,7 @@ function FeedbackText({ item, className }) {
 
 function SpotlightCard({ item, onShot }) {
   return (
-    <Reveal className="lg:col-span-3 relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#07192e] via-[#0c2847] to-[#0e3b68] text-white p-7 sm:p-9 shadow-2xl shadow-[#07192e]/25 flex flex-col">
+    <article className="w-full relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#07192e] via-[#0c2847] to-[#0e3b68] text-white p-6 sm:p-7 shadow-xl shadow-[#07192e]/25 flex flex-col">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_90%_at_100%_0%,rgba(20,184,166,0.35),transparent_60%),radial-gradient(ellipse_60%_80%_at_0%_100%,rgba(245,158,11,0.25),transparent_60%)] pointer-events-none" />
       <div className="absolute top-0 inset-x-0 flex h-1.5" dir="ltr">
         <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
@@ -449,20 +552,20 @@ function SpotlightCard({ item, onShot }) {
           <Sparkles className="w-3.5 h-3.5" /> {t('أعلى تقييم')}
         </span>
         {item.score && (
-          <span className="px-4 py-1.5 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-slate-950 text-2xl font-black shadow-lg shadow-amber-500/30" dir="ltr">{item.score}</span>
+          <span className="px-4 py-1.5 rounded-2xl bg-gradient-to-br from-amber-300 to-amber-500 text-slate-950 text-xl font-black shadow-lg shadow-amber-500/30" dir="ltr">{item.score}</span>
         )}
       </div>
-      <div className="relative flex-1 mt-6 flex flex-col justify-center gap-2">
-        <FeedbackText item={item} className="text-base sm:text-lg leading-loose font-semibold text-slate-100" />
+      <div className="relative flex-1 mt-5 flex flex-col gap-2">
+        <FeedbackText item={item} dark clamp="line-clamp-5" className="text-[15px] sm:text-base leading-loose font-semibold text-slate-100" />
       </div>
-      <div className="relative mt-7 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+      <div className="relative mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
         <WhoLine item={item} dark />
         <div className="flex items-center gap-3">
-          <Stars />
+          <Stars className="w-3.5 h-3.5" />
           <ShotButton item={item} onShot={onShot} dark />
         </div>
       </div>
-    </Reveal>
+    </article>
   );
 }
 
@@ -470,7 +573,7 @@ function FeedbackCard({ item, onShot, highlight }) {
   const tone = item.level ? toneFor(item.level) : null;
   return (
     <article
-      className={`group relative overflow-hidden rounded-3xl bg-white p-5 sm:p-6 border shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 ${
+      className={`group w-full relative overflow-hidden rounded-3xl bg-white p-5 sm:p-6 border shadow-md hover:shadow-xl transition-all duration-300 flex flex-col gap-4 ${
         highlight ? 'border-amber-200 ring-1 ring-amber-100' : 'border-slate-200/80'
       }`}
     >
@@ -481,7 +584,7 @@ function FeedbackCard({ item, onShot, highlight }) {
         </span>
         <Stars className="w-3.5 h-3.5" />
       </div>
-      <div className="space-y-1.5">
+      <div className="flex-1 flex flex-col gap-1.5">
         <FeedbackText item={item} className="text-sm sm:text-[15px] text-slate-700 leading-relaxed font-medium" />
       </div>
       <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">

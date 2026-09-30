@@ -598,6 +598,8 @@ const DE = {
   'رسالة حقيقية على واتساب': 'Echte WhatsApp-Nachricht',
   'الرسالة الأصلية': 'Originalnachricht',
   'مترجمة من العربية': 'Aus dem Arabischen übersetzt',
+  'اقرأ الرسالة كاملة': 'Ganze Nachricht lesen',
+  'عرض أقل': 'Weniger anzeigen',
   'أعلى تقييم': 'Top bewertet',
   'ماشاء الله هير خالد الحلواني ممتاز وأقيمه 10/10 وطريقة شرحه بسيطه حتى لو مش فاهمين نقطه فبنقوله فبيقعد يعيد ويزيد كذا مره من غير حتى مايضايق ولا مره وأنا بالفعل رشحته في بوستات كتير على الفيسبوك اما بشوف حد بيسأل على كورسات ألماني. شغالين ألماني ألماني من أول يوم، في البدايه الدنيا كانت تقيله شويه بس بعد كدا اتعودنا واحنا اللي طلبنا منه يكمل ألماني ألماني من غير عربي ودا فرق مع المجموعة ككل':
     'Herr Khaled El-Halawany ist ausgezeichnet – ich gebe ihm 10/10. Er erklärt einfach, und wenn wir etwas nicht verstehen, wiederholt er es immer wieder, ohne je genervt zu sein. Ich habe ihn schon in vielen Facebook-Posts empfohlen, wenn jemand nach Deutschkursen fragt. Seit dem ersten Tag nur Deutsch – am Anfang war es etwas schwer, dann haben wir uns daran gewöhnt, und wir selbst haben ihn gebeten, ohne Arabisch weiterzumachen. Das hat für die ganze Gruppe viel verändert.',
