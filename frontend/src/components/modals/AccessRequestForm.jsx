@@ -6,6 +6,7 @@ import { requestsService, ACCESS_REQUEST_EVENT } from '@/services/requests.servi
 import { getErrorMessage, isMissingEndpoint } from '@/services/api';
 import { useContactInfo, whatsappHref, numberForMethod, CASH_METHOD } from '@/lib/contactInfo';
 import PaymentInfo from '@/components/common/PaymentInfo';
+import CouponBox from './CouponBox';
 import { track, priceValue } from '@/lib/analytics';
 import { PayMethodPicker, Field, inputCls, SentState, usePayOptions } from './OrderShell';
 import { Send, Loader2, ImagePlus, X, Clock3, AlertCircle } from 'lucide-react';
@@ -35,6 +36,8 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
   const [error, setError] = useState('');
   const [sent, setSent] = useState(null); // 'platform' | 'whatsapp'
   const [pending, setPending] = useState(null); // an earlier request for the same item still under review
+  const [coupon, setCoupon] = useState(null); // a checked coupon: { code, discount, final, … }
+  const payAmount = coupon ? coupon.final.toLocaleString('en-US', { maximumFractionDigits: 2 }) : amount;
   const fileRef = useRef(null);
 
   useEffect(() => {
@@ -60,9 +63,9 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
     setError('');
     try {
       await requestsService.create({
-        kind, item_id: itemId, full_name: name, phone, payment_method: paymentMethod, note, receipt,
+        kind, item_id: itemId, full_name: name, phone, payment_method: paymentMethod, note, receipt, coupon: coupon?.code,
       });
-      track('generate_lead', { item_type: kind, item_id: itemId, value: priceValue(amount), currency: 'EGP', channel: 'platform' });
+      track('generate_lead', { item_type: kind, item_id: itemId, value: priceValue(payAmount), currency: 'EGP', channel: 'platform', coupon: coupon?.code });
       window.dispatchEvent(new CustomEvent(ACCESS_REQUEST_EVENT, { detail: { kind, itemId } }));
       setSent('platform');
     } catch (err) {
@@ -83,7 +86,8 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
       kind === 'level' ? 'أود الاشتراك وتفعيل المستوى على حسابي في الموقع:' : 'أريد شراء الكتاب وتفعيله على حسابي في الموقع:',
       '',
       itemLine,
-      amount ? `💰 السعر: ${amount} ج.م` : null,
+      amount ? `💰 السعر: ${payAmount} ج.م` : null,
+      coupon ? `🎟️ كوبون: ${coupon.code} (خصم ${coupon.discount} ج.م من ${amount})` : null,
       `👤 الاسم: ${name}`,
       `📱 الهاتف: ${phone}`,
       user?.id ? `🆔 رقم الحساب: ${user.id}` : null,
@@ -129,7 +133,7 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-      <PaymentInfo amount={amount} compact />
+      <PaymentInfo amount={payAmount} compact />
 
       <form onSubmit={submit} className="rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-900/[0.05] p-5 sm:p-6 space-y-4">
         <Field label={t('الاسم بالكامل')}>
@@ -194,6 +198,8 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
             placeholder={t('مثلاً: حوّلت من رقم تاني')}
           />
         </Field>
+
+        <CouponBox kind={kind} itemId={itemId} applied={coupon} onChange={setCoupon} />
 
         {error && (
           <p className="flex items-start gap-2 rounded-2xl bg-rose-50 border border-rose-200 px-4 py-3 text-xs font-bold text-rose-700">

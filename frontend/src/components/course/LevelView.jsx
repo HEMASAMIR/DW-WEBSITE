@@ -8,13 +8,14 @@ import { useAuth } from '@/context/AuthContext';
 import { coursesService, formatDuration, formatPrice, formatPriceLatin } from '@/services/courses.service';
 import { requestsService, ACCESS_REQUEST_EVENT } from '@/services/requests.service';
 import { useLevelContent, formatTotal, totalSeconds } from './useLevelContent';
+import { useLevelSubscription } from './useLevelSubscription';
 import Reveal from '@/components/common/Reveal';
 import PaymentInfo from '@/components/common/PaymentInfo';
 import { useContactInfo, groupLink, whatsappHref } from '@/lib/contactInfo';
 import {
   PlayCircle, Play, FileText, AlertCircle, RefreshCw, Lock, LogIn, MessageCircle, Clock, ListVideo,
   Eye, CheckCircle2, ChevronLeft, FileType2, Sparkles, Hourglass, Wallet, Send, BadgeCheck, ShieldCheck,
-  GraduationCap, Plane, Route,
+  GraduationCap, Plane, Route, CalendarClock, CalendarCheck2,
 } from 'lucide-react';
 import { toneFor } from '@/constants/levelTones';
 
@@ -24,9 +25,19 @@ import { t, langMeta } from '@/lib/i18n';
  * own page: /courses/<levelId>/watch/<videoId>. Everything shown comes from the backend.
  */
 export default function LevelView({ level, levels = [] }) {
-  if (!level.hasAccess) return <LockedLevel level={level} levels={levels} />;
-  return <UnlockedLevel level={level} />;
+  // Levels are yearly: an expired year shows the locked page (with "renew"), even before the dashboard revokes it.
+  const subscription = useLevelSubscription(level.id);
+  if (!level.hasAccess || subscription?.status === 'expired') return <LockedLevel level={level} levels={levels} subscription={subscription} />;
+  return <UnlockedLevel level={level} subscription={subscription} />;
 }
+
+const longDate = (iso) => {
+  try {
+    return new Date(iso).toLocaleDateString(langMeta().locale, { day: 'numeric', month: 'long', year: 'numeric' });
+  } catch {
+    return '';
+  }
+};
 
 /* ------------------------------------------------------------------ */
 /* Hero                                                                */
@@ -176,7 +187,7 @@ function FeaturedLecture({ levelId, video }) {
 /* ------------------------------------------------------------------ */
 /* Unlocked                                                            */
 /* ------------------------------------------------------------------ */
-function UnlockedLevel({ level }) {
+function UnlockedLevel({ level, subscription }) {
   const { content, error, retry } = useLevelContent(level.id);
   const { openFileViewer } = useModal();
   const videos = content?.videos || [];
@@ -197,7 +208,7 @@ function UnlockedLevel({ level }) {
         badge={
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-400/15 border border-emerald-300/30 text-xs font-black text-emerald-200">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            {t('مفعّل لك')}
+            {subscription ? t('مفعّل لك لحد {date}', { date: longDate(subscription.expires_at) }) : t('مفعّل لك')}
           </span>
         }
         stats={
@@ -280,6 +291,7 @@ function UnlockedLevel({ level }) {
 
             {/* Files */}
             <aside id="level-files" className="lg:col-span-4 lg:sticky lg:top-24 scroll-mt-24 space-y-5">
+              {subscription && <SubscriptionCard level={level} subscription={subscription} contact={contact} />}
               {group && <GroupCard href={group} code={level.code} />}
               <section className="rounded-[2rem] bg-white border border-slate-200/80 shadow-xl shadow-slate-900/[0.04] p-5 sm:p-6">
                 <SectionTitle icon={FileText} title={t('ملفات المستوى')} sub={files.length ? t('{n} ملف • بتتفتح جوه الموقع', { n: files.length }) : t('لا توجد ملفات')} />
@@ -459,7 +471,7 @@ const formatDate = (iso) => {
   }
 };
 
-function LockedLevel({ level, levels }) {
+function LockedLevel({ level, levels, subscription }) {
   const { isAuthenticated } = useAuth();
   const { openEnrollModal, openLoginPromptModal } = useModal();
   const contact = useContactInfo();
@@ -472,7 +484,16 @@ function LockedLevel({ level, levels }) {
   const prevCode = ordered[ordered.findIndex((l) => String(l.id) === String(level.id)) - 1]?.code || null;
 
   // guest → ready → pending → (approved: the page turns into UnlockedLevel) | rejected → ready again
-  const status = !isAuthenticated ? 'guest' : request?.status === 'pending' ? 'pending' : request?.status === 'rejected' ? 'rejected' : 'ready';
+  const expired = subscription?.status === 'expired';
+  const status = !isAuthenticated
+    ? 'guest'
+    : request?.status === 'pending'
+      ? 'pending'
+      : expired
+        ? 'expired'
+        : request?.status === 'rejected'
+          ? 'rejected'
+          : 'ready';
 
   const subscribe = () =>
     isAuthenticated
@@ -483,6 +504,7 @@ function LockedLevel({ level, levels }) {
   const askAdmin = whatsappHref(contact, `مرحباً إدارة دويتشه فيلت 👋\nبعت طلب اشتراك في المستوى ${level.code} ومستني التفعيل على حسابي.`);
 
   const perks = [
+    { icon: CalendarCheck2, text: t('اشتراك سنة كاملة من يوم التفعيل') },
     { icon: PlayCircle, text: t('كل محاضرات المستوى مسجّلة وتتفرج عليها في أي وقت') },
     { icon: FileText, text: t('ملفات ومذكرات المستوى بتتفتح جوه الموقع') },
     ...(hasGroup ? [{ icon: MessageCircle, text: t('جروب واتساب خاص بطلاب المستوى') }] : []),
@@ -517,6 +539,12 @@ function LockedLevel({ level, levels }) {
         {t('الطلب محتاج مراجعة')}
       </span>
     ),
+    expired: (
+      <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-400/15 border border-rose-300/40 text-xs font-black text-rose-200">
+        <CalendarClock className="w-3.5 h-3.5" />
+        {t('اشتراكك السنوي انتهى')}
+      </span>
+    ),
   }[status];
 
   return (
@@ -545,7 +573,7 @@ function LockedLevel({ level, levels }) {
             <>
               <button onClick={subscribe} className={primaryBtn}>
                 {isAuthenticated ? <Sparkles className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
-                {isAuthenticated ? t('اشترك الآن') : t('سجّل دخول واشترك')}
+                {status === 'expired' ? t('جدّد اشتراكك') : isAuthenticated ? t('اشترك الآن') : t('سجّل دخول واشترك')}
                 <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 ltr:-scale-x-100 ltr:group-hover:translate-x-1" />
               </button>
               <a href="#level-pay" className={ghostBtn}>
@@ -573,6 +601,8 @@ function LockedLevel({ level, levels }) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-8 relative space-y-8">
         {status === 'pending' && request ? (
           <PendingPanel level={level} request={request} hasGroup={hasGroup} askAdmin={askAdmin} />
+        ) : status === 'expired' ? (
+          <ExpiredPanel level={level} subscription={subscription} onRenew={subscribe} />
         ) : status === 'rejected' && request ? (
           <RejectedPanel request={request} onRetry={subscribe} />
         ) : null}
@@ -623,7 +653,7 @@ function TicketCard({ level, prevCode, price, oldPrice, discount, perks, status,
   const pending = status === 'pending';
   const details = [
     { label: t('المحاضرات'), value: t('مسجّلة') },
-    { label: t('الدفع'), value: t('مرة واحدة') },
+    { label: t('المدة'), value: t('سنة كاملة') },
     { label: t('التفعيل'), value: t('على حسابك') },
   ];
 
@@ -693,7 +723,7 @@ function TicketCard({ level, prevCode, price, oldPrice, discount, perks, status,
                   <span className="text-base font-black text-slate-500">{t('ج.م')}</span>
                 </div>
               </div>
-              {!pending && <span className="text-[11px] font-bold text-slate-400 text-end leading-snug max-w-[8rem]">{t('دفعة واحدة للمستوى كامل')}</span>}
+              {!pending && <span className="text-[11px] font-bold text-slate-400 text-end leading-snug max-w-[8rem]">{t('اشتراك سنة كاملة من يوم التفعيل')}</span>}
             </div>
           )}
 
@@ -740,7 +770,7 @@ function TicketCard({ level, prevCode, price, oldPrice, discount, perks, status,
                 className="dw-shine w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-950 hover:bg-teal-700 disabled:opacity-60 text-white text-sm font-black transition-colors"
               >
                 {status === 'guest' ? <LogIn className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-                {status === 'guest' ? t('سجّل دخول للاشتراك') : t('اشترك في المستوى')}
+                {status === 'guest' ? t('سجّل دخول للاشتراك') : status === 'expired' ? t('جدّد اشتراكك') : t('اشترك في المستوى')}
               </button>
             </>
           )}
@@ -829,7 +859,7 @@ function Steps({ status }) {
   const steps = [
     { icon: Wallet, title: t('حوّل قيمة الاشتراك'), text: t('بأي طريقة من طرق الدفع المتاحة أو كاش في الفرع.') },
     { icon: Send, title: t('ابعت طلب الاشتراك'), text: t('من زرار «اشترك الآن» ومعاه صورة التحويل.') },
-    { icon: BadgeCheck, title: t('الإدارة تفعّل المستوى'), text: t('بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً.') },
+    { icon: BadgeCheck, title: t('الإدارة تفعّل المستوى'), text: t('بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة سنة كاملة.') },
   ];
   const current = status === 'pending' ? 2 : 0;
 
@@ -971,6 +1001,97 @@ function RejectedPanel({ request, onRetry }) {
         <RefreshCw className="w-4 h-4" />
         {t('ابعت طلب جديد')}
       </button>
+    </section>
+  );
+}
+
+/** The student's yearly subscription: a ring for the year, the end date and — in the last 30 days — a renew nudge. */
+function SubscriptionCard({ level, subscription, contact }) {
+  const used = subscription.elapsed;
+  const ending = subscription.ending;
+  const R = 26;
+  const C = 2 * Math.PI * R;
+  // i18n-keep: the WhatsApp message goes to the academy, always in Arabic
+  const renew = whatsappHref(contact, `مرحباً إدارة دويتشه فيلت 👋\nعايز أجدد اشتراكي في المستوى ${level.code} — اشتراكي بيخلص يوم ${new Date(subscription.expires_at).toLocaleDateString('ar-EG')}.`);
+
+  return (
+    <section
+      className={`relative overflow-hidden rounded-[2rem] border p-5 sm:p-6 shadow-xl ${
+        ending ? 'bg-gradient-to-br from-amber-50 to-white border-amber-200 shadow-amber-900/10' : 'bg-white border-slate-200/80 shadow-slate-900/[0.04]'
+      }`}
+    >
+      <div className="flex items-center gap-4">
+        <span className="relative w-16 h-16 shrink-0">
+          <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90">
+            <circle cx="32" cy="32" r={R} fill="none" strokeWidth="6" className="stroke-slate-100" />
+            <circle
+              cx="32" cy="32" r={R} fill="none" strokeWidth="6" strokeLinecap="round"
+              className={ending ? 'stroke-amber-500' : 'stroke-teal-500'}
+              strokeDasharray={C}
+              strokeDashoffset={C * used}
+            />
+          </svg>
+          <span className="absolute inset-0 flex flex-col items-center justify-center leading-none">
+            <span className={`text-base font-black ${ending ? 'text-amber-700' : 'text-slate-900'}`}>{subscription.daysLeft}</span>
+            <span className="text-[9px] font-bold text-slate-400 mt-0.5">{t('يوم')}</span>
+          </span>
+        </span>
+        <div className="min-w-0">
+          <span className={`inline-flex items-center gap-1.5 text-[11px] font-black ${ending ? 'text-amber-700' : 'text-teal-700'}`}>
+            <CalendarCheck2 className="w-3.5 h-3.5" />
+            {t('اشتراكك السنوي')}
+          </span>
+          <p className="text-base font-black text-slate-900 leading-tight mt-0.5">{t('ساري لحد {date}', { date: longDate(subscription.expires_at) })}</p>
+          <p className="text-xs font-bold text-slate-500 mt-0.5">{t('اتفعّل يوم {date}', { date: longDate(subscription.started_at) })}</p>
+        </div>
+      </div>
+      {ending && (
+        <div className="mt-4 rounded-2xl bg-amber-100/70 border border-amber-200 p-3.5 space-y-2.5">
+          <p className="text-xs font-bold text-amber-900 leading-relaxed">
+            {t('اشتراكك قرب يخلص — باقي {n} يوم بس. جدّده دلوقتي عشان محاضراتك متتقفلش.', { n: subscription.daysLeft })}
+          </p>
+          <a
+            href={renew}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition-colors"
+          >
+            <MessageCircle className="w-4 h-4" />
+            {t('كلّم الإدارة للتجديد')}
+          </a>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** The year is over: the level is locked again until the student renews. */
+function ExpiredPanel({ level, subscription, onRenew }) {
+  return (
+    <section className="dw-pop relative overflow-hidden rounded-[2rem] bg-white border border-rose-200 shadow-2xl shadow-rose-900/10">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_100%_0%,rgba(244,63,94,0.10),transparent_60%),radial-gradient(ellipse_50%_70%_at_0%_100%,rgba(20,184,166,0.08),transparent_60%)]" />
+      <div className="relative flex flex-col sm:flex-row sm:items-center gap-6 p-6 sm:p-9">
+        <span className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 text-white flex items-center justify-center shadow-xl shadow-rose-500/30 shrink-0">
+          <CalendarClock className="w-8 h-8" />
+        </span>
+        <div className="flex-1 space-y-2">
+          <span className="text-xs font-black text-rose-600">{t('المستوى {code}', { code: level.code })}</span>
+          <h2 className="text-2xl font-black text-slate-900 leading-tight">{t('اشتراكك السنوي انتهى')}</h2>
+          <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+            {t('اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لسنة كاملة جديدة.', {
+              from: longDate(subscription.started_at),
+              to: longDate(subscription.expires_at),
+            })}
+          </p>
+        </div>
+        <button
+          onClick={onRenew}
+          className="dw-shine inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl bg-slate-950 hover:bg-teal-700 text-white text-sm font-black transition-colors shrink-0"
+        >
+          <RefreshCw className="w-4 h-4" />
+          {t('جدّد اشتراكك')}
+        </button>
+      </div>
     </section>
   );
 }

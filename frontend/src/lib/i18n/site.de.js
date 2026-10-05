@@ -800,6 +800,92 @@ const DE = {
   'رحلتك في الألماني': 'Deine Deutsch-Reise',
   'كل مستوى بيوصلك للي بعده — وده مكانك دلوقتي': 'Jedes Niveau führt zum nächsten – hier stehst du gerade',
   'انت هنا': 'Du bist hier',
+
+  // ---- Coupons + yearly subscriptions (CouponBox, LevelView, couponsStore)
+  'اشتراكك السنوي في المستوى ده انتهى — جدّده عشان ترجع للمحاضرات.':
+    'Dein Jahresabo für dieses Niveau ist abgelaufen – verlängere es, um wieder auf die Lektionen zuzugreifen.',
+  'مفعّل لك لحد {date}':
+    'Aktiv bis {date}',
+  'اشتراك سنة كاملة من يوم التفعيل':
+    'Ein ganzes Jahr ab dem Tag der Freischaltung',
+  'اشتراكك السنوي انتهى':
+    'Dein Jahresabo ist abgelaufen',
+  'جدّد اشتراكك':
+    'Abo verlängern',
+  'المدة':
+    'Dauer',
+  'سنة كاملة':
+    'Ein ganzes Jahr',
+  'بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة سنة كاملة.':
+    'Nach Bestätigung der Zahlung sind die Lektionen sofort in deinem Konto verfügbar – ein ganzes Jahr lang.',
+  'يوم':
+    'Tage',
+  'اشتراكك السنوي':
+    'Dein Jahresabo',
+  'ساري لحد {date}':
+    'Gültig bis {date}',
+  'اتفعّل يوم {date}':
+    'Freigeschaltet am {date}',
+  'اشتراكك قرب يخلص — باقي {n} يوم بس. جدّده دلوقتي عشان محاضراتك متتقفلش.':
+    'Dein Abo läuft bald ab – nur noch {n} Tage. Verlängere jetzt, damit deine Lektionen nicht gesperrt werden.',
+  'كلّم الإدارة للتجديد':
+    'Akademie zur Verlängerung kontaktieren',
+  'اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لسنة كاملة جديدة.':
+    'Dein Abo lief vom {from} bis {to}. Verlängere es, um die Lektionen und Dateien des Niveaus für ein weiteres ganzes Jahr zurückzubekommen.',
+  'تعذر التحقق من الكوبون، حاول تاني.':
+    'Gutschein konnte nicht geprüft werden – bitte versuche es erneut.',
+  'استخدمت الكوبون بتاعك قبل كده':
+    'Du hast deinen Gutschein bereits verwendet',
+  'كل طالب ليه كوبون خصم واحد بس.':
+    'Jeder Schüler hat nur einen Rabattgutschein.',
+  'خصم {n}%':
+    '{n} % Rabatt',
+  'خصم {n} ج.م':
+    '{n} EGP Rabatt',
+  'وفّرت {n} ج.م':
+    'Du sparst {n} EGP',
+  'هتدفع {final} ج.م بدل {old}':
+    'Du zahlst {final} EGP statt {old}',
+  'عندك كوبون خصم؟':
+    'Hast du einen Rabattgutschein?',
+  'اكتب كود الكوبون':
+    'Gutscheincode eingeben',
+  'تطبيق':
+    'Einlösen',
+  'كل طالب ليه كوبون واحد بس — وبيتحسب عليك أول ما تبعت الطلب بيه.':
+    'Jeder Schüler hat nur einen Gutschein – er gilt als verwendet, sobald du deine Anfrage damit sendest.',
+  'كود الكوبون لازم يكون من 3 لـ 40 حرف إنجليزي أو رقم (من غير مسافات).':
+    'Der Gutscheincode muss aus 3–40 lateinischen Buchstaben oder Ziffern bestehen (ohne Leerzeichen).',
+  'فيه كوبون تاني بنفس الكود.':
+    'Ein anderer Gutschein hat bereits diesen Code.',
+  'قيمة الخصم لازم تكون أكبر من صفر.':
+    'Der Rabatt muss größer als null sein.',
+  'نسبة الخصم مينفعش تعدّي 100%.':
+    'Der Rabatt darf 100 % nicht überschreiten.',
+  'حدد تاريخ نهاية الكوبون.':
+    'Lege das Enddatum des Gutscheins fest.',
+  'تاريخ النهاية لازم يكون بعد تاريخ البداية.':
+    'Das Enddatum muss nach dem Startdatum liegen.',
+  'عدد الطلاب المسموحلهم لازم يكون 1 أو أكتر (أو سيبه فاضي لعدد مفتوح).':
+    'Die Schülergrenze muss 1 oder mehr sein (oder leer lassen für unbegrenzt).',
+  'الكوبون ده متوقف حالياً.':
+    'Dieser Gutschein ist derzeit pausiert.',
+  'الكوبون ده لسه مبدأش.':
+    'Dieser Gutschein ist noch nicht gültig.',
+  'الكوبون ده انتهت مدته.':
+    'Dieser Gutschein ist abgelaufen.',
+  'الكوبون ده خلص — العدد المسموح بيه اكتمل.':
+    'Dieser Gutschein ist aufgebraucht – die Schülergrenze ist erreicht.',
+  'الكود ده مش صحيح — اتأكد منه وجرّب تاني.':
+    'Dieser Code ist ungültig – prüfe ihn und versuche es erneut.',
+  'إنت استخدمت الكوبون بتاعك قبل كده — كل طالب ليه كوبون واحد بس.':
+    'Du hast deinen Gutschein bereits verwendet – jeder Schüler hat nur einen.',
+  'الكوبون ده مش شغال على الكتب دي.':
+    'Dieser Gutschein gilt nicht für dieses Buch.',
+  'الكوبون ده مش شغال على المستوى ده.':
+    'Dieser Gutschein gilt nicht für dieses Niveau.',
+  'الكوبون ده مش هيفرق في السعر هنا.':
+    'Dieser Gutschein ändert hier nichts am Preis.',
 };
 
 export default DE;

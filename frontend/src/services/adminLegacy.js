@@ -260,7 +260,43 @@ export const legacyAdmin = {
     if (kind === 'level' && grant) body.notes = 'تفعيل من لوحة التحكم';
     await apiClient.post(url, body);
     invalidateLegacy();
+    // Levels are yearly: activating starts a fresh year, revoking by hand ends it (src/lib/subscriptionsStore.js).
+    if (kind === 'level') {
+      const level = snapshot?.levels?.find((l) => Number(l.id) === Number(itemId));
+      await apiClient
+        .post(SITE_SUBSCRIPTIONS, { action: grant ? 'start' : 'stop', user_id: Number(id), level_id: Number(itemId), level_code: level?.name })
+        .catch(() => {});
+    }
     return { detail: grant ? 'تم التفعيل.' : 'تم إلغاء التفعيل.' };
+  },
+
+  /**
+   * Runs when the dashboard opens: gives every active level grant a yearly record (counting from the
+   * backend's granted_at), revokes the ones whose year is over, and returns them.
+   * → { expired: [{ user_id, level_id, level_code, name, expires_at }], records }
+   */
+  async syncSubscriptions() {
+    const snap = await loadSnapshot(true);
+    const rows = snap.accesses
+      .filter((a) => a.kind === 'level')
+      .map((a) => ({ user_id: a.user_id, level_id: a.item_id, level_code: a.level_code, name: a.name, granted_at: a.granted_at }));
+    const { data } = await apiClient.post(SITE_SUBSCRIPTIONS, { action: 'sync', rows });
+    const due = data?.due || [];
+    const revoked = [];
+    for (const r of due) {
+      try {
+        await apiClient.post(API_ENDPOINTS.ADMIN_REVOKE_LEVEL(r.level_id), { user_id: Number(r.user_id) });
+        revoked.push(r);
+      } catch {
+        // stays due; tried again next time the dashboard opens
+      }
+    }
+    if (revoked.length) {
+      await apiClient.post(SITE_SUBSCRIPTIONS, { action: 'expire', items: revoked.map(({ user_id, level_id }) => ({ user_id, level_id })) });
+      invalidateLegacy();
+    }
+    const { data: records } = await apiClient.get(SITE_SUBSCRIPTIONS, { params: { all: 1 } });
+    return { expired: revoked, records: Array.isArray(records) ? records : [] };
   },
 
   async getLevels() {
@@ -364,6 +400,7 @@ export const legacyAdmin = {
 
 const SITE_BRANCHES = '/site-data/branches';
 const SITE_ANNOUNCEMENT = '/site-data/announcement';
+const SITE_SUBSCRIPTIONS = '/site-data/subscriptions';
 const EMPTY_ANNOUNCEMENT = {
   is_active: false, tag: '🔥 عرض خاص', title: '', desc: '', has_discount: false, discount_percent: '',
   cta_text: 'احجز الآن', cta_link: '/#online-courses',

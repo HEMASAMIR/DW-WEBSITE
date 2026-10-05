@@ -38,6 +38,8 @@ const DEFAULTS = {
   announcement: () => null,
   contact: () => DEFAULT_CONTACT,
   requests: () => [],
+  coupons: () => [],
+  subscriptions: () => [],
 };
 
 const fileFor = (key) => path.join(DATA_DIR, `${key}.json`);

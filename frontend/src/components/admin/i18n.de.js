@@ -512,6 +512,154 @@ const DE = {
   'تم تفعيل الوضع الفاتح': 'Hellmodus aktiviert',
   'أهدى على العين في الإضاءة الخافتة': 'Angenehmer für die Augen bei wenig Licht',
   'واضح ومريح للشغل طول اليوم': 'Klar und angenehm – den ganzen Tag',
+
+  // ---- Coupons + yearly subscriptions (CouponsSection, SubscriptionsSection)
+  'تعذر تحميل الكوبونات.':
+    'Gutscheine konnten nicht geladen werden.',
+  'الكوبون اتعمل ✨':
+    'Gutschein erstellt ✨',
+  'اتحفظت التعديلات':
+    'Änderungen gespeichert',
+  'الكوبون اشتغل تاني':
+    'Gutschein wieder aktiv',
+  'الكوبون اتوقف':
+    'Gutschein pausiert',
+  'تعذر الحفظ.':
+    'Speichern fehlgeschlagen.',
+  'حذف الكوبون {code}؟':
+    'Gutschein {code} löschen?',
+  'الطلبات اللي استخدمته هتفضل محتفظة بالخصم بتاعها.':
+    'Anfragen, die ihn verwendet haben, behalten ihren Rabatt.',
+  'تم حذف الكوبون.':
+    'Gutschein gelöscht.',
+  'تعذر الحذف.':
+    'Löschen fehlgeschlagen.',
+  'الكوبونات':
+    'Gutscheine',
+  'كوبونات خصم بمدة وعدد محدد — وكل طالب ليه كوبون واحد بس':
+    'Rabattgutscheine mit Zeitraum und Schülergrenze – ein Gutschein pro Schüler',
+  'كوبون جديد':
+    'Neuer Gutschein',
+  'كوبونات سارية':
+    'Aktive Gutscheine',
+  'دخلوا على الكوبونات':
+    'Gutschein eingegeben',
+  'استفادوا من الخصم':
+    'Rabatt erhalten',
+  'إجمالي الخصومات (ج.م)':
+    'Rabatte gesamt (EGP)',
+  'السارية':
+    'Aktiv',
+  'المقفولة':
+    'Geschlossen',
+  'مفيش كوبونات هنا':
+    'Keine Gutscheine hier',
+  'لسه مفيش كوبونات':
+    'Noch keine Gutscheine',
+  'اعمل كوبون خصم بمدة محددة وعدد طلاب محدد، وابعت الكود للطلاب.':
+    'Erstelle einen Rabattgutschein mit Zeitraum und Schülergrenze und schicke den Code an die Schüler.',
+  'كوبون خصم':
+    'Rabattgutschein',
+  'نسخ الكود':
+    'Code kopieren',
+  'باقي {n} يوم':
+    'Noch {n} Tage',
+  'الطلاب المسموحلهم':
+    'Erlaubte Schüler',
+  'دخلوا عليه':
+    'Eingegeben',
+  'استخدموه':
+    'Verwendet',
+  'استفادوا':
+    'Profitiert',
+  'إجمالي الخصم اللي استفادوا بيه:':
+    'Gewährter Rabatt gesamt:',
+  'مين استخدمه':
+    'Wer ihn verwendet hat',
+  'إيقاف':
+    'Pausieren',
+  'تشغيل':
+    'Aktivieren',
+  'تعديل الكوبون':
+    'Gutschein bearbeiten',
+  'كل طالب ليه كوبون واحد بس — حتى لو الطلب اترفض':
+    'Ein Gutschein pro Schüler – auch wenn die Anfrage abgelehnt wird',
+  'إنشاء الكوبون':
+    'Gutschein erstellen',
+  'كود الكوبون':
+    'Gutscheincode',
+  'حروف إنجليزي وأرقام — الطالب هيكتبه زي ما هو.':
+    'Lateinische Buchstaben und Ziffern – der Schüler gibt ihn genau so ein.',
+  'توليد':
+    'Generieren',
+  'نوع الخصم':
+    'Rabattart',
+  'نسبة':
+    'Prozent',
+  'مبلغ ثابت':
+    'Fester Betrag',
+  'النسبة (%)':
+    'Prozent (%)',
+  'المبلغ (ج.م)':
+    'Betrag (EGP)',
+  'بيبدأ يوم':
+    'Beginnt am',
+  'بيتقفل لوحده يوم':
+    'Endet automatisch am',
+  'بعد اليوم ده الكوبون بيقف تلقائي.':
+    'Nach diesem Tag endet der Gutschein automatisch.',
+  'عدد الطلاب المسموحلهم':
+    'Anzahl erlaubter Schüler',
+  'سيبه فاضي لو العدد مفتوح.':
+    'Leer lassen für unbegrenzt.',
+  'شغال على':
+    'Gilt für',
+  'مستويات معينة (اختياري)':
+    'Bestimmte Niveaus (optional)',
+  'لو مختارتش حاجة، الكوبون شغال على كل المستويات. الكتب بتتحسب بمستواها.':
+    'Ohne Auswahl gilt er für alle Niveaus. Bücher zählen nach ihrem Niveau.',
+  'ملاحظة للإدارة (اختياري)':
+    'Notiz für die Verwaltung (optional)',
+  'مثلاً: عرض بداية الترم':
+    'z. B. Angebot zum Semesterstart',
+  'الكوبون شغال':
+    'Gutschein aktiv',
+  'مين استخدم {code}':
+    'Wer {code} verwendet hat',
+  '{n} طالب استخدموه • {m} استفادوا':
+    '{n} Schüler haben ihn verwendet • {m} profitiert',
+  'لسه محدش استخدمه':
+    'Noch niemand hat ihn verwendet',
+  'أول ما طالب يبعت طلب بالكوبون ده هيظهر هنا.':
+    'Sobald ein Schüler eine Anfrage mit diesem Gutschein sendet, erscheint er hier.',
+  'ساري':
+    'Aktiv',
+  'لسه مبدأش':
+    'Noch nicht gestartet',
+  'اكتمل العدد':
+    'Grenze erreicht',
+  'انتهت مدته':
+    'Abgelaufen',
+  'متوقف':
+    'Pausiert',
+  'المستويات والكتب':
+    'Niveaus und Bücher',
+  'المستويات بس':
+    'Nur Niveaus',
+  'الكتب بس':
+    'Nur Bücher',
+  '{n} اشتراك هيخلص خلال 30 يوم':
+    '{n} Abos enden in den nächsten 30 Tagen',
+  'مفيش حد قرب يخلص':
+    'Niemandes Abo endet bald',
+  '{n} اشتراك خلصت سنته واتقفل تلقائي':
+    '{n} Abos haben ihr Jahr beendet und wurden automatisch gesperrt',
+  'خلصت سنته':
+    'Jahr vorbei',
+  'اتقفل {n} اشتراك خلصت سنته: {names}':
+    '{n} Abos mit abgelaufenem Jahr gesperrt: {names}',
+  'بدل {n} ج.م':
+    'statt {n} EGP',
 };
 
 export default DE;

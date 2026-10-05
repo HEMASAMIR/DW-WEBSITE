@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
 import { adminService, getAdminMode } from '@/services/admin.service';
-import { ToastProvider, ConfirmProvider, Avatar, Btn } from './ui';
+import { ToastProvider, ConfirmProvider, Avatar, Btn, useToast } from './ui';
 import { AdminPrefsProvider, useAdminPrefs, translate as t } from './prefs';
 import OverviewSection from './OverviewSection';
 import CombinedRequestsSection from './CombinedRequestsSection';
@@ -16,9 +16,10 @@ import BooksSection from './BooksSection';
 import BranchesSection from './BranchesSection';
 import AnnouncementSection from './AnnouncementSection';
 import ContactPaySection from './ContactPaySection';
+import CouponsSection from './CouponsSection';
 import {
   LayoutDashboard, GraduationCap, BookMarked, Users, Layers, BookOpen, MapPin, Megaphone,
-  Menu, X, LogOut, Home, RefreshCw, ShieldAlert, Loader2, ExternalLink, ChevronLeft, Sun, Moon, Languages, PhoneCall,
+  Menu, X, LogOut, Home, RefreshCw, ShieldAlert, Loader2, ExternalLink, ChevronLeft, Sun, Moon, Languages, PhoneCall, Ticket,
 } from 'lucide-react';
 
 // Labels are translation keys; they're translated where they render.
@@ -39,6 +40,7 @@ const NAV = [
       { key: 'books', label: 'الكتب', icon: BookOpen, tone: 'rose' },
       { key: 'branches', label: 'الفروع', icon: MapPin, tone: 'cyan' },
       { key: 'contact', label: 'التواصل والدفع', icon: PhoneCall, tone: 'emerald' },
+      { key: 'coupons', label: 'الكوبونات', icon: Ticket, tone: 'amber' },
       { key: 'announcement', label: 'إعلان الموقع', icon: Megaphone, tone: 'orange' },
     ],
   },
@@ -146,6 +148,19 @@ function Shell({ user }) {
   const legacy = mode === 'legacy';
   useEffect(() => { getAdminMode().then(setMode); }, []);
 
+  // Levels are yearly: on open, lock the subscriptions whose year is over (src/lib/subscriptionsStore.js).
+  const toast = useToast();
+  useEffect(() => {
+    if (mode !== 'legacy') return;
+    adminService.syncSubscriptions()
+      .then(({ expired }) => {
+        if (!expired.length) return;
+        const names = expired.slice(0, 3).map((r) => `${r.name || `#${r.user_id}`} (${r.level_code})`).join('، ');
+        toast('ok', t('اتقفل {n} اشتراك خلصت سنته: {names}', { n: expired.length, names: expired.length > 3 ? `${names}…` : names }));
+      })
+      .catch(() => {});
+  }, [mode, toast]);
+
   // Section lives in the URL hash so refresh / back keep the admin where they were.
   useEffect(() => {
     const read = () => {
@@ -187,6 +202,7 @@ function Shell({ user }) {
   else if (tab === 'branches') section = <BranchesSection {...sectionProps} />;
   else if (tab === 'announcement') section = <AnnouncementSection {...sectionProps} />;
   else if (tab === 'contact') section = <ContactPaySection {...sectionProps} />;
+  else if (tab === 'coupons') section = <CouponsSection {...sectionProps} />;
   else section = <OverviewSection {...sectionProps} adminName={name} />;
 
   const sidebar = (

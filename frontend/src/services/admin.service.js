@@ -137,6 +137,18 @@ export const adminService = {
     await patch(API_ENDPOINTS.ADMIN_BRANCH(b.id), { order: i + 1 });
   }, (id, dir) => legacyAdmin.moveBranch(id, dir)),
 
+  // ---- Coupons (stored by the website: src/app/site-data/coupons) ----
+  getCoupons: async () => (await apiClient.get('/site-data/coupons')).data,
+  getCoupon: async (id) => (await apiClient.get(`/site-data/coupons/${id}`)).data,
+  createCoupon: async (fields) => (await apiClient.post('/site-data/coupons', fields)).data,
+  updateCoupon: async (id, fields) => (await apiClient.patch(`/site-data/coupons/${id}`, fields)).data,
+  deleteCoupon: async (id) => (await apiClient.delete(`/site-data/coupons/${id}`)).data,
+
+  // ---- Yearly level subscriptions (stored by the website: src/app/site-data/subscriptions) ----
+  /** Revokes levels whose year is over → { expired, records } */
+  syncSubscriptions: () => legacyAdmin.syncSubscriptions(),
+  getSubscriptionRecords: async () => (await apiClient.get('/site-data/subscriptions', { params: { all: 1 } })).data,
+
   // ---- Contact numbers & payment methods (stored by the website: src/app/site-data/contact) ----
   getContact: async () => (await apiClient.get('/site-data/contact')).data,
   saveContact: async (fields) => (await apiClient.put('/site-data/contact', fields)).data,

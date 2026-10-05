@@ -1,13 +1,15 @@
 import path from 'path';
-import { isAdminRequest, getRequestUser, backendGet } from '@/lib/siteStore';
+import { isAdminRequest, getRequestUser } from '@/lib/siteStore';
+import { loadCoupons, evaluateCoupon } from '@/lib/couponsStore';
 import {
-  loadRequests, updateRequests, adminView, ownView, saveReceipt, RECEIPT_TYPES, MAX_RECEIPT_BYTES,
+  loadRequests, updateRequests, adminView, ownView, saveReceipt, findItem, RECEIPT_TYPES, MAX_RECEIPT_BYTES,
 } from '@/lib/requestsStore';
 
 // Students' level / book requests (see src/lib/requestsStore.js).
 //   GET  (admin)   → { counts, results } — filters: kind, status, level, search
 //   GET  (student) → the student's own requests only
-//   POST (student) → multipart: kind, item_id, full_name, phone, payment_method, note, receipt?
+//   POST (student) → multipart: kind, item_id, full_name, phone, payment_method, note, receipt?, coupon?
+//                    (the coupon is checked again here, under the requests lock — see couponsStore)
 export const dynamic = 'force-dynamic';
 
 const json = (data, status = 200) => Response.json(data, { status });
@@ -64,6 +66,7 @@ export async function POST(request) {
   const paymentMethod = String(form.get('payment_method') || '').trim().slice(0, 50);
   const note = String(form.get('note') || '').trim().slice(0, 1000);
   const receipt = form.get('receipt');
+  const couponCode = String(form.get('coupon') || '').trim();
 
   if (kind !== 'level' && kind !== 'book') return json({ detail: 'نوع الطلب غير صحيح.' }, 400);
   if (!fullName) return json({ full_name: ['الاسم مطلوب.'] }, 400);
@@ -75,18 +78,7 @@ export async function POST(request) {
   }
 
   // The item as the student sees it (name, price, level, already unlocked?) — straight from the backend.
-  let item = null;
-  if (kind === 'level') {
-    const data = await backendGet('/api/courses/levels/', user.token);
-    const list = Array.isArray(data) ? data : data?.results || [];
-    const l = list.find((x) => Number(x.id) === itemId);
-    if (l) item = { name: l.title || l.name, level_code: l.name, amount: l.price, has_access: l.has_access };
-  } else {
-    const data = await backendGet('/api/books/', user.token);
-    const list = Array.isArray(data) ? data : Object.values(data || {}).flat();
-    const b = list.find((x) => Number(x.id) === itemId);
-    if (b) item = { name: b.name, level_code: b.level, amount: b.price, has_access: b.has_access };
-  }
+  const item = await findItem(kind, itemId, user.token);
   if (!item) return json({ detail: kind === 'level' ? 'المستوى غير موجود.' : 'الكتاب غير موجود.' }, 404);
   if (item.has_access) return json({ detail: kind === 'level' ? 'المستوى مفعّل على حسابك بالفعل.' : 'الكتاب مفعّل على حسابك بالفعل.' }, 400);
 
@@ -96,13 +88,24 @@ export async function POST(request) {
       if (list.some((r) => r.user_id === user.id && r.kind === kind && r.item_id === itemId && r.status === 'pending')) {
         return { list, result: null };
       }
+      let coupon = null;
+      if (couponCode) {
+        coupon = evaluateCoupon({
+          coupons: await loadCoupons(), requests: list, code: couponCode, userId: user.id, kind, levelCode: item.level_code, amount: item.amount,
+        });
+        if (coupon.error) return { list, result: { couponError: coupon.error } };
+      }
       const record = {
         id,
         kind,
         item_id: itemId,
         item_name: item.name,
         level_code: item.level_code,
-        amount: String(item.amount ?? '0'),
+        amount: String(coupon ? coupon.final : item.amount ?? '0'),
+        original_amount: coupon ? String(item.amount ?? '0') : null,
+        coupon_id: coupon?.coupon.id || null,
+        coupon_code: coupon?.coupon.code || null,
+        discount: coupon ? coupon.discount : null,
         user_id: user.id,
         user_email: '',
         full_name: fullName,
@@ -116,6 +119,7 @@ export async function POST(request) {
       };
       return { list: [...list, record], result: record };
     });
+    if (created?.couponError) return json({ coupon: [created.couponError], detail: created.couponError }, 400);
     if (!created) {
       return json({ detail: 'عندك طلب لنفس العنصر قيد المراجعة بالفعل، هيتم تفعيله أول ما الإدارة تراجعه.' }, 400);
     }

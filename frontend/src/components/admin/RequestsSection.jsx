@@ -449,7 +449,13 @@ function ModernRequestCard({ r, busy, onApprove, onReject, onDelete, onReceipt }
           <p className="text-lg font-black text-[#0e2c4e]" dir="ltr">
             {money(r.amount)} <span className="text-[10px] font-black text-slate-500">{t('ج.م')}</span>
           </p>
-          <p className="text-[10px] font-bold text-slate-400 text-center">{t('المبلغ')}</p>
+          {r.coupon_code ? (
+            <p className="text-[10px] font-black text-emerald-700 text-center" title={t('بدل {n} ج.م', { n: money(r.original_amount) })}>
+              🎟️ <span dir="ltr">{r.coupon_code}</span> • -{money(r.discount)}
+            </p>
+          ) : (
+            <p className="text-[10px] font-bold text-slate-400 text-center">{t('المبلغ')}</p>
+          )}
         </div>
       </div>
 

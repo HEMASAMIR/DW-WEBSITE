@@ -75,6 +75,7 @@
 :root[data-admin-theme="dark"] .from-sky-50:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-from: color-mix(in oklab, #0ea5e9 14%, #111b2e); }
 :root[data-admin-theme="dark"] .from-slate-100:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-from: #17233a; }
 :root[data-admin-theme="dark"] .from-slate-200:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-from: #223049; }
+:root[data-admin-theme="dark"] .from-slate-400:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-from: #3b4c6b; }
 :root[data-admin-theme="dark"] .from-slate-50:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-from: #0e1729; }
 :root[data-admin-theme="dark"] .from-teal-50:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-from: color-mix(in oklab, #14b8a6 14%, #111b2e); }
 :root[data-admin-theme="dark"] .from-violet-50:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-from: color-mix(in oklab, #8b5cf6 14%, #111b2e); }
@@ -138,6 +139,7 @@
 :root[data-admin-theme="dark"] .text-rose-700:not(.dw-keep-light, .dw-keep-light *) { color: #fda4af; }
 :root[data-admin-theme="dark"] .text-rose-900:not(.dw-keep-light, .dw-keep-light *) { color: #fecdd3; }
 :root[data-admin-theme="dark"] .text-sky-600:not(.dw-keep-light, .dw-keep-light *) { color: #38bdf8; }
+:root[data-admin-theme="dark"] .text-sky-700:not(.dw-keep-light, .dw-keep-light *) { color: #7dd3fc; }
 :root[data-admin-theme="dark"] .text-sky-900:not(.dw-keep-light, .dw-keep-light *) { color: #bae6fd; }
 :root[data-admin-theme="dark"] .text-slate-500:not(.dw-keep-light, .dw-keep-light *) { color: #94a3b8; }
 :root[data-admin-theme="dark"] .text-slate-600:not(.dw-keep-light, .dw-keep-light *) { color: #aab6c8; }
@@ -151,6 +153,7 @@
 :root[data-admin-theme="dark"] .text-teal-800:not(.dw-keep-light, .dw-keep-light *) { color: #99f6e4; }
 :root[data-admin-theme="dark"] .text-teal-900:not(.dw-keep-light, .dw-keep-light *) { color: #99f6e4; }
 :root[data-admin-theme="dark"] .text-violet-600:not(.dw-keep-light, .dw-keep-light *) { color: #a78bfa; }
+:root[data-admin-theme="dark"] .text-violet-700:not(.dw-keep-light, .dw-keep-light *) { color: #c4b5fd; }
 :root[data-admin-theme="dark"] .text-violet-900:not(.dw-keep-light, .dw-keep-light *) { color: #ddd6fe; }
 :root[data-admin-theme="dark"] .to-amber-50\/30:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-to: color-mix(in oklab, color-mix(in oklab, #f59e0b 14%, #111b2e) 30%, transparent); }
 :root[data-admin-theme="dark"] .to-cyan-100:not(.dw-keep-light, .dw-keep-light *) { --tw-gradient-to: color-mix(in oklab, #06b6d4 22%, #111b2e); }

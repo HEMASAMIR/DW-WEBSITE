@@ -800,6 +800,92 @@ const EN = {
   'رحلتك في الألماني': 'Your German journey',
   'كل مستوى بيوصلك للي بعده — وده مكانك دلوقتي': 'Each level leads to the next — here’s where you are now',
   'انت هنا': 'You are here',
+
+  // ---- Coupons + yearly subscriptions (CouponBox, LevelView, couponsStore)
+  'اشتراكك السنوي في المستوى ده انتهى — جدّده عشان ترجع للمحاضرات.':
+    'Your yearly subscription to this level has ended — renew it to get back to the lectures.',
+  'مفعّل لك لحد {date}':
+    'Active until {date}',
+  'اشتراك سنة كاملة من يوم التفعيل':
+    'A full year from the day it’s activated',
+  'اشتراكك السنوي انتهى':
+    'Your yearly subscription has ended',
+  'جدّد اشتراكك':
+    'Renew your subscription',
+  'المدة':
+    'Duration',
+  'سنة كاملة':
+    'One full year',
+  'بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة سنة كاملة.':
+    'Once the payment is confirmed, the lectures open on your account right away — for a full year.',
+  'يوم':
+    'days',
+  'اشتراكك السنوي':
+    'Your yearly subscription',
+  'ساري لحد {date}':
+    'Valid until {date}',
+  'اتفعّل يوم {date}':
+    'Activated on {date}',
+  'اشتراكك قرب يخلص — باقي {n} يوم بس. جدّده دلوقتي عشان محاضراتك متتقفلش.':
+    'Your subscription is almost over — only {n} days left. Renew now so your lectures don’t lock.',
+  'كلّم الإدارة للتجديد':
+    'Contact the academy to renew',
+  'اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لسنة كاملة جديدة.':
+    'Your subscription ran from {from} to {to}. Renew it to get the level’s lectures and files back for another full year.',
+  'تعذر التحقق من الكوبون، حاول تاني.':
+    'Couldn’t check the coupon — please try again.',
+  'استخدمت الكوبون بتاعك قبل كده':
+    'You’ve already used your coupon',
+  'كل طالب ليه كوبون خصم واحد بس.':
+    'Each student gets one discount coupon only.',
+  'خصم {n}%':
+    '{n}% off',
+  'خصم {n} ج.م':
+    '{n} EGP off',
+  'وفّرت {n} ج.م':
+    'You save {n} EGP',
+  'هتدفع {final} ج.م بدل {old}':
+    'You’ll pay {final} EGP instead of {old}',
+  'عندك كوبون خصم؟':
+    'Have a discount coupon?',
+  'اكتب كود الكوبون':
+    'Enter the coupon code',
+  'تطبيق':
+    'Apply',
+  'كل طالب ليه كوبون واحد بس — وبيتحسب عليك أول ما تبعت الطلب بيه.':
+    'Each student gets one coupon only — it counts as used once you send your request with it.',
+  'كود الكوبون لازم يكون من 3 لـ 40 حرف إنجليزي أو رقم (من غير مسافات).':
+    'The coupon code must be 3–40 English letters or digits (no spaces).',
+  'فيه كوبون تاني بنفس الكود.':
+    'Another coupon already has this code.',
+  'قيمة الخصم لازم تكون أكبر من صفر.':
+    'The discount must be greater than zero.',
+  'نسبة الخصم مينفعش تعدّي 100%.':
+    'The discount can’t be more than 100%.',
+  'حدد تاريخ نهاية الكوبون.':
+    'Set the coupon’s end date.',
+  'تاريخ النهاية لازم يكون بعد تاريخ البداية.':
+    'The end date must be after the start date.',
+  'عدد الطلاب المسموحلهم لازم يكون 1 أو أكتر (أو سيبه فاضي لعدد مفتوح).':
+    'The student limit must be 1 or more (or leave it empty for no limit).',
+  'الكوبون ده متوقف حالياً.':
+    'This coupon is paused right now.',
+  'الكوبون ده لسه مبدأش.':
+    'This coupon hasn’t started yet.',
+  'الكوبون ده انتهت مدته.':
+    'This coupon has expired.',
+  'الكوبون ده خلص — العدد المسموح بيه اكتمل.':
+    'This coupon is used up — the student limit has been reached.',
+  'الكود ده مش صحيح — اتأكد منه وجرّب تاني.':
+    'That code isn’t valid — check it and try again.',
+  'إنت استخدمت الكوبون بتاعك قبل كده — كل طالب ليه كوبون واحد بس.':
+    'You’ve already used your coupon — each student gets one only.',
+  'الكوبون ده مش شغال على الكتب دي.':
+    'This coupon doesn’t apply to this book.',
+  'الكوبون ده مش شغال على المستوى ده.':
+    'This coupon doesn’t apply to this level.',
+  'الكوبون ده مش هيفرق في السعر هنا.':
+    'This coupon doesn’t change the price here.',
 };
 
 export default EN;

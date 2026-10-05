@@ -5,7 +5,24 @@
 
 import { promises as fs } from 'fs';
 import path from 'path';
-import { readStore, writeStore, withLock, dataPath } from './siteStore';
+import { readStore, writeStore, withLock, dataPath, backendGet } from './siteStore';
+
+/**
+ * The item as the student sees it (name, price, level, already unlocked?) — straight from the backend,
+ * with the student's own token. → { name, level_code, amount, has_access } or null.
+ */
+export async function findItem(kind, itemId, token) {
+  if (kind === 'level') {
+    const data = await backendGet('/api/courses/levels/', token);
+    const list = Array.isArray(data) ? data : data?.results || [];
+    const l = list.find((x) => Number(x.id) === Number(itemId));
+    return l ? { name: l.title || l.name, level_code: l.name, amount: l.price, has_access: l.has_access } : null;
+  }
+  const data = await backendGet('/api/books/', token);
+  const list = Array.isArray(data) ? data : Object.values(data || {}).flat();
+  const b = list.find((x) => Number(x.id) === Number(itemId));
+  return b ? { name: b.name, level_code: b.level, amount: b.price, has_access: b.has_access } : null;
+}
 
 export const RECEIPT_TYPES = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.heic': 'image/heic', '.pdf': 'application/pdf' };
 export const MAX_RECEIPT_BYTES = 8 * 1024 * 1024;
@@ -38,6 +55,9 @@ export function adminView(r) {
     phone: r.phone,
     payment_method: r.payment_method,
     amount: r.amount,
+    original_amount: r.original_amount ?? null,
+    coupon_code: r.coupon_code || null,
+    discount: r.discount ?? null,
     note: r.note,
     has_receipt: !!r.receipt,
     status: r.status,
@@ -58,6 +78,9 @@ export function ownView(r) {
     item_name: r.item_name,
     level_code: r.level_code,
     amount: r.amount,
+    original_amount: r.original_amount ?? null,
+    coupon_code: r.coupon_code || null,
+    discount: r.discount ?? null,
     payment_method: r.payment_method,
     status: r.status,
     admin_note: r.status === 'rejected' ? r.admin_note || '' : '',

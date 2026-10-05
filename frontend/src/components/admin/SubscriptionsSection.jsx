@@ -7,7 +7,7 @@ import {
   Card, Btn, Input, Select, Field, Modal, LevelChip, SectionHeader, Skeleton, Empty, ErrorBox, Avatar,
   timeAgo, fullDate, useToast, useConfirm,
 } from './ui';
-import { GraduationCap, BookMarked, Search, UserPlus, UserMinus, Check, Loader2, StickyNote } from 'lucide-react';
+import { GraduationCap, BookMarked, Search, UserPlus, UserMinus, Check, Loader2, StickyNote, CalendarClock, CalendarX2 } from 'lucide-react';
 import { translate as t } from './prefs';
 
 /**
@@ -24,6 +24,9 @@ export default function SubscriptionsSection({ kind, onChanged }) {
   const [search, setSearch] = useState('');
   const [granting, setGranting] = useState(false);
   const [busy, setBusy] = useState(null);
+  // Levels are yearly: when each one ends (src/lib/subscriptionsStore.js).
+  const [years, setYears] = useState([]);
+  const [now] = useState(() => Date.now());
 
   const load = useCallback((force = false) => {
     setError('');
@@ -31,6 +34,15 @@ export default function SubscriptionsSection({ kind, onChanged }) {
   }, [kind]);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => load(true), [load]);
+  useEffect(() => {
+    if (!isLevel || !data) return;
+    adminService.getSubscriptionRecords().then((r) => setYears(Array.isArray(r) ? r : [])).catch(() => {});
+  }, [isLevel, data]);
+
+  const yearOf = useMemo(() => new Map(years.map((y) => [`${y.user_id}:${y.level_id}`, y])), [years]);
+  const daysLeft = (y) => Math.ceil((new Date(y.expires_at).getTime() - now) / 86400000);
+  const endingSoon = years.filter((y) => y.status === 'active' && daysLeft(y) > 0 && daysLeft(y) <= 30);
+  const expired = years.filter((y) => y.status === 'expired').sort((a, b) => new Date(b.expired_at || 0) - new Date(a.expired_at || 0));
 
   const codes = useMemo(() => [...new Set((data?.items || []).map((i) => i.level_code))], [data]);
   const countBy = useMemo(() => {
@@ -80,6 +92,33 @@ export default function SubscriptionsSection({ kind, onChanged }) {
         ))}
       </div>
 
+      {isLevel && (endingSoon.length > 0 || expired.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <Card className="p-4 flex items-start gap-3 border-amber-200">
+            <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-300 to-orange-500 text-white flex items-center justify-center shadow-lg shrink-0">
+              <CalendarClock className="w-5 h-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-black text-slate-900">{t('{n} اشتراك هيخلص خلال 30 يوم', { n: endingSoon.length })}</p>
+              <p className="text-xs font-bold text-slate-500 mt-0.5 truncate">
+                {endingSoon.slice(0, 4).map((y) => `${y.name || `#${y.user_id}`} (${y.level_code})`).join('، ') || t('مفيش حد قرب يخلص')}
+              </p>
+            </div>
+          </Card>
+          <Card className="p-4 flex items-start gap-3 border-rose-200">
+            <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-400 to-rose-600 text-white flex items-center justify-center shadow-lg shrink-0">
+              <CalendarX2 className="w-5 h-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-black text-slate-900">{t('{n} اشتراك خلصت سنته واتقفل تلقائي', { n: expired.length })}</p>
+              <p className="text-xs font-bold text-slate-500 mt-0.5 truncate">
+                {expired.slice(0, 4).map((y) => `${y.name || `#${y.user_id}`} (${y.level_code})`).join('، ') || '—'}
+              </p>
+            </div>
+          </Card>
+        </div>
+      )}
+
       <Card className="p-3 sm:p-4 mb-5">
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute start-4 top-1/2 -translate-y-1/2" />
@@ -113,8 +152,9 @@ export default function SubscriptionsSection({ kind, onChanged }) {
                 <LevelChip code={r.level_code} size="sm" />
                 <span className="text-xs font-bold text-slate-600 truncate" dir="auto">{r.item_name}</span>
               </div>
-              <div className="hidden md:block w-40 text-end">
+              <div className="hidden md:block w-44 text-end">
                 <p className="text-xs font-bold text-slate-500" title={fullDate(r.granted_at)}>{r.granted_at ? t('اتفعّل {when}', { when: timeAgo(r.granted_at) }) : '—'}</p>
+                <YearChip year={isLevel ? yearOf.get(`${r.user_id}:${r.item_id}`) : null} now={now} />
                 {r.notes && <p className="text-[10px] text-slate-400 truncate flex items-center gap-1 justify-end" title={r.notes}><StickyNote className="w-3 h-3" /> {r.notes}</p>}
               </div>
               <Btn variant="dangerSoft" size="sm" icon={UserMinus} loading={busy === `${r.item_id}-${r.user_id}`} onClick={() => revoke(r)}>
@@ -242,5 +282,22 @@ function GrantModal({ kind, items, defaultCode, onClose, onDone }) {
         )}
       </div>
     </Modal>
+  );
+}
+
+/** Days left in a student's year on a level (amber in the last 30 days). */
+function YearChip({ year, now }) {
+  if (!year) return null;
+  const d = Math.ceil((new Date(year.expires_at).getTime() - now) / 86400000);
+  return (
+    <p
+      className={`mt-0.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black ${
+        d <= 0 ? 'bg-rose-50 text-rose-700' : d <= 30 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'
+      }`}
+      title={fullDate(year.expires_at)}
+    >
+      <CalendarClock className="w-3 h-3" />
+      {d <= 0 ? t('خلصت سنته') : t('باقي {n} يوم', { n: d })}
+    </p>
   );
 }

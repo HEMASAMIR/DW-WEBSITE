@@ -512,6 +512,154 @@ const EN = {
   'تم تفعيل الوضع الفاتح': 'Light mode on',
   'أهدى على العين في الإضاءة الخافتة': 'Easier on the eyes in low light',
   'واضح ومريح للشغل طول اليوم': 'Clear and comfortable all day long',
+
+  // ---- Coupons + yearly subscriptions (CouponsSection, SubscriptionsSection)
+  'تعذر تحميل الكوبونات.':
+    'Couldn’t load the coupons.',
+  'الكوبون اتعمل ✨':
+    'Coupon created ✨',
+  'اتحفظت التعديلات':
+    'Changes saved',
+  'الكوبون اشتغل تاني':
+    'Coupon is on again',
+  'الكوبون اتوقف':
+    'Coupon paused',
+  'تعذر الحفظ.':
+    'Couldn’t save.',
+  'حذف الكوبون {code}؟':
+    'Delete coupon {code}?',
+  'الطلبات اللي استخدمته هتفضل محتفظة بالخصم بتاعها.':
+    'Requests that used it keep their discount.',
+  'تم حذف الكوبون.':
+    'Coupon deleted.',
+  'تعذر الحذف.':
+    'Couldn’t delete.',
+  'الكوبونات':
+    'Coupons',
+  'كوبونات خصم بمدة وعدد محدد — وكل طالب ليه كوبون واحد بس':
+    'Discount coupons with a set period and student limit — one coupon per student',
+  'كوبون جديد':
+    'New coupon',
+  'كوبونات سارية':
+    'Active coupons',
+  'دخلوا على الكوبونات':
+    'Entered a coupon',
+  'استفادوا من الخصم':
+    'Got the discount',
+  'إجمالي الخصومات (ج.م)':
+    'Total discounts (EGP)',
+  'السارية':
+    'Active',
+  'المقفولة':
+    'Closed',
+  'مفيش كوبونات هنا':
+    'No coupons here',
+  'لسه مفيش كوبونات':
+    'No coupons yet',
+  'اعمل كوبون خصم بمدة محددة وعدد طلاب محدد، وابعت الكود للطلاب.':
+    'Create a discount coupon with a set period and student limit, then send the code to students.',
+  'كوبون خصم':
+    'Discount coupon',
+  'نسخ الكود':
+    'Copy code',
+  'باقي {n} يوم':
+    '{n} days left',
+  'الطلاب المسموحلهم':
+    'Students allowed',
+  'دخلوا عليه':
+    'Entered it',
+  'استخدموه':
+    'Used it',
+  'استفادوا':
+    'Benefited',
+  'إجمالي الخصم اللي استفادوا بيه:':
+    'Total discount given:',
+  'مين استخدمه':
+    'Who used it',
+  'إيقاف':
+    'Pause',
+  'تشغيل':
+    'Turn on',
+  'تعديل الكوبون':
+    'Edit coupon',
+  'كل طالب ليه كوبون واحد بس — حتى لو الطلب اترفض':
+    'One coupon per student — even if the request is rejected',
+  'إنشاء الكوبون':
+    'Create coupon',
+  'كود الكوبون':
+    'Coupon code',
+  'حروف إنجليزي وأرقام — الطالب هيكتبه زي ما هو.':
+    'English letters and digits — the student types it exactly like this.',
+  'توليد':
+    'Generate',
+  'نوع الخصم':
+    'Discount type',
+  'نسبة':
+    'Percent',
+  'مبلغ ثابت':
+    'Fixed amount',
+  'النسبة (%)':
+    'Percent (%)',
+  'المبلغ (ج.م)':
+    'Amount (EGP)',
+  'بيبدأ يوم':
+    'Starts on',
+  'بيتقفل لوحده يوم':
+    'Closes automatically on',
+  'بعد اليوم ده الكوبون بيقف تلقائي.':
+    'After this day the coupon stops by itself.',
+  'عدد الطلاب المسموحلهم':
+    'Number of students allowed',
+  'سيبه فاضي لو العدد مفتوح.':
+    'Leave empty for no limit.',
+  'شغال على':
+    'Applies to',
+  'مستويات معينة (اختياري)':
+    'Specific levels (optional)',
+  'لو مختارتش حاجة، الكوبون شغال على كل المستويات. الكتب بتتحسب بمستواها.':
+    'If you pick none, it works on every level. Books count by their level.',
+  'ملاحظة للإدارة (اختياري)':
+    'Admin note (optional)',
+  'مثلاً: عرض بداية الترم':
+    'e.g. start-of-term offer',
+  'الكوبون شغال':
+    'Coupon is on',
+  'مين استخدم {code}':
+    'Who used {code}',
+  '{n} طالب استخدموه • {m} استفادوا':
+    '{n} students used it • {m} benefited',
+  'لسه محدش استخدمه':
+    'Nobody has used it yet',
+  'أول ما طالب يبعت طلب بالكوبون ده هيظهر هنا.':
+    'As soon as a student sends a request with this coupon, they’ll show up here.',
+  'ساري':
+    'Active',
+  'لسه مبدأش':
+    'Not started',
+  'اكتمل العدد':
+    'Limit reached',
+  'انتهت مدته':
+    'Expired',
+  'متوقف':
+    'Paused',
+  'المستويات والكتب':
+    'Levels and books',
+  'المستويات بس':
+    'Levels only',
+  'الكتب بس':
+    'Books only',
+  '{n} اشتراك هيخلص خلال 30 يوم':
+    '{n} subscriptions end within 30 days',
+  'مفيش حد قرب يخلص':
+    'Nobody is close to ending',
+  '{n} اشتراك خلصت سنته واتقفل تلقائي':
+    '{n} subscriptions finished their year and were locked automatically',
+  'خلصت سنته':
+    'Year over',
+  'اتقفل {n} اشتراك خلصت سنته: {names}':
+    'Locked {n} subscriptions whose year ended: {names}',
+  'بدل {n} ج.م':
+    'instead of {n} EGP',
 };
 
 export default EN;
