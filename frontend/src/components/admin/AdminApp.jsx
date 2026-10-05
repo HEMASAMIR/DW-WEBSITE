@@ -237,14 +237,14 @@ function Shell({ user }) {
 
       {/* navigation — scrolls on short screens, fading out above the account card */}
       <div className="relative flex-1 min-h-0">
-        <nav className="dw-no-scrollbar h-full overflow-y-auto px-4 pt-1 pb-6 space-y-5 [@media(max-height:760px)]:space-y-3">
+        <nav className="dw-no-scrollbar h-full overflow-y-auto px-4 pt-1 pb-6 space-y-6 [@media(max-height:760px)]:space-y-5">
           {NAV.map((g) => (
             <div key={g.group}>
-              <p className="flex items-center gap-2 px-2 mb-1.5 text-[10px] font-black tracking-widest text-slate-400">
+              <p className="flex items-center gap-2 px-2 mb-2.5 text-[10px] font-black tracking-widest text-slate-400">
                 {t(g.group)}
                 <span className="flex-1 h-px bg-gradient-to-l from-slate-200 to-transparent" />
               </p>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {g.items.map((item) => {
                   const Icon = item.icon;
                   const tone = NAV_TONES[item.tone] || NAV_TONES.teal;
@@ -254,7 +254,7 @@ function Shell({ user }) {
                     <button
                       key={item.key}
                       onClick={() => setTab(item.key)}
-                      className={`group relative w-full flex items-center gap-3 ps-3 pe-3 h-11 [@media(max-height:760px)]:h-9 rounded-2xl text-[13px] font-bold border transition-all duration-200 ${
+                      className={`group relative w-full flex items-center gap-3 ps-3 pe-3 h-12 [@media(max-height:760px)]:h-11 rounded-2xl text-[13px] font-bold border transition-all duration-200 ${
                         active ? `${tone.soft} shadow-sm` : 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-slate-900'
                       }`}
                     >

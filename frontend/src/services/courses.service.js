@@ -1,4 +1,4 @@
-import apiClient, { saveBlob, filenameFromResponse } from './api';
+import apiClient, { saveBlob, filenameFromResponse, getWithRetry } from './api';
 import { langMeta } from '@/lib/i18n';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
 import { withAdminAccess } from './adminAccess';
@@ -69,7 +69,7 @@ export const coursesService = {
 
   /** Real catalog for visitors who are not logged in (served by the site, see lib/publicCatalog). */
   getPublicLevels: async () => {
-    const { data } = await apiClient.get('/public-data/levels');
+    const { data } = await getWithRetry('/public-data/levels');
     return (Array.isArray(data) ? data : []).map(normalizeLevel).sort((a, b) => a.order - b.order);
   },
 

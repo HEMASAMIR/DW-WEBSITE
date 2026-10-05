@@ -133,6 +133,16 @@ function errorText(error, fallback) {
  * True when the backend doesn't have this endpoint at all (an older deployment answers with
  * Django's HTML "Not Found" page), as opposed to a JSON 404 like "level not found".
  */
+/** GET that quietly tries once more after a failure (e.g. a slow first load of the visitors' catalog). */
+export async function getWithRetry(url, delayMs = 1500) {
+  try {
+    return await apiClient.get(url);
+  } catch {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+    return apiClient.get(url);
+  }
+}
+
 export function isMissingEndpoint(error) {
   const res = error?.response;
   if (!res || res.status !== 404) return false;

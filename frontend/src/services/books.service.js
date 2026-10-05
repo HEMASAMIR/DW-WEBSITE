@@ -1,4 +1,4 @@
-import apiClient from './api';
+import apiClient, { getWithRetry } from './api';
 import { API_ENDPOINTS } from '@/constants/apiRoutes';
 import { fetchFile } from './courses.service';
 import { withAdminAccess } from './adminAccess';
@@ -33,7 +33,7 @@ export const booksService = {
   getBooks: async () => toBookList((await apiClient.get(API_ENDPOINTS.BOOKS)).data),
 
   /** Real catalog for visitors who are not logged in (served by the site, see lib/publicCatalog). */
-  getPublicBooks: async () => toBookList((await apiClient.get('/public-data/books')).data),
+  getPublicBooks: async () => toBookList((await getWithRetry('/public-data/books')).data),
 
   viewBook: (book, onProgress) =>
     withAdminAccess('book', book.id, () => fetchFile(API_ENDPOINTS.BOOK_VIEW(book.id), `${book.name || 'book'}.pdf`, onProgress)),
