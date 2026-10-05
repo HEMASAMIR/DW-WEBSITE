@@ -4761,13 +4761,6 @@ body.dark-theme .swiper-btn:hover {
   animation: authCardPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   color: #ffffff !important;
 }
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  z-index: 2;
-  overflow: hidden;
-  animation: authCardPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  color: #ffffff !important;
-}
 
 @keyframes authCardPop {
   0% { opacity: 0; transform: scale(0.92) translateY(20px); }
