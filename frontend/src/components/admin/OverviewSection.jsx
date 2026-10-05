@@ -6,7 +6,7 @@ import { getErrorMessage } from '@/services/api';
 import { Card, Btn, LevelChip, StatusBadge, Avatar, Skeleton, ErrorBox, Empty, money, timeAgo, fullDate, dateLocale, useToast } from './ui';
 import {
   Users, UserPlus, GraduationCap, BookMarked, Wallet, BadgeCheck, ArrowLeft, Check, X, Sparkles, TrendingUp, Inbox,
-  BookPlus, MapPinPlus, Zap, Activity, ChartPie, Layers,
+  BookPlus, MapPinPlus, Zap, Activity, ChartPie, Layers, BookOpen,
 } from 'lucide-react';
 import { translate as t } from './prefs';
 
@@ -50,7 +50,6 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
   const greeting = hour < 12 ? t('صباح الخير') : t('مساء الخير');
   const hasJoinDates = data.has_join_dates !== false;
   const totalSubs = data.levels.reduce((a, l) => a + l.subscribers, 0);
-  const maxSubs = Math.max(1, ...data.levels.map((l) => l.subscribers));
 
   return (
     <div className="space-y-6">
@@ -114,34 +113,10 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Activity */}
-        <Card className="xl:col-span-2 p-5 sm:p-6">
-          {legacy ? (
-            <>
-              <CardTitle icon={Activity} title={t('آخر التفعيلات')} sub={t('مين اتفتحله إيه مؤخراً')} action={<LinkBtn onClick={() => goTo('requests-level')}>{t('كل الاشتراكات')}</LinkBtn>} />
-              {data.recent_activations?.length ? (
-                <ol className="relative border-s-2 border-slate-100 ms-4 space-y-1">
-                  {data.recent_activations.map((a) => (
-                    <li key={`${a.kind}-${a.item_id}-${a.user_id}`} className="relative ps-6 py-2">
-                      <span className="absolute -start-[9px] top-5 w-4 h-4 rounded-full ring-4 ring-white" style={{ background: hexFor(a.level_code, 0) }} />
-                      <div className="flex items-center gap-3 rounded-2xl hover:bg-slate-50 px-3 py-2 -mx-3">
-                        <Avatar name={a.name} size="sm" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-black text-slate-900 truncate">{a.name}</p>
-                          <p className="text-xs text-slate-500 truncate">
-                            {a.kind === 'level' ? t('اشترك في') : t('اتفتحله كتاب')} <span className="font-bold text-slate-700" dir="auto">{a.item_name}</span>
-                          </p>
-                        </div>
-                        <LevelChip code={a.level_code} size="sm" />
-                        <span className="hidden sm:block text-[11px] font-bold text-slate-400 w-24 text-end" title={fullDate(a.granted_at)}>{timeAgo(a.granted_at)}</span>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <Empty title={t('لسه مفيش تفعيلات')} text={t('لما تفعّل مستوى أو كتاب لطالب هيظهر هنا.')} />
-              )}
-            </>
-          ) : (
+        {legacy ? (
+          <ActivityPanel activations={data.recent_activations || []} levels={data.levels} books={data.books || []} goTo={goTo} />
+        ) : (
+          <Card className="xl:col-span-2 p-5 sm:p-6">
             <>
               <CardTitle icon={Inbox} title={t('أحدث الطلبات')} action={<LinkBtn onClick={() => goTo('requests-level')}>{t('كل الطلبات')}</LinkBtn>} />
               {data.recent_requests.length === 0 ? (
@@ -169,8 +144,8 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
                 </ul>
               )}
             </>
-          )}
-        </Card>
+          </Card>
+        )}
 
         {/* Distribution donut */}
         <Card className="p-5 sm:p-6 flex flex-col">
@@ -194,49 +169,13 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Subscribers per level */}
-        <Card className="xl:col-span-2 p-5 sm:p-6">
-          <CardTitle icon={GraduationCap} title={t('المشتركين في كل مستوى')} action={<LinkBtn onClick={() => goTo('courses')}>{t('إدارة الكورسات')}</LinkBtn>} />
-          <div className="space-y-4">
-            {data.levels.map((l, i) => (
-              <div key={l.id} className="flex items-center gap-4">
-                <LevelChip code={l.name} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <p className="text-sm font-black text-slate-800 truncate" dir="auto">{l.title}</p>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {l.pending > 0 && <span className="text-[11px] font-black text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">{l.pending}{' '}{t('طلب')}</span>}
-                      <span className="text-sm font-black text-slate-900">{l.subscribers}</span>
-                    </div>
-                  </div>
-                  <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(3, (l.subscribers / maxSubs) * 100)}%`, background: `linear-gradient(to left, ${hexFor(l.name, i)}, #0e2c4e)` }} />
-                  </div>
-                </div>
-              </div>
-            ))}
-            {data.levels.length === 0 && <p className="text-sm text-slate-500 text-center py-6">{t('مفيش مستويات لسه.')}</p>}
-          </div>
-          {!legacy && data.signups_14d?.some((d) => d.count) && <Signups days={data.signups_14d} />}
-        </Card>
+      {/* Each level on its own */}
+      <LevelsPanel levels={data.levels} activations={data.recent_activations || []} goTo={goTo} signups={!legacy ? data.signups_14d : null} />
 
-        {/* Recent users */}
-        <Card className="p-5 sm:p-6">
-          <CardTitle icon={UserPlus} title={t('آخر المسجلين')} action={<LinkBtn onClick={() => goTo('users')}>{t('الكل')}</LinkBtn>} />
-          <ul className="space-y-2">
-            {data.recent_users.map((u) => (
-              <li key={u.id} className="flex items-center gap-3 rounded-2xl hover:bg-slate-50 px-2 py-1.5 -mx-2">
-                <Avatar name={u.name} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-black text-slate-800 truncate">{u.name}</p>
-                  <p className="text-[11px] text-slate-400 font-bold">{u.date_joined ? timeAgo(u.date_joined) : t('حساب #{id}', { id: u.id })}</p>
-                </div>
-                <span className="w-7 h-7 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center"><UserPlus className="w-3.5 h-3.5" /></span>
-              </li>
-            ))}
-          </ul>
-        </Card>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+        {/* Each book on its own */}
+        {data.books ? <BooksPanel books={data.books} activations={data.recent_activations || []} goTo={goTo} /> : <div className="xl:col-span-2" />}
+        <RecentUsers users={data.recent_users} goTo={goTo} />
       </div>
     </div>
   );
@@ -395,5 +334,266 @@ function OverviewSkeleton() {
         <Skeleton className="h-80 !rounded-3xl" />
       </div>
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Latest unlocks — levels and books apart, one chip per level / book  */
+/* ------------------------------------------------------------------ */
+
+const PAGE = 8;
+
+function ActivityPanel({ activations, levels, books, goTo }) {
+  const [kind, setKind] = useState('level');
+  const [pick, setPick] = useState('all');
+  const [shown, setShown] = useState(PAGE);
+
+  const ofKind = activations.filter((a) => a.kind === kind);
+  const chips = kind === 'level'
+    ? levels.map((l, i) => ({ key: String(l.id), code: l.name, label: l.name, color: hexFor(l.name, i), count: ofKind.filter((a) => a.item_id === l.id).length }))
+    : books.map((b, i) => ({ key: String(b.id), code: b.level, label: b.name, color: hexFor(b.level, i), count: ofKind.filter((a) => a.item_id === b.id).length }));
+  const list = pick === 'all' ? ofKind : ofKind.filter((a) => String(a.item_id) === pick);
+
+  const switchKind = (k) => { setKind(k); setPick('all'); setShown(PAGE); };
+  const choose = (k) => { setPick(k); setShown(PAGE); };
+
+  return (
+    <Card className="xl:col-span-2 p-5 sm:p-6">
+      <CardTitle
+        icon={Activity}
+        title={t('آخر التفعيلات')}
+        sub={t('مين اتفتحله إيه مؤخراً')}
+        action={<LinkBtn onClick={() => goTo(kind === 'level' ? 'requests-level' : 'requests-book')}>{t('كل الاشتراكات')}</LinkBtn>}
+      />
+
+      {/* Levels | Books */}
+      <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-slate-100 border border-slate-200/70 mb-4">
+        {[
+          { k: 'level', icon: GraduationCap, label: t('المستويات'), n: activations.filter((a) => a.kind === 'level').length },
+          { k: 'book', icon: BookMarked, label: t('الكتب'), n: activations.filter((a) => a.kind === 'book').length },
+        ].map(({ k, icon: Icon, label, n }) => (
+          <button
+            key={k}
+            type="button"
+            onClick={() => switchKind(k)}
+            className={`flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-black transition-all ${
+              kind === k ? 'bg-white text-slate-900 shadow-md' : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Icon className="w-4 h-4" /> {label}
+            <span className={`min-w-6 h-6 px-1.5 rounded-full text-[11px] flex items-center justify-center ${kind === k ? 'bg-[#0e2c4e] text-white' : 'bg-slate-200 text-slate-600'}`}>{n}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* One chip per level / book */}
+      <div className="flex gap-2 overflow-x-auto dw-no-scrollbar pb-1 mb-4 -mx-1 px-1">
+        <Chip active={pick === 'all'} onClick={() => choose('all')} label={kind === 'level' ? t('كل المستويات') : t('كل الكتب')} count={ofKind.length} />
+        {chips.map((c) => (
+          <Chip key={c.key} active={pick === c.key} onClick={() => choose(c.key)} label={c.label} code={c.code} color={c.color} count={c.count} book={kind === 'book'} />
+        ))}
+      </div>
+
+      {list.length ? (
+        <>
+          <ol className="relative border-s-2 border-slate-100 ms-4 space-y-1">
+            {list.slice(0, shown).map((a) => (
+              <li key={`${a.kind}-${a.item_id}-${a.user_id}`} className="relative ps-6 py-1.5">
+                <span className="absolute -start-[9px] top-5 w-4 h-4 rounded-full ring-4 ring-white" style={{ background: hexFor(a.level_code, 0) }} />
+                <div className="flex items-center gap-3 rounded-2xl hover:bg-slate-50 px-3 py-2 -mx-3 transition-colors">
+                  <Avatar name={a.name} size="sm" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-black text-slate-900 truncate">{a.name}</p>
+                    <p className="text-xs text-slate-500 truncate">
+                      {a.kind === 'level' ? t('اشترك في') : t('اتفتحله كتاب')} <span className="font-bold text-slate-700" dir="auto">{a.item_name}</span>
+                    </p>
+                  </div>
+                  <LevelChip code={a.level_code} size="sm" />
+                  <span className="hidden sm:block text-[11px] font-bold text-slate-400 w-24 text-end" title={fullDate(a.granted_at)}>{timeAgo(a.granted_at)}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+          {list.length > shown && (
+            <button type="button" onClick={() => setShown((n) => n + PAGE)} className="mt-3 w-full h-10 rounded-xl border border-dashed border-slate-300 text-xs font-black text-slate-500 hover:text-slate-800 hover:border-slate-400">
+              {t('عرض المزيد ({n})', { n: list.length - shown })}
+            </button>
+          )}
+        </>
+      ) : (
+        <Empty
+          icon={kind === 'level' ? GraduationCap : BookMarked}
+          title={t('لسه مفيش تفعيلات هنا')}
+          text={kind === 'level' ? t('لما تفعّل المستوى ده لطالب هيظهر هنا.') : t('لما تفعّل الكتاب ده لطالب هيظهر هنا.')}
+        />
+      )}
+    </Card>
+  );
+}
+
+function Chip({ active, onClick, label, code, color, count, book }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`shrink-0 inline-flex items-center gap-2 h-10 ps-1.5 pe-3 rounded-full border text-xs font-black transition-all max-w-[16rem] ${
+        active ? 'bg-[#0e2c4e] border-[#0e2c4e] text-white shadow-lg shadow-[#0e2c4e]/20' : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+      }`}
+    >
+      {code ? (
+        <span className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black text-white shrink-0" style={{ background: color }} dir="ltr">
+          {book ? <BookOpen className="w-3.5 h-3.5" /> : code}
+        </span>
+      ) : (
+        <span className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${active ? 'bg-white/15' : 'bg-slate-100'}`}><Layers className="w-3.5 h-3.5" /></span>
+      )}
+      <span className="truncate" dir="auto">{label}</span>
+      {book && code && <span className={`text-[10px] ${active ? 'text-white/70' : 'text-slate-400'}`} dir="ltr">{code}</span>}
+      <span className={`min-w-5 h-5 px-1.5 rounded-full text-[10px] flex items-center justify-center ${active ? 'bg-white/20' : 'bg-slate-100 text-slate-500'}`}>{count}</span>
+    </button>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Each level on its own                                               */
+/* ------------------------------------------------------------------ */
+
+function LevelsPanel({ levels, activations, goTo, signups }) {
+  const total = levels.reduce((a, l) => a + l.subscribers, 0);
+  return (
+    <Card className="p-5 sm:p-6">
+      <CardTitle icon={GraduationCap} title={t('المستويات')} sub={t('{n} مشترك في كل المستويات', { n: total })} action={<LinkBtn onClick={() => goTo('courses')}>{t('إدارة الكورسات')}</LinkBtn>} />
+      {levels.length === 0 ? (
+        <p className="text-sm text-slate-500 text-center py-6">{t('مفيش مستويات لسه.')}</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {levels.map((l, i) => {
+            const color = hexFor(l.name, i);
+            const last = activations.find((a) => a.kind === 'level' && a.item_id === l.id);
+            const share = total ? Math.round((l.subscribers / total) * 100) : 0;
+            return (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => goTo('requests-level')}
+                className="group relative overflow-hidden text-start rounded-3xl border border-slate-200/80 bg-white hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              >
+                <div className="relative h-24 px-5 pt-4 text-white overflow-hidden" style={{ background: `linear-gradient(135deg, ${color}, #0e2c4e)` }}>
+                  <span className="absolute -bottom-6 -end-2 text-[5.5rem] font-black leading-none text-white/10 select-none" dir="ltr">{l.name}</span>
+                  <span className="relative inline-flex items-center px-2.5 h-7 rounded-lg bg-white/20 backdrop-blur text-sm font-black" dir="ltr">{l.name}</span>
+                  <p className="relative mt-2 text-xs font-bold text-white/85 truncate" dir="auto">{l.title}</p>
+                </div>
+                <div className="px-5 py-4 space-y-3">
+                  <div className="flex items-end justify-between gap-2">
+                    <div>
+                      <p className="text-3xl font-black text-slate-900 leading-none">{l.subscribers}</p>
+                      <p className="text-[11px] font-bold text-slate-400 mt-1">{t('مشترك')}</p>
+                    </div>
+                    <span className="text-xs font-black px-2 py-1 rounded-lg" style={{ color, background: `${color}14` }}>{share}%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.max(share, l.subscribers ? 4 : 0)}%`, background: color }} />
+                  </div>
+                  <p className="text-[11px] font-bold text-slate-500 truncate">
+                    {last ? <>{t('آخر مشترك:')} <span className="text-slate-800">{last.name}</span> • {timeAgo(last.granted_at)}</> : t('لسه مفيش مشتركين')}
+                  </p>
+                  {l.pending > 0 && <span className="inline-flex text-[11px] font-black text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">{l.pending}{' '}{t('طلب')}</span>}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {signups?.some((d) => d.count) && <Signups days={signups} />}
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Each book on its own                                                */
+/* ------------------------------------------------------------------ */
+
+function BooksPanel({ books, activations, goTo }) {
+  const total = books.reduce((a, b) => a + b.readers, 0);
+  return (
+    <Card className="xl:col-span-2 p-5 sm:p-6">
+      <CardTitle icon={BookOpen} title={t('الكتب')} sub={t('{n} تفعيل على كل الكتب', { n: total })} action={<LinkBtn onClick={() => goTo('books')}>{t('إدارة الكتب')}</LinkBtn>} />
+      {books.length === 0 ? (
+        <Empty icon={BookOpen} title={t('مفيش كتب لسه')} text={t('ضيف كتاب PDF لأي مستوى من قسم الكتب.')} />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {books.map((b, i) => {
+            const color = hexFor(b.level, i);
+            const last = activations.find((a) => a.kind === 'book' && a.item_id === b.id);
+            return (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => goTo('requests-book')}
+                className="group flex items-stretch gap-4 text-start rounded-3xl border border-slate-200/80 bg-white p-3 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              >
+                {/* little book cover */}
+                <span className="relative w-16 shrink-0 rounded-xl overflow-hidden shadow-md" style={{ background: `linear-gradient(160deg, ${color}, #0e2c4e)` }}>
+                  <span className="absolute inset-y-0 start-0 w-1.5 bg-black/20" />
+                  <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-white">
+                    <BookOpen className="w-5 h-5" />
+                    <span className="text-[11px] font-black" dir="ltr">{b.level}</span>
+                  </span>
+                </span>
+                <span className="flex-1 min-w-0 py-1">
+                  <span className="block text-sm font-black text-slate-900 leading-snug line-clamp-2" dir="auto">{b.name}</span>
+                  <span className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-2xl font-black text-slate-900 leading-none">{b.readers}</span>
+                    <span className="text-[11px] font-bold text-slate-400">{t('طالب مفعّل له')}</span>
+                  </span>
+                  <span className="mt-1.5 block text-[11px] font-bold text-slate-500 truncate">
+                    {last ? <>{t('آخر تفعيل:')} <span className="text-slate-800">{last.name}</span> • {timeAgo(last.granted_at)}</> : t('لسه محدش اتفعّل له')}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Newest accounts — with what each one already has                    */
+/* ------------------------------------------------------------------ */
+
+function RecentUsers({ users, goTo }) {
+  return (
+    <Card className="p-5 sm:p-6">
+      <CardTitle icon={UserPlus} title={t('آخر المسجلين')} sub={t('الحسابات الجديدة وإيه المفعّل لكل واحد')} action={<LinkBtn onClick={() => goTo('users')}>{t('الكل')}</LinkBtn>} />
+      <ul className="space-y-2.5">
+        {users.map((u) => {
+          const has = (u.levels?.length || 0) + (u.books?.length || 0) > 0;
+          return (
+            <li key={u.id} className="rounded-2xl border border-slate-100 bg-slate-50/60 hover:bg-white hover:shadow-md p-3 transition-all">
+              <div className="flex items-center gap-3">
+                <Avatar name={u.name} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-black text-slate-900 truncate">{u.name}</p>
+                  <p className="text-[11px] text-slate-400 font-bold">{u.date_joined ? timeAgo(u.date_joined) : t('حساب #{id}', { id: u.id })}</p>
+                </div>
+                {!has && <span className="text-[10px] font-black text-slate-400 bg-white border border-slate-200 px-2 py-1 rounded-lg">{t('لسه مشتركش')}</span>}
+              </div>
+              {has && (
+                <div className="mt-2.5 flex flex-wrap items-center gap-1.5 ps-[3.25rem]">
+                  {u.levels.map((code) => <LevelChip key={code} code={code} size="sm" />)}
+                  {u.books.map((b) => (
+                    <span key={b.id} className="inline-flex items-center gap-1 px-2 h-6 rounded-lg bg-white border border-slate-200 text-[10px] font-black text-slate-600" title={b.name}>
+                      <BookOpen className="w-3 h-3" /> <span dir="ltr">{b.level}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </Card>
   );
 }

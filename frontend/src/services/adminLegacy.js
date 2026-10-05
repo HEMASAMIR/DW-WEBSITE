@@ -169,16 +169,25 @@ export const legacyAdmin = {
         .map((l) => ({ id: l.id, name: l.name, title: l.title, subscribers: Number(l.access_count) || 0, pending: 0, is_active: l.is_active !== false })),
       signups_14d: signups,
       recent_requests: [],
-      // Latest unlocks (levels & books) — the live activity on this backend.
+      // Every book with its readers, so the overview can show each one on its own.
+      books: [...snap.books]
+        .map((b) => ({ id: b.id, name: b.name, level: b.level, readers: b.readers || 0, is_active: b.is_active !== false })),
+      // Latest unlocks (levels & books) — the live activity on this backend; the overview filters them.
       recent_activations: [...snap.accesses]
         .filter((a) => a.granted_at)
         .sort((a, b) => new Date(b.granted_at) - new Date(a.granted_at))
-        .slice(0, 8),
+        .slice(0, 300),
       has_join_dates: snap.users.some((u) => u.date_joined),
       recent_users: [...snap.users]
         .sort((a, b) => joinedAt(b) - joinedAt(a))
         .slice(0, 6)
-        .map((u) => ({ id: u.id, name: displayName(u), date_joined: u.date_joined })),
+        .map((u) => ({
+          id: u.id,
+          name: displayName(u),
+          date_joined: u.date_joined,
+          levels: [...new Set((snap.levelsByUser.get(u.id) || []).map((x) => x.level.name))].sort(),
+          books: (snap.booksByUser.get(u.id) || []).map((x) => ({ id: x.book.id, name: x.book.name, level: x.book.level })),
+        })),
     };
   },
 

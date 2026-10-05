@@ -217,19 +217,37 @@ function Shell({ user }) {
         <span className="flex-1 bg-slate-900" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
       </div>
 
-      {/* brand */}
+      {/* brand — the academy's full logo (mark + name) on the navy/teal card */}
       <div className="relative px-4 pt-6 pb-4 [@media(max-height:760px)]:pt-4 [@media(max-height:760px)]:pb-2">
-        <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-l from-[#0e2c4e] to-teal-800 text-white p-2.5 pe-3 shadow-lg shadow-[#0e2c4e]/20">
-          <span className="dw-keep-light w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-md shrink-0">
-            <Image src="/assets/images/logo-mark.png" alt="Deutsche Welt" width={682} height={425} sizes="200px" className="w-9 h-auto" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-black leading-tight tracking-tight text-start">deutsche welt</p>
-            <p className="text-[11px] text-amber-300 font-black flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> {t('لوحة تحكم الأكاديمية')}
-            </p>
+        <div className="dw-keep-light group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#07192e] via-[#0c2847] to-[#0e3b68] px-4 pt-5 pb-4 [@media(max-height:760px)]:pt-3 [@media(max-height:760px)]:pb-3 shadow-xl shadow-[#07192e]/25 border border-white/10">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_100%_0%,rgba(20,184,166,0.45),transparent_60%),radial-gradient(ellipse_70%_70%_at_0%_100%,rgba(245,158,11,0.28),transparent_60%)]" />
+          <div
+            className="absolute inset-0 opacity-[0.07]"
+            style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)', backgroundSize: '16px 16px' }}
+          />
+          <span className="absolute -inset-x-10 -top-10 h-24 bg-white/10 blur-2xl rotate-6 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="relative flex flex-col items-center">
+            <Image
+              src="/assets/images/logo-full-white.png"
+              alt="Deutsche Welt"
+              width={954}
+              height={622}
+              sizes="240px"
+              priority
+              className="h-[4.75rem] [@media(max-height:760px)]:h-12 w-auto drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] transition-transform duration-500 group-hover:scale-105"
+            />
+            <span className="mt-3 [@media(max-height:760px)]:mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 backdrop-blur text-[11px] font-black text-amber-300">
+              <span className="relative flex w-1.5 h-1.5">
+                <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping" />
+                <span className="relative w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              </span>
+              {t('لوحة تحكم الأكاديمية')}
+            </span>
           </div>
-          <button onClick={() => setMenuOpen(false)} className="lg:hidden w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center" aria-label={t('إغلاق القائمة')}>
+          <div className="absolute bottom-0 inset-x-0 flex h-1" dir="ltr">
+            <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
+          </div>
+          <button onClick={() => setMenuOpen(false)} className="lg:hidden absolute top-3 end-3 w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center" aria-label={t('إغلاق القائمة')}>
             <X className="w-5 h-5" />
           </button>
         </div>

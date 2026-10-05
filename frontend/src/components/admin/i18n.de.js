@@ -660,6 +660,38 @@ const DE = {
     '{n} Abos mit abgelaufenem Jahr gesperrt: {names}',
   'بدل {n} ج.م':
     'statt {n} EGP',
+
+  // ---- Overview: levels / books apart (OverviewSection)
+  'عرض المزيد ({n})':
+    'Mehr anzeigen ({n})',
+  'لسه مفيش تفعيلات هنا':
+    'Hier gibt es noch keine Freischaltungen',
+  'لما تفعّل المستوى ده لطالب هيظهر هنا.':
+    'Sobald du dieses Niveau für einen Schüler freischaltest, erscheint es hier.',
+  'لما تفعّل الكتاب ده لطالب هيظهر هنا.':
+    'Sobald du dieses Buch für einen Schüler freischaltest, erscheint es hier.',
+  '{n} مشترك في كل المستويات':
+    '{n} Abonnenten über alle Niveaus',
+  'آخر مشترك:':
+    'Zuletzt:',
+  'لسه مفيش مشتركين':
+    'Noch keine Abonnenten',
+  '{n} تفعيل على كل الكتب':
+    '{n} Freischaltungen über alle Bücher',
+  'إدارة الكتب':
+    'Bücher verwalten',
+  'مفيش كتب لسه':
+    'Noch keine Bücher',
+  'ضيف كتاب PDF لأي مستوى من قسم الكتب.':
+    'Füge im Bereich Bücher ein PDF-Buch für ein beliebiges Niveau hinzu.',
+  'آخر تفعيل:':
+    'Zuletzt:',
+  'لسه محدش اتفعّل له':
+    'Noch für niemanden freigeschaltet',
+  'الحسابات الجديدة وإيه المفعّل لكل واحد':
+    'Neue Konten und was jedes freigeschaltet hat',
+  'لسه مشتركش':
+    'Noch kein Abo',
 };
 
 export default DE;

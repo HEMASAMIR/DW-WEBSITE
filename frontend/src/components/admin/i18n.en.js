@@ -660,6 +660,38 @@ const EN = {
     'Locked {n} subscriptions whose year ended: {names}',
   'بدل {n} ج.م':
     'instead of {n} EGP',
+
+  // ---- Overview: levels / books apart (OverviewSection)
+  'عرض المزيد ({n})':
+    'Show more ({n})',
+  'لسه مفيش تفعيلات هنا':
+    'No activations here yet',
+  'لما تفعّل المستوى ده لطالب هيظهر هنا.':
+    'When you activate this level for a student, it shows up here.',
+  'لما تفعّل الكتاب ده لطالب هيظهر هنا.':
+    'When you activate this book for a student, it shows up here.',
+  '{n} مشترك في كل المستويات':
+    '{n} subscribers across all levels',
+  'آخر مشترك:':
+    'Latest:',
+  'لسه مفيش مشتركين':
+    'No subscribers yet',
+  '{n} تفعيل على كل الكتب':
+    '{n} activations across all books',
+  'إدارة الكتب':
+    'Manage books',
+  'مفيش كتب لسه':
+    'No books yet',
+  'ضيف كتاب PDF لأي مستوى من قسم الكتب.':
+    'Add a PDF book for any level from the Books section.',
+  'آخر تفعيل:':
+    'Latest:',
+  'لسه محدش اتفعّل له':
+    'Not activated for anyone yet',
+  'الحسابات الجديدة وإيه المفعّل لكل واحد':
+    'New accounts and what each one has',
+  'لسه مشتركش':
+    'No subscription yet',
 };
 
 export default EN;
