@@ -116,16 +116,23 @@ export default function PaymentInfo({ amount, compact = false, className = '', i
         {/* Numbers */}
         {numbers.map((n) => (
           <div key={n.number} className="rounded-2xl bg-[#0e2c4e] text-white p-4 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <span className="block text-[11px] text-teal-200 font-bold mb-0.5">
+            <div className="flex-1 min-w-0">
+              <span className="block text-[11px] text-teal-200 font-bold mb-0.5 truncate">
                 {t('حوّل على الرقم')}{numbers.length > 1 ? ` (${n.labels.map((l) => t(l)).join(' / ')})` : ''}
               </span>
-              <span className={`block font-black break-all ${n.number.length > 14 ? 'text-lg sm:text-xl tracking-wide' : 'text-2xl sm:text-3xl tracking-wider'}`} dir="ltr">{n.number}</span>
+              <span
+                className={`block font-black whitespace-nowrap font-mono select-all ${
+                  n.number.length > 14 ? 'text-base sm:text-xl tracking-wide' : 'text-xl sm:text-2xl md:text-3xl tracking-wider'
+                }`}
+                dir="ltr"
+              >
+                {n.number}
+              </span>
             </div>
             <button
               type="button"
               onClick={() => copy(n.number)}
-              className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black transition-colors ${
+              className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2.5 sm:px-4 rounded-xl text-xs font-black transition-colors whitespace-nowrap ${
                 copied === n.number ? 'bg-emerald-500 text-white' : 'bg-white/10 hover:bg-white/20 border border-white/20'
               }`}
             >
