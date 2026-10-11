@@ -22,8 +22,6 @@ const nextConfig = {
 
   async rewrites() {
     return [
-      // :path* drops the trailing slash; Django would then 301 back to the same relative URL (loop).
-      { source: '/api/:path*', destination: `${BACKEND_URL}/api/:path*/` },
       { source: '/media/:path*', destination: `${BACKEND_URL}/media/:path*` },
     ];
   },
