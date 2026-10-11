@@ -72,17 +72,7 @@ export default function BooksSection() {
           </div>
         )}
 
-        {!loading && requiresLogin && (
-          <div className="max-w-md mx-auto text-center bg-teal-50 border border-teal-200 rounded-3xl p-8 space-y-4">
-            <Lock className="w-10 h-10 text-teal-600 mx-auto" />
-            <p className="text-sm text-teal-900 font-semibold">{t('سجّل الدخول لعرض الكتب المتاحة وأسعارها.')}</p>
-            <button onClick={() => openAuthModal('login')} className="inline-flex items-center gap-2 bg-[#0e2c4e] text-white px-5 py-2.5 rounded-full text-xs font-black">
-              <span>{t('تسجيل الدخول')}</span>
-            </button>
-          </div>
-        )}
-
-        {!loading && !error && !requiresLogin && books.length === 0 && (
+        {!loading && !error && books.length === 0 && (
           <p className="text-center text-sm text-slate-500">{t('لا توجد كتب متاحة حالياً.')}</p>
         )}
 

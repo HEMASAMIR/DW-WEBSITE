@@ -38,9 +38,10 @@ const ERROR_TRANSLATIONS = [
 ];
 
 function friendlyError(err, fallback) {
+  const raw = typeof err?.response?.data?.detail === 'string' ? err.response.data.detail : '';
   const msg = getErrorMessage(err, fallback);
-  const hit = ERROR_TRANSLATIONS.find(([re]) => re.test(msg));
-  return hit ? hit[1] : msg;
+  const hit = ERROR_TRANSLATIONS.find(([re]) => re.test(raw) || re.test(msg));
+  return hit ? t(hit[1]) : msg;
 }
 
 const isOtpError = (msg) => /الكود/.test(msg);

@@ -14,7 +14,9 @@ export default function CoursePage() {
   const { allCourses, loading, error, requiresLogin, reload } = useCourses();
   const { openAuthModal } = useModal();
 
-  const level = allCourses.find((c) => String(c.id) === String(id));
+  const level = allCourses.find(
+    (c) => String(c.id) === String(id) || String(c.code || '').toLowerCase() === String(id).toLowerCase()
+  );
 
   if (level) return <LevelView level={level} levels={allCourses} />;
 

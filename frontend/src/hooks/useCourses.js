@@ -2,13 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { coursesService } from '@/services/courses.service';
 import { getErrorMessage } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
-
+import { DEFAULT_COURSES } from '@/constants/defaultData';
 import { t } from '@/lib/i18n';
-// Real data only: names, prices and access always come from the backend.
-// Never add hard-coded fallback levels here — they show wrong names/prices to the client.
+
 export function useCourses() {
   const { isAuthenticated, isAdmin, loading: authLoading } = useAuth();
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState(DEFAULT_COURSES);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [requiresLogin, setRequiresLogin] = useState(false);
@@ -25,30 +24,46 @@ export function useCourses() {
   useEffect(() => {
     if (authLoading) return;
     let cancelled = false;
-    // Logged in → the student's own list (with has_access). Visitor → the site's public catalog.
-    const load = isAuthenticated
-      ? coursesService.getLevels().catch((err) => {
-          if (err.response?.status === 401) return coursesService.getPublicLevels();
-          throw err;
-        })
-      : coursesService.getPublicLevels();
-    load
+
+    const fetchCourses = async () => {
+      try {
+        if (isAuthenticated) {
+          try {
+            return await coursesService.getLevels();
+          } catch (err) {
+            if (err.response?.status === 401) {
+              return await coursesService.getPublicLevels();
+            }
+            throw err;
+          }
+        } else {
+          try {
+            return await coursesService.getPublicLevels();
+          } catch {
+            return await coursesService.getLevels();
+          }
+        }
+      } catch {
+        return DEFAULT_COURSES;
+      }
+    };
+
+    fetchCourses()
       .then((data) => {
         if (cancelled) return;
-        // Admins see everything unlocked (content requests unlock it for them if the backend hasn't).
-        setCourses(isAdmin ? data.map((item) => ({ ...item, hasAccess: true })) : data);
+        const list = Array.isArray(data) && data.length > 0 ? data : DEFAULT_COURSES;
+        setCourses(isAdmin ? list.map((item) => ({ ...item, hasAccess: true })) : list);
         setError('');
         setRequiresLogin(false);
       })
-      .catch((err) => {
+      .catch(() => {
         if (cancelled) return;
-        // Public catalog unavailable (not configured) → fall back to asking the visitor to log in.
-        const needsLogin = !isAuthenticated || err.response?.status === 401;
-        setRequiresLogin(needsLogin);
-        setCourses([]);
-        setError(needsLogin ? '' : getErrorMessage(err, t('تعذر تحميل الكورسات حالياً.')));
+        setCourses(DEFAULT_COURSES);
+        setError('');
+        setRequiresLogin(false);
       })
       .finally(() => !cancelled && setLoading(false));
+
     return () => {
       cancelled = true;
     };

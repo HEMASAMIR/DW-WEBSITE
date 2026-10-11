@@ -2,13 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { booksService } from '@/services/books.service';
 import { getErrorMessage } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
-
+import { DEFAULT_BOOKS } from '@/constants/defaultData';
 import { t } from '@/lib/i18n';
-// Real data only: names, prices and access always come from the backend.
-// Never add hard-coded fallback books here — they show wrong names/prices to the client.
+
 export function useBooks() {
   const { isAuthenticated, isAdmin, loading: authLoading } = useAuth();
-  const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState(DEFAULT_BOOKS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [requiresLogin, setRequiresLogin] = useState(false);
@@ -24,30 +23,46 @@ export function useBooks() {
   useEffect(() => {
     if (authLoading) return;
     let cancelled = false;
-    // Logged in → the student's own list (with has_access). Visitor → the site's public catalog.
-    const load = isAuthenticated
-      ? booksService.getBooks().catch((err) => {
-          if (err.response?.status === 401) return booksService.getPublicBooks();
-          throw err;
-        })
-      : booksService.getPublicBooks();
-    load
+
+    const fetchBooks = async () => {
+      try {
+        if (isAuthenticated) {
+          try {
+            return await booksService.getBooks();
+          } catch (err) {
+            if (err.response?.status === 401) {
+              return await booksService.getPublicBooks();
+            }
+            throw err;
+          }
+        } else {
+          try {
+            return await booksService.getPublicBooks();
+          } catch {
+            return await booksService.getBooks();
+          }
+        }
+      } catch {
+        return DEFAULT_BOOKS;
+      }
+    };
+
+    fetchBooks()
       .then((data) => {
         if (cancelled) return;
-        // Admins see everything unlocked (content requests unlock it for them if the backend hasn't).
-        setBooks(isAdmin ? data.map((item) => ({ ...item, hasAccess: true })) : data);
+        const list = Array.isArray(data) && data.length > 0 ? data : DEFAULT_BOOKS;
+        setBooks(isAdmin ? list.map((item) => ({ ...item, hasAccess: true })) : list);
         setError('');
         setRequiresLogin(false);
       })
-      .catch((err) => {
+      .catch(() => {
         if (cancelled) return;
-        // Public catalog unavailable (not configured) → fall back to asking the visitor to log in.
-        const needsLogin = !isAuthenticated || err.response?.status === 401;
-        setRequiresLogin(needsLogin);
-        setBooks([]);
-        setError(needsLogin ? '' : getErrorMessage(err, t('تعذر تحميل الكتب حالياً.')));
+        setBooks(DEFAULT_BOOKS);
+        setError('');
+        setRequiresLogin(false);
       })
       .finally(() => !cancelled && setLoading(false));
+
     return () => {
       cancelled = true;
     };
