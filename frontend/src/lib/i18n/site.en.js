@@ -531,6 +531,14 @@ const EN = {
   'انتهت مهلة الاتصال بالخادم، حاول مرة أخرى.': 'The server took too long to respond, please try again.',
   'تعذر الاتصال بالخادم. تحقق من اتصال الإنترنت.': 'Couldn’t reach the server. Check your internet connection.',
 
+  'المحتوى محمي': 'Content Protected',
+  'تم حجب الشاشة تلقائياً لمنع برامج التصوير والتسجيل. انقر هنا للعودة لمتابعة المحتوى.': 'Screen shielded automatically to prevent screen recording. Click here to resume viewing.',
+  'متابعة المشاهدة': 'Resume viewing',
+  '⚠️ تحذير أمني: تصوير الشاشة ممنوع': '⚠️ Security Warning: Screenshots prohibited',
+  'يُمنع منعاً باتاً التقاط صور للشاشة (Screenshot) أو تسجيل الفيديو لجميع محاضرات ومذكرات الأكاديمية لحماية حقوق الملكية الفكرية.': 'Screenshots and screen recording of lectures and study materials are strictly prohibited to protect intellectual property.',
+  'تم تسجيل هذه المحاولة وربطها ببيانات حسابك. تكرار المحاولة سيعرض الحساب للحظر النهائي فوراً.': 'This action has been logged and linked to your account. Repeated attempts will result in immediate permanent suspension.',
+  'فهمت وأتعهد بالالتزام': 'I understand and agree to comply',
+
   // ---- Site content (constants/siteContent.js)
   'Deutsche Welt - هير خالد الحلواني': 'Deutsche Welt - Herr Khaled El-Halawany',
   'أكاديمية اللغة الألمانية المتخصصة للمرحلتين الثانوية والجامعية والراغبين للسفر': 'A German language academy for high-school and university students and anyone moving abroad',

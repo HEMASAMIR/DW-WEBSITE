@@ -356,3 +356,20 @@ nextjs-portal,
   transform: translateY(-3px);
 }
 
+/* Anti-screenshot & Anti-print protection */
+@media print {
+  html, body {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+/* Prevent text copying in documents */
+.docx-host, .docx-host * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+

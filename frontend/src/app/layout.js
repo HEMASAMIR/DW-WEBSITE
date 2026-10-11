@@ -16,6 +16,7 @@ import LoginPromptModal from '@/components/modals/LoginPromptModal';
 import FileViewerModal from '@/components/modals/FileViewerModal';
 import LogoutConfirmModal from '@/components/modals/LogoutConfirmModal';
 import Analytics from '@/components/common/Analytics';
+import ContentProtection from '@/components/common/ContentProtection';
 import { SiteLangProvider, LangRemount } from '@/lib/i18n';
 import { LANG_BOOT_SCRIPT } from '@/lib/i18nBoot';
 
@@ -42,21 +43,23 @@ export default function RootLayout({ children }) {
         <SiteLangProvider>
           <AuthProvider>
             <ModalProvider>
-              {/* Re-renders the whole page when the visitor switches language */}
-              <LangRemount>
-                {children}
+              <ContentProtection>
+                {/* Re-renders the whole page when the visitor switches language */}
+                <LangRemount>
+                  {children}
 
-                {/* Global Modal Layer */}
-                <AuthModal />
-                <CourseEnrollModal />
-                <BookOrderModal />
-                <ProfileModal />
-                <LightboxModal />
-                <CvModal />
-                <LoginPromptModal />
-                <FileViewerModal />
-                <LogoutConfirmModal />
-              </LangRemount>
+                  {/* Global Modal Layer */}
+                  <AuthModal />
+                  <CourseEnrollModal />
+                  <BookOrderModal />
+                  <ProfileModal />
+                  <LightboxModal />
+                  <CvModal />
+                  <LoginPromptModal />
+                  <FileViewerModal />
+                  <LogoutConfirmModal />
+                </LangRemount>
+              </ContentProtection>
               <Analytics />
             </ModalProvider>
           </AuthProvider>

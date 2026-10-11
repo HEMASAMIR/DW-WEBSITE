@@ -51,7 +51,7 @@ function DocxView({ blob }) {
   }, [blob]);
 
   return (
-    <div className="w-full h-full overflow-auto bg-slate-700" dir="ltr">
+    <div className="w-full h-full overflow-auto bg-slate-700 select-none" dir="ltr" onContextMenu={(e) => e.preventDefault()}>
       {state === 'loading' && (
         <div className="flex justify-center py-16">
           <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
@@ -67,7 +67,7 @@ function DocxView({ blob }) {
 
 function Viewer({ title, load, onClose }) {
   return (
-    <div className="fixed inset-0 z-[110] flex flex-col bg-slate-950/95 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-[110] flex flex-col bg-slate-950/95 backdrop-blur-md animate-fadeIn select-none" onContextMenu={(e) => e.preventDefault()}>
       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-800 bg-slate-900">
         <div className="flex items-center gap-2 min-w-0">
           <FileText className="w-5 h-5 text-amber-400 shrink-0" />
