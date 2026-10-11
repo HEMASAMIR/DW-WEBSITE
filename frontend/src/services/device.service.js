@@ -1,6 +1,6 @@
 'use client';
 
-import apiClient from './api';
+import apiClient, { tokenStorage } from './api';
 
 const DEVICE_ID_KEY = 'dw_device_id';
 
@@ -57,11 +57,14 @@ export async function pingDeviceSession(action = 'heartbeat') {
   try {
     const deviceId = getDeviceId();
     const { deviceName, deviceType } = getDeviceInfo();
+    const user = tokenStorage.getUser();
     const res = await apiClient.post('/api/device-session', {
       deviceId,
       deviceName,
       deviceType,
       action,
+      clientEmail: user?.email,
+      clientIsAdmin: Boolean(user?.is_admin || user?.is_staff),
     });
     return res.data;
   } catch (err) {

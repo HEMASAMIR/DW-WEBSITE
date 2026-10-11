@@ -56,7 +56,8 @@ export function handleDeviceSession({
     return { active: true, exempt: true };
   }
 
-  const existing = sessions.get(userId);
+  const key = String(userId);
+  const existing = sessions.get(key);
 
   // No active session registered yet -> claim it
   if (!existing) {
@@ -67,7 +68,7 @@ export function handleDeviceSession({
       updatedAt: Date.now(),
       registeredAt: Date.now(),
     };
-    sessions.set(userId, newSession);
+    sessions.set(key, newSession);
     persistSessions();
     return { active: true, exempt: false, message: 'registered' };
   }
@@ -89,7 +90,7 @@ export function handleDeviceSession({
     existing.activeDeviceType = deviceType || 'mobile';
     existing.updatedAt = Date.now();
     existing.switchedAt = Date.now();
-    sessions.set(userId, existing);
+    sessions.set(key, existing);
     persistSessions();
     return { active: true, exempt: false, message: 'registered' };
   }
@@ -105,6 +106,6 @@ export function handleDeviceSession({
 }
 
 export function clearUserDeviceSession(userId) {
-  sessions.delete(userId);
+  sessions.delete(String(userId));
   persistSessions();
 }

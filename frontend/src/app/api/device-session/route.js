@@ -1,4 +1,4 @@
-import { getRequestUser } from '@/lib/siteStore';
+import { getRequestUser, isAdminRequest } from '@/lib/siteStore';
 import { handleDeviceSession, clearUserDeviceSession } from '@/lib/sessionStore';
 
 export const dynamic = 'force-dynamic';
@@ -16,16 +16,24 @@ export async function POST(request) {
     // default empty
   }
 
-  const { deviceId, deviceName, deviceType, action = 'heartbeat' } = body;
+  const { deviceId, deviceName, deviceType, action = 'heartbeat', clientEmail, clientIsAdmin } = body;
 
   if (!deviceId) {
     return Response.json({ active: false, detail: 'معرّف الجهاز مطلوب' }, { status: 400 });
   }
 
+  // Check if admin through multiple robust channels
+  let isAdmin = Boolean(user.is_admin || clientIsAdmin);
+  if (!isAdmin) {
+    isAdmin = await isAdminRequest(request);
+  }
+
+  const userEmail = user.email || clientEmail || '';
+
   const result = handleDeviceSession({
     userId: user.id,
-    userEmail: user.email,
-    isAdmin: user.is_admin,
+    userEmail,
+    isAdmin,
     deviceId,
     deviceName,
     deviceType,
