@@ -2,9 +2,11 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from '@/context/ModalContext';
+import { useAuth } from '@/context/AuthContext';
+import { isExemptFromProtection } from '@/constants/securityConfig';
 import { getErrorMessage } from '@/services/api';
 import { saveFile } from '@/services/courses.service';
-import { X, Loader2, AlertCircle, FileText, Download } from 'lucide-react';
+import { X, Loader2, AlertCircle, FileText, Download, Lock } from 'lucide-react';
 
 import { t, tRich } from '@/lib/i18n';
 /**
@@ -87,6 +89,8 @@ function Viewer({ title, load, onClose }) {
  * a "open on your device" fallback). Fills its parent; used by the modal and the book reader page.
  */
 export function FileContent({ title, load }) {
+  const { user } = useAuth();
+  const exempt = isExemptFromProtection(user);
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [progress, setProgress] = useState({ ratio: null, loaded: 0 });
@@ -108,7 +112,7 @@ export function FileContent({ title, load }) {
   const isImage = file?.type?.startsWith('image/');
 
   return (
-      <div className="flex-1 min-h-0 flex items-center justify-center bg-slate-950" onContextMenu={(e) => e.preventDefault()}>
+      <div className="flex-1 min-h-0 flex items-center justify-center bg-slate-950 select-none" onContextMenu={(e) => e.preventDefault()}>
         {error ? (
           <div className="text-center space-y-3 p-6">
             <AlertCircle className="w-10 h-10 text-rose-400 mx-auto" />
@@ -131,9 +135,20 @@ export function FileContent({ title, load }) {
         ) : inline ? (
           isImage ? (
             // eslint-disable-next-line @next/next/no-img-element -- blob URL of an authenticated file
-            <img src={url} alt={title || ''} className="max-w-full max-h-full object-contain" />
+            <img
+              src={url}
+              alt={title || ''}
+              className="max-w-full max-h-full object-contain pointer-events-none select-none"
+              draggable={false}
+              onContextMenu={(e) => e.preventDefault()}
+            />
           ) : (
-            <iframe src={`${url}#toolbar=0&navpanes=0`} title={title || 'file'} className="w-full h-full bg-white" />
+            <iframe
+              src={`${url}#toolbar=0&navpanes=0`}
+              title={title || 'file'}
+              className="w-full h-full bg-white select-none"
+              onContextMenu={(e) => e.preventDefault()}
+            />
           )
         ) : (
           <div className="text-center space-y-4 p-6 max-w-sm">
@@ -141,13 +156,20 @@ export function FileContent({ title, load }) {
             <p className="text-sm text-slate-200">
               {tRich('الملف <b>{name}</b> من نوع لا يمكن عرضه داخل المتصفح.', { b: (s) => <span className="font-bold" dir="ltr">{s}</span> }, { name: file.filename })}
             </p>
-            <button
-              onClick={() => saveFile(file)}
-              className="inline-flex items-center gap-2 bg-amber-400 text-slate-950 font-black text-sm px-6 py-2.5 rounded-xl"
-            >
-              <Download className="w-4 h-4" />
-              {t('فتح الملف على جهازك')}
-            </button>
+            {exempt ? (
+              <button
+                onClick={() => saveFile(file)}
+                className="inline-flex items-center gap-2 bg-amber-400 text-slate-950 font-black text-sm px-6 py-2.5 rounded-xl hover:bg-amber-300 transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                {t('فتح الملف على جهازك')}
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold justify-center">
+                <Lock className="w-4 h-4 shrink-0" />
+                <span>{t('المحتوى محمي للعرض فقط ويمنع تحميله.')}</span>
+              </div>
+            )}
           </div>
         )}
       </div>

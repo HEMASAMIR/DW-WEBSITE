@@ -107,13 +107,13 @@ function Watch({ level, content, videoId }) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Player + lesson info (mobile order: player → playlist → tabs) */}
         <div className="lg:col-span-8 lg:col-start-1 lg:row-start-1 space-y-5 min-w-0">
-          <div className="rounded-3xl overflow-hidden bg-black shadow-2xl shadow-slate-900/20 ring-1 ring-slate-900/10">
-            <div className="aspect-video">
+          <div className="rounded-3xl overflow-hidden bg-black shadow-2xl shadow-slate-900/20 ring-1 ring-slate-900/10 select-none relative" onContextMenu={(e) => e.preventDefault()}>
+            <div className="aspect-video relative select-none">
               <iframe
                 key={active.id}
                 src={active.embed_url}
                 title={active.title}
-                className="w-full h-full"
+                className="w-full h-full select-none"
                 allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
                 allowFullScreen
               />

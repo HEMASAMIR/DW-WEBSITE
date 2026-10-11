@@ -46,7 +46,7 @@ export default function ReadBookPage() {
   }
 
   return (
-    <div className="bg-slate-950 flex flex-col" style={{ height: 'calc(100vh - 4rem)' }}>
+    <div className="bg-slate-950 flex flex-col select-none" style={{ height: 'calc(100vh - 4rem)' }} onContextMenu={(e) => e.preventDefault()}>
       <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 bg-slate-900 border-b border-slate-800 text-white">
         <Link href={`/books/${book.id}`} className="inline-flex items-center gap-2 min-w-0 text-sm font-black hover:text-amber-300">
           <ArrowRight className="w-4 h-4 shrink-0 ltr:-scale-x-100" />
