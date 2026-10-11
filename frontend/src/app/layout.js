@@ -17,6 +17,7 @@ import FileViewerModal from '@/components/modals/FileViewerModal';
 import LogoutConfirmModal from '@/components/modals/LogoutConfirmModal';
 import Analytics from '@/components/common/Analytics';
 import ContentProtection from '@/components/common/ContentProtection';
+import DeviceSessionGuard from '@/components/common/DeviceSessionGuard';
 import { SiteLangProvider, LangRemount } from '@/lib/i18n';
 import { LANG_BOOT_SCRIPT } from '@/lib/i18nBoot';
 
@@ -58,6 +59,7 @@ export default function RootLayout({ children }) {
                   <LoginPromptModal />
                   <FileViewerModal />
                   <LogoutConfirmModal />
+                  <DeviceSessionGuard />
                 </LangRemount>
               </ContentProtection>
               <Analytics />

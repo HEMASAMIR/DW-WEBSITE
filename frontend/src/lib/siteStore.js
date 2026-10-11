@@ -86,8 +86,14 @@ export async function getRequestUser(request) {
     const payload = JSON.parse(Buffer.from(m[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
     const id = Number(payload.user_id ?? payload.id);
     if (!id) return null;
-    const u = res.data?.user || res.data || {};
-    return { id, name: [u.first_name, u.last_name].filter(Boolean).join(' '), phone: u.phone_number || '', token: auth };
+    return {
+      id,
+      name: [u.first_name, u.last_name].filter(Boolean).join(' '),
+      email: u.email || payload.email || '',
+      phone: u.phone_number || '',
+      is_admin: !!(u.is_admin || payload.is_admin || u.is_staff),
+      token: auth,
+    };
   } catch {
     return null;
   }
