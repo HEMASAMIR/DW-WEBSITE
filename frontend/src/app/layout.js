@@ -22,9 +22,48 @@ import { SiteLangProvider, LangRemount } from '@/lib/i18n';
 import { LANG_BOOT_SCRIPT } from '@/lib/i18nBoot';
 
 export const metadata = {
-  title: 'Deutsche Welt Academy | هير خالد الحلواني - أكاديمية اللغة الألمانية',
-  description: 'أكاديمية تدريس وتأسيس اللغة الألمانية للمراحل الثانوية والجامعية والراغبين بالسفر لألمانيا مع هير خالد الحلواني.',
-  // Stops the Dark Reader extension from recolouring the site.
+  metadataBase: new URL('https://deutscheweltacademy.com'),
+  title: {
+    default: 'هير خالد الحلواني | أكاديمية دويتشه فيلت - Deutsche Welt Academy',
+    template: '%s | هير خالد الحلواني - Deutsche Welt',
+  },
+  description: 'المنصة الرسمية للأستاذ خالد الحلواني (هير خالد الحلواني) - أكاديمية دويتشه فيلت (Deutsche Welt Academy) لتدريس وتأسيس اللغة الألمانية للمراحل الثانوية والجامعية والتأهيل للسفر لألمانيا.',
+  keywords: [
+    'هير خالد الحلواني',
+    'خالد الحلواني',
+    'دويتشه فيلت',
+    'اكاديمية دويتشه فيلت',
+    'أكاديمية دويتشه فيلت',
+    'منصة دويتشه فيلت',
+    'Deutsche Welt',
+    'Deutsche Welt Academy',
+    'deutscheweltacademy',
+    'الماني ثانوية عامة',
+    'اللغة الالمانية ثانوية عامة',
+    'شرح الماني ثانوية عامة',
+    'تعلم اللغة الالمانية',
+    'كورس الماني',
+    'مذكرات هير خالد الحلواني',
+  ],
+  authors: [{ name: 'هير خالد الحلواني' }],
+  creator: 'هير خالد الحلواني',
+  publisher: 'Deutsche Welt Academy',
+  openGraph: {
+    type: 'website',
+    locale: 'ar_EG',
+    url: 'https://deutscheweltacademy.com',
+    title: 'هير خالد الحلواني | أكاديمية دويتشه فيلت - Deutsche Welt Academy',
+    description: 'المنصة الرسمية للأستاذ خالد الحلواني لتدريس وتأسيس اللغة الألمانية للمراحل الثانوية والجامعية.',
+    siteName: 'Deutsche Welt Academy',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'هير خالد الحلواني | أكاديمية دويتشه فيلت',
+    description: 'المنصة الرسمية للأستاذ خالد الحلواني لتدريس وتأسيس اللغة الألمانية.',
+  },
+  alternates: {
+    canonical: 'https://deutscheweltacademy.com',
+  },
   other: { 'darkreader-lock': 'true' },
 };
 
