@@ -74,9 +74,27 @@ def _user_data(user):
     }
 
 
-def _jwt_for_user(user):
-    """Issue a fresh JWT pair for the given user."""
+def _jwt_for_user(user, device_id='', device_name='', ip=''):
+    """Issue a fresh JWT pair for the given user, enforcing single-session for students."""
+    import uuid
     refresh = RefreshToken.for_user(user)
+
+    from academy.authentication import is_admin_or_staff_user
+    if not is_admin_or_staff_user(user):
+        from academy.models import StudentActiveSession
+        session_id = uuid.uuid4().hex
+        StudentActiveSession.objects.update_or_create(
+            user=user,
+            defaults={
+                'session_id': session_id,
+                'device_id': str(device_id or ''),
+                'device_name': str(device_name or ''),
+                'ip_address': ip or None,
+            }
+        )
+        refresh['session_id'] = session_id
+        refresh.access_token['session_id'] = session_id
+
     return {
         'access': str(refresh.access_token),
         'refresh': str(refresh),
@@ -222,7 +240,10 @@ class LoginAPIView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        tokens = _jwt_for_user(user_obj)
+        device_id = request.data.get('device_id', '') or request.headers.get('X-Device-Id', '')
+        device_name = request.data.get('device_name', '') or request.headers.get('User-Agent', '')[:250]
+        ip = (request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip() or request.META.get('REMOTE_ADDR') or '')
+        tokens = _jwt_for_user(user_obj, device_id=device_id, device_name=device_name, ip=ip)
         return Response({**tokens, 'user': _user_data(user_obj)}, status=status.HTTP_200_OK)
 
 
@@ -234,9 +255,44 @@ class TokenRefreshAPIView(TokenRefreshView):
     """
     POST /api/users/login/refresh/
     Body: { "refresh": "<token>" }
-    Returns new access token (and rotated refresh if ROTATE_REFRESH_TOKENS=True).
+    Returns new access token, or 401 if student's session was terminated by another device.
     """
-    pass
+    def post(self, request, *args, **kwargs):
+        refresh_str = request.data.get('refresh', '')
+        token_session_id = None
+        if refresh_str:
+            try:
+                from rest_framework_simplejwt.tokens import RefreshToken
+                token = RefreshToken(refresh_str)
+                user_id = token.get('user_id')
+                token_session_id = token.get('session_id')
+                user = User.objects.filter(id=user_id).first()
+
+                from academy.authentication import is_admin_or_staff_user
+                if user and not is_admin_or_staff_user(user):
+                    from academy.models import StudentActiveSession
+                    active_session = StudentActiveSession.objects.filter(user=user).first()
+                    if active_session and token_session_id and active_session.session_id != token_session_id:
+                        return Response({
+                            'code': 'session_terminated',
+                            'detail': 'SESSION_TERMINATED_ANOTHER_DEVICE',
+                            'message': 'تم تسجيل الدخول إلى حسابك من جهاز آخر. تم إنهاء الجلسة على هذا الجهاز لحماية حسابك.'
+                        }, status=status.HTTP_401_UNAUTHORIZED)
+            except Exception:
+                pass
+
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200 and isinstance(response.data, dict) and token_session_id:
+            try:
+                from rest_framework_simplejwt.tokens import AccessToken
+                access_str = response.data.get('access')
+                if access_str:
+                    access_token = AccessToken(access_str)
+                    access_token['session_id'] = token_session_id
+                    response.data['access'] = str(access_token)
+            except Exception:
+                pass
+        return response
 
 
 # ---------------------------------------------------------------------------

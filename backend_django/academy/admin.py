@@ -160,3 +160,12 @@ class AccessRequestAdmin(admin.ModelAdmin):
     list_display = ('id', 'full_name', 'phone', 'kind', 'level_code', 'amount', 'status', 'created_at')
     list_filter = ('status', 'kind', 'level_code')
     search_fields = ('full_name', 'phone')
+
+
+from .models import StudentActiveSession
+
+@admin.register(StudentActiveSession)
+class StudentActiveSessionAdmin(admin.ModelAdmin):
+    list_display = ('user', 'session_id', 'device_name', 'ip_address', 'updated_at')
+    search_fields = ('user__username', 'user__email', 'device_name', 'ip_address')
+    readonly_fields = ('session_id', 'updated_at')

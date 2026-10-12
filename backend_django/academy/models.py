@@ -582,3 +582,19 @@ class SiteAnnouncement(models.Model):
 
     def __str__(self):
         return f"{self.title} ({'مفعل' if self.is_active else 'معطل'})"
+
+
+class StudentActiveSession(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="active_session", verbose_name="المستخدم")
+    session_id = models.CharField(max_length=255, db_index=True, verbose_name="معرف الجلسة")
+    device_id = models.CharField(max_length=255, blank=True, default="", verbose_name="معرف الجهاز")
+    device_name = models.CharField(max_length=255, blank=True, default="", verbose_name="اسم/نوع الجهاز")
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="عنوان IP")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="آخر نشاط")
+
+    class Meta:
+        verbose_name = "جلسة الطالب النشطة"
+        verbose_name_plural = "جلسات الطلاب النشطة"
+
+    def __str__(self):
+        return f"{self.user.username} ({self.device_name or self.session_id})"

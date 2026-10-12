@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 # ---------------------------------------------------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'academy.authentication.SingleSessionJWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'academy.authentication.BearerTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
