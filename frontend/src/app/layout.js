@@ -61,6 +61,9 @@ export const metadata = {
     title: 'هير خالد الحلواني | أكاديمية دويتشه فيلت',
     description: 'المنصة الرسمية للأستاذ خالد الحلواني لتدريس وتأسيس اللغة الألمانية.',
   },
+  verification: {
+    google: 'vRxOUyNZ6vbMOwrRZvPgGc2YFTe2y6ro_oUx6ra_RN0',
+  },
   alternates: {
     canonical: 'https://deutscheweltacademy.com',
   },
@@ -76,6 +79,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="vRxOUyNZ6vbMOwrRZvPgGc2YFTe2y6ro_oUx6ra_RN0" />
         {/* Saved English/German choice → left-to-right before the first paint */}
         <script dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />
       </head>
