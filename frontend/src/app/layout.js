@@ -75,11 +75,34 @@ export const viewport = {
   colorScheme: 'only light',
 };
 
+const SCHEMA_JSON = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'EducationalOrganization',
+  name: 'Deutsche Welt Academy',
+  alternateName: ['أكاديمية دويتشه فيلت', 'هير خالد الحلواني', 'منصة هير خالد الحلواني'],
+  url: 'https://deutscheweltacademy.com',
+  logo: 'https://deutscheweltacademy.com/icon.png',
+  description: 'المنصة الرسمية للأستاذ خالد الحلواني لتدريس وتأسيس اللغة الألمانية للمراحل الثانوية والجامعية.',
+  founder: {
+    '@type': 'Person',
+    name: 'خالد الحلواني',
+    alternateName: 'هير خالد الحلواني',
+  },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '16 شارع شريف سامي - الحي الثامن',
+    addressLocality: 'مدينة نصر',
+    addressRegion: 'القاهرة',
+    addressCountry: 'EG',
+  },
+});
+
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="vRxOUyNZ6vbMOwrRZvPgGc2YFTe2y6ro_oUx6ra_RN0" />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: SCHEMA_JSON }} />
         {/* Saved English/German choice → left-to-right before the first paint */}
         <script dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />
       </head>
