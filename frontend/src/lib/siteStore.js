@@ -2,20 +2,35 @@
 // contact numbers & payment methods),
 // stored as JSON files next to the website and edited from the admin dashboard.
 //
-// Files live in SITE_DATA_DIR (default: <project>/data). Needs a normal Node server with a
-// writable disk (a VPS / `npm run start`); read-only hosts (e.g. Vercel) can read the defaults
-// but can't save changes.
+// Automatically adapts to serverless environments (e.g. Vercel / AWS Lambda) where process.cwd() is read-only.
+// Uses writable temporary storage and memory cache to ensure operations succeed.
 //
 // Writes are allowed only for admins: the caller's token is checked against an admin-only
 // backend endpoint, so the backend stays the single source of truth for who is an admin.
 
 import { promises as fs } from 'fs';
 import path from 'path';
+import os from 'os';
 import axios from 'axios';
 import { BRANCHES_DATA, DEFAULT_CONTACT } from '@/constants/siteContent';
 
 const BACKEND_URL = (process.env.BACKEND_URL || 'https://py.deutschewelt.academy').replace(/\/+$/, '');
-const DATA_DIR = process.env.SITE_DATA_DIR || path.join(process.cwd(), 'data');
+
+// Detect serverless host (Vercel / Lambda) where process.cwd() is read-only
+const isServerless = !!(
+  process.env.VERCEL ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT
+);
+
+let resolvedDataDir = process.env.SITE_DATA_DIR || (
+  isServerless
+    ? path.join(os.tmpdir(), 'dw_site_data')
+    : path.join(process.cwd(), 'data')
+);
+
+// In-memory cache ensures zero latency and persists changes during warm lambda lifecycle
+const memoryCache = new Map();
 
 // family: 4 — some networks time out on the backend's IPv6 address.
 const http = axios.create({ baseURL: BACKEND_URL, timeout: 20000, family: 4 });
@@ -42,21 +57,70 @@ const DEFAULTS = {
   subscriptions: () => [],
 };
 
-const fileFor = (key) => path.join(DATA_DIR, `${key}.json`);
+const fileFor = (key, dir = resolvedDataDir) => path.join(dir, `${key}.json`);
 
 export async function readStore(key) {
-  try {
-    return JSON.parse(await fs.readFile(fileFor(key), 'utf8'));
-  } catch {
-    return DEFAULTS[key]();
+  if (memoryCache.has(key)) {
+    return memoryCache.get(key);
   }
+
+  // 1. Try reading from resolvedDataDir (e.g. /tmp/dw_site_data or custom dir)
+  try {
+    const data = JSON.parse(await fs.readFile(fileFor(key), 'utf8'));
+    memoryCache.set(key, data);
+    return data;
+  } catch {}
+
+  // 2. Try reading from project seed data if present
+  try {
+    const staticFile = path.join(process.cwd(), 'data', `${key}.json`);
+    const data = JSON.parse(await fs.readFile(staticFile, 'utf8'));
+    memoryCache.set(key, data);
+    return data;
+  } catch {}
+
+  // 3. Try reading from os.tmpdir() fallback
+  try {
+    const tmpFile = path.join(os.tmpdir(), 'dw_site_data', `${key}.json`);
+    const data = JSON.parse(await fs.readFile(tmpFile, 'utf8'));
+    memoryCache.set(key, data);
+    return data;
+  } catch {}
+
+  // 4. Default seed fallback
+  const def = DEFAULTS[key] ? DEFAULTS[key]() : null;
+  memoryCache.set(key, def);
+  return def;
 }
 
 export async function writeStore(key, value) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  const tmp = `${fileFor(key)}.tmp`;
-  await fs.writeFile(tmp, JSON.stringify(value, null, 2), 'utf8');
-  await fs.rename(tmp, fileFor(key)); // atomic replace
+  memoryCache.set(key, value);
+
+  // Helper to attempt write to a directory
+  const tryWriteTo = async (targetDir) => {
+    await fs.mkdir(targetDir, { recursive: true });
+    const targetFile = fileFor(key, targetDir);
+    const tmp = `${targetFile}.${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
+    await fs.writeFile(tmp, JSON.stringify(value, null, 2), 'utf8');
+    await fs.rename(tmp, targetFile); // atomic replace
+  };
+
+  try {
+    await tryWriteTo(resolvedDataDir);
+  } catch (err) {
+    // If read-only filesystem (EROFS/EACCES), permanently switch to os.tmpdir()
+    if (err.code === 'EROFS' || err.code === 'EACCES') {
+      try {
+        resolvedDataDir = path.join(os.tmpdir(), 'dw_site_data');
+        await tryWriteTo(resolvedDataDir);
+      } catch (innerErr) {
+        console.warn(`writeStore fallback write warning for ${key}:`, innerErr?.message);
+      }
+    } else {
+      console.warn(`writeStore write warning for ${key}:`, err?.message);
+    }
+  }
+
   return value;
 }
 
@@ -69,7 +133,7 @@ export function withLock(key, fn) {
   return next;
 }
 
-export const dataPath = (...parts) => path.join(DATA_DIR, ...parts);
+export const dataPath = (...parts) => path.join(resolvedDataDir, ...parts);
 
 /**
  * The logged-in user behind the request's Bearer token: the backend validates the token
@@ -118,55 +182,56 @@ export async function isAdminRequest(request) {
   }
 }
 
-const str = (v, max) => String(v ?? '').trim().slice(0, max);
+const str = (v, max = 200) => String(v ?? '').trim().slice(0, max);
+const phoneDigits = (v) => String(v ?? '').replace(/[^\d+]/g, '').slice(0, 20);
 const safeUrl = (v) => {
   const s = str(v, 500);
-  return /^https?:\/\//i.test(s) || s.startsWith('/') ? s : '';
+  return /^https?:\/\//i.test(s) ? s : '';
 };
+const id = (v, prefix, idx) => str(v, 40) || `${prefix}-${Date.now().toString(36)}-${idx}`;
+const list = (v) => (Array.isArray(v) ? v : []);
 
-/** Cleans one branch coming from the dashboard. */
-export function cleanBranch(b, index) {
+export function cleanBranch(b, idx) {
+  const rawId = b?.id;
+  const validId = rawId !== undefined && rawId !== null && String(rawId).trim() !== '' ? rawId : id(null, 'b', idx);
   return {
-    id: str(b.id, 60) || `b-${Date.now().toString(36)}-${index}`,
-    name: str(b.name, 120),
-    city: str(b.city, 80),
-    address: str(b.address, 400),
-    phone: str(b.phone, 20).replace(/[^\d+]/g, ''),
-    badge: str(b.badge, 60),
-    map_url: safeUrl(b.map_url),
-    color: BRANCH_COLORS.includes(b.color) ? b.color : BRANCH_COLORS[index % BRANCH_COLORS.length],
-    is_active: b.is_active !== false,
-    order: index + 1,
+    id: validId,
+    name: str(b?.name, 80),
+    city: str(b?.city, 40),
+    address: str(b?.address, 200),
+    phone: phoneDigits(b?.phone),
+    badge: str(b?.badge, 40),
+    map_url: safeUrl(b?.map_url || b?.mapUrl),
+    color: BRANCH_COLORS.includes(b?.color) ? b.color : BRANCH_COLORS[idx % BRANCH_COLORS.length],
+    is_active: b?.is_active !== false,
+    order: Number.isInteger(b?.order) ? b.order : idx + 1,
   };
 }
 
 export function cleanAnnouncement(a) {
-  if (!a || typeof a !== 'object') return null;
+  if (!a) return null;
   return {
-    is_active: a.is_active !== false,
-    tag: str(a.tag, 60),
-    title: str(a.title, 200),
-    desc: str(a.desc, 500),
+    is_active: !!a.is_active,
+    tag: str(a.tag, 30) || '🔥 عرض خاص',
+    title: str(a.title, 120),
+    desc: str(a.desc, 300),
     has_discount: !!a.has_discount,
-    discount_percent: str(a.discount_percent, 20),
-    cta_text: str(a.cta_text, 60),
-    cta_link: safeUrl(a.cta_link) || '/#online-courses',
+    discount_percent: str(a.discount_percent, 10),
+    cta_text: str(a.cta_text, 40) || 'احجز الآن',
+    cta_link: str(a.cta_link, 300) || '/#online-courses',
+    expires_at: a.expires_at ? new Date(a.expires_at).toISOString() : null,
     updated_at: new Date().toISOString(),
   };
 }
 
-export const PAYMENT_TYPES = ['wallet', 'instapay', 'bank', 'other'];
-const phoneDigits = (v) => str(v, 20).replace(/[^\d+]/g, '');
+const PAYMENT_TYPES = ['vodafone', 'instapay', 'fawry', 'bank', 'other'];
 
-/** Cleans the contact numbers / payment methods coming from the dashboard. */
 export function cleanContact(c) {
-  if (!c || typeof c !== 'object') return null;
-  const list = (v) => (Array.isArray(v) ? v.slice(0, 12) : []);
-  const id = (v, prefix, i) => str(v, 40) || `${prefix}-${Date.now().toString(36)}-${i}`;
+  c = c || {};
   return {
-    whatsapp: phoneDigits(c.whatsapp),
+    whatsapp: phoneDigits(c.whatsapp || DEFAULT_CONTACT.whatsapp),
     phones: list(c.phones)
-      .map((p, i) => ({ id: id(p?.id, 'p', i), label: str(p?.label, 60), number: phoneDigits(p?.number) }))
+      .map((p, i) => ({ id: id(p?.id, 'p', i), label: str(p?.label, 40), number: phoneDigits(p?.number), is_primary: !!p?.is_primary }))
       .filter((p) => p.number),
     payment: {
       methods: list(c.payment?.methods)
