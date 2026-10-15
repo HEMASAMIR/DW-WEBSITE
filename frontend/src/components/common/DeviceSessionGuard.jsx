@@ -55,6 +55,7 @@ export default function DeviceSessionGuard() {
   // Initial registration on login
   useEffect(() => {
     if (isAuthenticated && !exempt) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       checkSession('register');
     }
   }, [isAuthenticated, exempt, checkSession]);
