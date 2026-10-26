@@ -412,12 +412,12 @@ const SITE_ANNOUNCEMENT = '/site-data/announcement';
 const SITE_SUBSCRIPTIONS = '/site-data/subscriptions';
 const EMPTY_ANNOUNCEMENT = {
   is_active: true,
-  tag: '🔥 عرض خاص',
-  title: 'خصم خاص 25% على باقة المستويات المجمعة والتسجيل المبكر',
-  desc: 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية مستمرة.',
-  has_discount: true,
-  discount_percent: '25%',
-  cta_text: 'احجز مقعدك بالخصم',
+  tag: '📚 درس جديد',
+  title: 'تم نزول الدرس الأول للمستوى الأول A1 من كتاب Netzwerk Neu 🇩🇪',
+  desc: 'المحاضرة الأولى متوفرة الآن مع تدريبات النطق والقواعد وملفات الـ PDF التفاعلية بالكامل؛ ابدأ دراستك وانضم للمتابعة!',
+  has_discount: false,
+  discount_percent: '',
+  cta_text: 'شاهد الدرس الآن',
   cta_link: '/#online-courses',
 };
 
