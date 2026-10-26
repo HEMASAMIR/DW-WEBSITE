@@ -22,6 +22,10 @@ export default function AnnouncementSection() {
 
   const save = async (e) => {
     e.preventDefault();
+    if (form?.is_active && !form?.title?.trim()) {
+      toast('err', t('يرجى كتابة عنوان الإعلان قبل الحفظ والتفعيل.'));
+      return;
+    }
     setSaving(true);
     try {
       setForm(await adminService.saveAnnouncement(form));

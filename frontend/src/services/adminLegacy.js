@@ -411,8 +411,14 @@ const SITE_BRANCHES = '/site-data/branches';
 const SITE_ANNOUNCEMENT = '/site-data/announcement';
 const SITE_SUBSCRIPTIONS = '/site-data/subscriptions';
 const EMPTY_ANNOUNCEMENT = {
-  is_active: false, tag: '🔥 عرض خاص', title: '', desc: '', has_discount: false, discount_percent: '',
-  cta_text: 'احجز الآن', cta_link: '/#online-courses',
+  is_active: true,
+  tag: '🔥 عرض خاص',
+  title: 'خصم خاص 25% على باقة المستويات المجمعة والتسجيل المبكر',
+  desc: 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية مستمرة.',
+  has_discount: true,
+  discount_percent: '25%',
+  cta_text: 'احجز مقعدك بالخصم',
+  cta_link: '/#online-courses',
 };
 
 async function saveBranches(list) {

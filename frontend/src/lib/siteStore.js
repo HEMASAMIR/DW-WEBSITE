@@ -35,7 +35,17 @@ const memoryCache = new Map();
 // family: 4 — some networks time out on the backend's IPv6 address.
 const http = axios.create({ baseURL: BACKEND_URL, timeout: 20000, family: 4 });
 
-export const BRANCH_COLORS = ['teal', 'sky', 'amber', 'rose', 'violet', 'emerald'];
+export const DEFAULT_ANNOUNCEMENT = {
+  is_active: true,
+  tag: '🔥 عرض خاص',
+  title: 'خصم خاص 25% على باقة المستويات المجمعة والتسجيل المبكر',
+  desc: 'التسجيل متاح الآن للدفعة الجديدة مع محاضرات تفاعلية وبنك أسئلة ومتابعة شخصية مستمرة.',
+  has_discount: true,
+  discount_percent: '25%',
+  cta_text: 'احجز مقعدك بالخصم',
+  cta_link: '/#online-courses',
+  updated_at: new Date().toISOString(),
+};
 
 const DEFAULTS = {
   branches: () => BRANCHES_DATA.map((b, i) => ({
@@ -50,7 +60,7 @@ const DEFAULTS = {
     is_active: true,
     order: i + 1,
   })),
-  announcement: () => null,
+  announcement: () => DEFAULT_ANNOUNCEMENT,
   contact: () => DEFAULT_CONTACT,
   requests: () => [],
   coupons: () => [],
