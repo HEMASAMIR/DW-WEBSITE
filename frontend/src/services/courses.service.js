@@ -60,6 +60,18 @@ export function saveFile({ blob, filename }) {
   saveBlob(blob, filename);
 }
 
+export function formatLectureTitle(title, index = 0) {
+  if (!title || typeof title !== 'string') return `المحاضرة ${index + 1}`;
+  const t = title.trim();
+  const isRaw = /(^GMT|\.mp4$|\.mov$|\.mkv$|\.avi$|^Recording|^VID_|^Zoom_)/i.test(t);
+  if (isRaw) {
+    return index === 0
+      ? 'الدرس الأول: مدخل اللغة الألمانية - كتاب Netzwerk Neu'
+      : `المحاضرة ${index + 1}`;
+  }
+  return t;
+}
+
 export const coursesService = {
   getLevels: async () => {
     const { data } = await apiClient.get(API_ENDPOINTS.COURSE_LEVELS);
@@ -76,9 +88,14 @@ export const coursesService = {
   /** Returns { level, videos, files }. Throws 403 if the user has no access. */
   getLevelContent: async (levelId) => {
     const { data } = await withAdminAccess('level', levelId, () => apiClient.get(API_ENDPOINTS.LEVEL_VIDEOS(levelId)));
+    const sortedVideos = [...(data.videos || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     return {
       level: data.level ? normalizeLevel(data.level) : null,
-      videos: [...(data.videos || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+      videos: sortedVideos.map((v, i) => ({
+        ...v,
+        title: formatLectureTitle(v.title, i),
+        raw_title: v.title,
+      })),
       files: (data.files || []).filter((f) => f.is_active !== false),
     };
   },
