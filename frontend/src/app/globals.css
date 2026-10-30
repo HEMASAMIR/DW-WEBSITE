@@ -372,4 +372,34 @@ nextjs-portal,
   -ms-user-select: none !important;
 }
 
+/* Announcement Marquee Ticker */
+@keyframes dwAnnouncementMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.dw-announcement-ticker {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: dwAnnouncementMarquee 35s linear infinite;
+}
+
+.dw-announcement-wrapper:hover .dw-announcement-ticker,
+.dw-announcement-ticker:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dw-announcement-ticker {
+    animation: none;
+    transform: none;
+  }
+}
+
+
 
