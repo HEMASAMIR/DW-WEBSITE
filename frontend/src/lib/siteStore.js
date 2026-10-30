@@ -40,8 +40,28 @@ export const BRANCH_COLORS = ['teal', 'sky', 'amber', 'rose', 'violet', 'emerald
 function sanitizeData(data) {
   if (!data) return data;
   try {
-    const raw = JSON.stringify(data).replace(/552287454/g, '55287454');
-    return JSON.parse(raw);
+    let raw = JSON.stringify(data).replace(/552287454/g, '55287454');
+    let parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      parsed = parsed.filter((b) => {
+        if (!b || typeof b !== 'object') return true;
+        const name = String(b.name || '');
+        const city = String(b.city || '');
+        const bid = String(b.id || '');
+        if (
+          name.includes('منصورة') ||
+          name.includes('إسكندرية') ||
+          city.includes('دقهلية') ||
+          city.includes('إسكندرية') ||
+          bid === 'mansoura' ||
+          bid === 'alexandria'
+        ) {
+          return false;
+        }
+        return true;
+      });
+    }
+    return parsed;
   } catch {
     return data;
   }

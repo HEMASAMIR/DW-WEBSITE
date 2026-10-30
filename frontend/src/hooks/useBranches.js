@@ -18,16 +18,20 @@ export function useBranches() {
       .then((list) => (Array.isArray(list) && list.length ? list : apiClient.get('/site-data/branches').then(({ data }) => data)))
       .then((list) => {
         if (cancelled || !Array.isArray(list)) return;
-        setBranches(list.filter((b) => b.is_active !== false).map((b) => ({
-          id: b.id,
-          name: b.name,
-          city: b.city,
-          address: b.address,
-          phone: String(b.phone || '').replace(/552287454/g, '55287454') || '+201055287454',
-          badge: b.badge || b.city,
-          mapUrl: b.map_url,
-          color: b.color,
-        })));
+        setBranches(
+          list
+            .filter((b) => b.is_active !== false && !b.name?.includes('منصورة') && !b.name?.includes('إسكندرية') && !b.city?.includes('دقهلية') && !b.city?.includes('إسكندرية') && b.id !== 'mansoura' && b.id !== 'alexandria')
+            .map((b) => ({
+              id: b.id,
+              name: b.name,
+              city: b.city,
+              address: b.address,
+              phone: String(b.phone || '').replace(/552287454/g, '55287454') || '+201055287454',
+              badge: b.badge || b.city,
+              mapUrl: b.map_url,
+              color: b.color,
+            }))
+        );
       })
       .catch(() => {});
     return () => { cancelled = true; };

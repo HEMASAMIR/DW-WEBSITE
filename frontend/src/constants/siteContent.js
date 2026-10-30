@@ -63,24 +63,6 @@ export const BRANCHES_DATA = [
     phone: '01144151673',
     badge: 'القاهرة',
   },
-  {
-    id: 'mansoura',
-    name: 'فرع المنصورة',
-    city: 'الدقهلية',
-    address: '١ شارع الشيخ الغزالي أمام مستشفى الجامعة البوابة الرئيسية',
-    mapUrl: 'https://maps.app.goo.gl/PpTdBa3fkWC7WGYt5',
-    phone: '+201055287454',
-    badge: 'الدقهلية',
-  },
-  {
-    id: 'alexandria',
-    name: 'فرع الإسكندرية',
-    city: 'الإسكندرية',
-    address: 'سموحة ١ شارع 3 من شارع النصر أمام صيدلية الخليلي',
-    mapUrl: 'https://maps.app.goo.gl/WY4LqQKPTK4M9e4A7',
-    phone: '01144151673',
-    badge: 'الإسكندرية',
-  },
 ];
 
 export const TEACHER_CV_DATA = {
