@@ -1,3 +1,4 @@
+import re
 """
 Deutsche Welt — Access Requests (Student)
 =========================================
@@ -46,14 +47,15 @@ class AccessRequestCreateAPIView(APIView):
         kind = str(data.get('kind', '')).strip()
         item_id = data.get('item_id')
         full_name = str(data.get('full_name', '')).strip()
-        phone = ''.join(ch for ch in str(data.get('phone', '')) if ch.isdigit())
+        raw_phone = str(data.get('phone', '')).strip()
+        phone = re.sub(r'[\s\-\(\)]', '', raw_phone)
 
         if kind not in (AccessRequest.KIND_LEVEL, AccessRequest.KIND_BOOK):
             return Response({'detail': 'نوع الطلب غير صحيح.'}, status=status.HTTP_400_BAD_REQUEST)
         if not full_name:
             return Response({'full_name': ['الاسم مطلوب.']}, status=status.HTTP_400_BAD_REQUEST)
-        if len(phone) != 11:
-            return Response({'phone': ['رقم الهاتف يجب أن يكون 11 رقماً.']}, status=status.HTTP_400_BAD_REQUEST)
+        if not re.match(r'^\+?[0-9]{7,16}$', phone):
+            return Response({'phone': ['رقم الهاتف غير صحيح. يرجى إدخال رقم صحيح مع كود الدولة.']}, status=status.HTTP_400_BAD_REQUEST)
 
         receipt = request.FILES.get('receipt')
         if receipt:

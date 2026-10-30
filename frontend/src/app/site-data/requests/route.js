@@ -62,7 +62,7 @@ export async function POST(request) {
   const kind = String(form.get('kind') || '');
   const itemId = Number(form.get('item_id'));
   const fullName = String(form.get('full_name') || '').trim().slice(0, 120);
-  const phone = String(form.get('phone') || '').replace(/\D/g, '');
+  const phone = String(form.get('phone') || '').replace(/[\s\-()]/g, '');
   const paymentMethod = String(form.get('payment_method') || '').trim().slice(0, 50);
   const note = String(form.get('note') || '').trim().slice(0, 1000);
   const receipt = form.get('receipt');
@@ -70,7 +70,7 @@ export async function POST(request) {
 
   if (kind !== 'level' && kind !== 'book') return json({ detail: 'نوع الطلب غير صحيح.' }, 400);
   if (!fullName) return json({ full_name: ['الاسم مطلوب.'] }, 400);
-  if (phone.length !== 11) return json({ phone: ['رقم الهاتف يجب أن يكون 11 رقماً.'] }, 400);
+  if (!/^\+?[0-9]{7,16}$/.test(phone)) return json({ phone: ['رقم الهاتف غير صحيح. يرجى إدخال رقم صحيح مع كود الدولة.'] }, 400);
   const hasReceipt = receipt && typeof receipt === 'object' && receipt.size > 0;
   if (hasReceipt) {
     if (!RECEIPT_TYPES[path.extname(receipt.name || '').toLowerCase()]) return json({ receipt: ['صورة التحويل يجب أن تكون صورة أو PDF.'] }, 400);

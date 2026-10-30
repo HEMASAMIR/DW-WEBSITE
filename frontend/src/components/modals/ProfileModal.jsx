@@ -7,6 +7,7 @@ import { authService } from '@/services/auth.service';
 import { getErrorMessage } from '@/services/api';
 import { mediaUrl } from '@/constants/apiRoutes';
 import { X, UserCircle, Save, KeyRound, Loader2, Camera } from 'lucide-react';
+import InternationalPhoneInput from '@/components/common/InternationalPhoneInput';
 
 import { t } from '@/lib/i18n';
 const inputClass =
@@ -52,9 +53,12 @@ function ProfileDialog({ onClose }) {
 
   const saveInfo = (e) => {
     e.preventDefault();
-    if (phone && !/^\d{11}$/.test(phone)) {
-      setMsg({ type: 'err', text: t('رقم الهاتف يجب أن يكون 11 رقماً بالضبط.') });
-      return;
+    if (phone) {
+      const digits = String(phone).replace(/\D/g, '');
+      if (digits.length < 8 || digits.length > 15) {
+        setMsg({ type: 'err', text: t('رقم الهاتف غير صحيح، يرجى إدخال رقم صحيح مع كود الدولة.') });
+        return;
+      }
     }
     run(async () => {
       let payload = { first_name: firstName.trim(), last_name: lastName.trim(), phone_number: phone };
@@ -145,18 +149,12 @@ function ProfileDialog({ onClose }) {
                 <input value={lastName} onChange={(e) => setLastName(e.target.value)} className={inputClass} />
               </div>
             </div>
-            <div>
-              <label className="block text-xs text-slate-300 mb-1">{t('رقم الموبايل')}</label>
-              <input
-                type="tel"
-                inputMode="numeric"
-                dir="ltr"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
-                placeholder="010xxxxxxxx"
-                className={`${inputClass} text-start`}
-              />
-            </div>
+            <InternationalPhoneInput
+              label={t('رقم الموبايل / الهاتف')}
+              darkMode
+              value={phone}
+              onChange={(val) => setPhone(val)}
+            />
             <button type="submit" disabled={busy} className="w-full flex items-center justify-center gap-2 bg-amber-400 text-slate-950 font-extrabold text-sm py-3 rounded-xl disabled:opacity-50">
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               <span>{t('حفظ التعديلات')}</span>

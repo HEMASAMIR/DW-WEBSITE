@@ -219,7 +219,11 @@ function Shell({ user }) {
 
       {/* brand — the academy's full logo (mark + name) on the navy/teal card */}
       <div className="relative px-4 pt-6 pb-4 [@media(max-height:760px)]:pt-4 [@media(max-height:760px)]:pb-2">
-        <div className="dw-keep-light group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#07192e] via-[#0c2847] to-[#0e3b68] px-4 pt-5 pb-4 [@media(max-height:760px)]:pt-3 [@media(max-height:760px)]:pb-3 shadow-xl shadow-[#07192e]/25 border border-white/10">
+        <Link
+          href="/"
+          title={t('الرئيسية')}
+          className="block dw-keep-light group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#07192e] via-[#0c2847] to-[#0e3b68] px-4 pt-5 pb-4 [@media(max-height:760px)]:pt-3 [@media(max-height:760px)]:pb-3 shadow-xl shadow-[#07192e]/25 border border-white/10 transition-transform duration-200 hover:scale-[1.02]"
+        >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_70%_at_100%_0%,rgba(20,184,166,0.45),transparent_60%),radial-gradient(ellipse_70%_70%_at_0%_100%,rgba(245,158,11,0.28),transparent_60%)]" />
           <div
             className="absolute inset-0 opacity-[0.07]"
@@ -247,10 +251,10 @@ function Shell({ user }) {
           <div className="absolute bottom-0 inset-x-0 flex h-1" dir="ltr">
             <span className="flex-1 bg-slate-950" /><span className="flex-1 bg-red-600" /><span className="flex-1 bg-amber-400" />
           </div>
-          <button onClick={() => setMenuOpen(false)} className="lg:hidden absolute top-3 end-3 w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center" aria-label={t('إغلاق القائمة')}>
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        </Link>
+        <button onClick={() => setMenuOpen(false)} className="lg:hidden absolute top-9 end-7 z-10 w-9 h-9 rounded-xl bg-white/15 text-white flex items-center justify-center" aria-label={t('إغلاق القائمة')}>
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* navigation — scrolls on short screens, fading out above the account card */}
@@ -362,8 +366,13 @@ function Shell({ user }) {
               <Btn variant="ghost" size="icon" title={t('تحديث')} onClick={() => { setReloadKey((k) => k + 1); refreshCounts(); }}>
                 <RefreshCw className="w-4 h-4" />
               </Btn>
-              <Link href="/courses" target="_blank" className="hidden md:inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-white border border-slate-200 text-xs font-black text-slate-700 hover:bg-slate-50">
-                <ExternalLink className="w-3.5 h-3.5" /> {t('شوف الموقع كطالب')}
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-white border border-slate-200 text-xs font-black text-slate-700 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-200 transition-all shadow-sm"
+                title={t('الذهاب للرئيسية')}
+              >
+                <Home className="w-4 h-4 text-teal-600" />
+                <span>{t('الرئيسية')}</span>
               </Link>
               <div className="flex items-center gap-2 ps-2 sm:border-s border-slate-200">
                 <Avatar name={name} size="sm" />

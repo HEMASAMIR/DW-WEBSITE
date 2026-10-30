@@ -147,10 +147,11 @@ export default function Header() {
           {mounted && isAdmin && (
             <button
               onClick={openAdminDashboard}
-              className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-colors"
+              className="h-10 px-3.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-600 hover:text-white flex items-center gap-1.5 transition-colors text-xs font-black shadow-sm group"
               title={t('لوحة تحكم الإدارة')}
             >
-              <LayoutDashboard className="w-4 h-4" />
+              <LayoutDashboard className="w-4 h-4 text-emerald-600 group-hover:text-white transition-colors" />
+              <span className="hidden sm:inline">{t('لوحة التحكم')}</span>
             </button>
           )}
 
@@ -230,6 +231,15 @@ export default function Header() {
               );
             })}
           </div>
+          {mounted && isAdmin && (
+            <button
+              onClick={() => { setMobileMenuOpen(false); openAdminDashboard(); }}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-black hover:bg-emerald-100 transition-colors"
+            >
+              <LayoutDashboard className="w-4 h-4 text-emerald-600" />
+              <span>{t('لوحة التحكم (الإدارة)')}</span>
+            </button>
+          )}
           {mounted && !isAuthenticated && (
             <button
               onClick={() => { setMobileMenuOpen(false); openAuthModal('login'); }}

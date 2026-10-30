@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { t, langMeta } from '@/lib/i18n';
+import InternationalPhoneInput from '@/components/common/InternationalPhoneInput';
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 const OTP_LENGTH = 6;
@@ -20,7 +21,11 @@ const OTP_TTL_MS = 10 * 60 * 1000; // backend: the code expires after 10 minutes
 const RESEND_COOLDOWN_MS = 60 * 1000;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^01\d{9}$/;
+const isPhoneValid = (p) => {
+  if (!p) return false;
+  const digits = String(p).replace(/\D/g, '');
+  return digits.length >= 8 && digits.length <= 15;
+};
 
 // The backend answers in English — show these in Arabic.
 const ERROR_TRANSLATIONS = [
@@ -34,7 +39,7 @@ const ERROR_TRANSLATIONS = [
   [/entirely numeric/i, 'كلمة المرور لازم متكونش أرقام بس.'],
   [/too short/i, 'كلمة المرور قصيرة، لازم 8 حروف على الأقل.'],
   [/too similar/i, 'كلمة المرور شبه بياناتك الشخصية، اختار واحدة مختلفة.'],
-  [/phone/i, 'رقم الموبايل غير صحيح (11 رقم ويبدأ بـ 01).'],
+  [/phone/i, 'رقم الهاتف غير صحيح، يرجى كتابة الرقم مع كود الدولة.'],
 ];
 
 function friendlyError(err, fallback) {
@@ -159,7 +164,7 @@ function AuthDialog({ initialMode, onClose }) {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    if (!PHONE_RE.test(phone)) return showError(t('رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.'));
+    if (!isPhoneValid(phone)) return showError(t('يرجى إدخال رقم هاتف صحيح مع كود الدولة.'));
     if (password.length < 8) return showError(t('كلمة المرور لازم تكون 8 حروف على الأقل.'));
     run(async () => {
       await register({ email, password, first_name: firstName, last_name: lastName, phone_number: phone });
@@ -185,7 +190,7 @@ function AuthDialog({ initialMode, onClose }) {
 
   const handleSavePhone = (e) => {
     e.preventDefault();
-    if (!PHONE_RE.test(phone)) return showError(t('رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 01.'));
+    if (!isPhoneValid(phone)) return showError(t('يرجى إدخال رقم هاتف صحيح مع كود الدولة.'));
     run(async () => {
       await updateProfile({ phone_number: phone });
       onClose();
@@ -366,26 +371,12 @@ function AuthDialog({ initialMode, onClose }) {
                     {(cls) => <input type="email" required autoComplete="email" dir="ltr" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className={cls} />}
                   </TextField>
 
-                  <TextField
-                    label={t('رقم الموبايل')}
-                    icon={Phone}
-                    hint={phone && !PHONE_RE.test(phone) ? t('{n}/11 — لازم يبدأ بـ 01', { n: phone.length }) : null}
-                    valid={PHONE_RE.test(phone)}
-                  >
-                    {(cls) => (
-                      <input
-                        type="tel"
-                        required
-                        inputMode="numeric"
-                        autoComplete="tel"
-                        dir="ltr"
-                        value={phone}
-                        onChange={(e) => setPhone(toLatinDigits(e.target.value).replace(/\D/g, '').slice(0, 11))}
-                        placeholder="01xxxxxxxxx"
-                        className={cls}
-                      />
-                    )}
-                  </TextField>
+                  <InternationalPhoneInput
+                    label={t('رقم الموبايل / الهاتف')}
+                    required
+                    value={phone}
+                    onChange={(val) => setPhone(val)}
+                  />
 
                   <PasswordField label={t('كلمة المرور')} value={password} onChange={setPassword} autoComplete="new-password" placeholder={t('8 حروف على الأقل')} showStrength />
 
@@ -463,27 +454,13 @@ function AuthDialog({ initialMode, onClose }) {
 
               {mode === 'phone' && (
                 <form onSubmit={handleSavePhone} className="space-y-4">
-                  <TextField
-                    label={t('رقم الموبايل')}
-                    icon={Phone}
-                    hint={phone && !PHONE_RE.test(phone) ? t('{n}/11 — لازم يبدأ بـ 01', { n: phone.length }) : null}
-                    valid={PHONE_RE.test(phone)}
-                  >
-                    {(cls) => (
-                      <input
-                        type="tel"
-                        required
-                        autoFocus
-                        inputMode="numeric"
-                        autoComplete="tel"
-                        dir="ltr"
-                        value={phone}
-                        onChange={(e) => setPhone(toLatinDigits(e.target.value).replace(/\D/g, '').slice(0, 11))}
-                        placeholder="01xxxxxxxxx"
-                        className={cls}
-                      />
-                    )}
-                  </TextField>
+                  <InternationalPhoneInput
+                    label={t('رقم الموبايل / الهاتف')}
+                    required
+                    autoFocus
+                    value={phone}
+                    onChange={(val) => setPhone(val)}
+                  />
                   <PrimaryButton loading={loading} icon={CheckCircle2} label={t('حفظ ومتابعة')} loadingLabel={t('بنحفظ…')} />
                   <button type="button" onClick={onClose} disabled={loading} className="w-full text-xs font-bold text-slate-500 hover:text-[#0e2c4e]">
                     {t('بعدين — هضيفه من صفحة حسابي')}

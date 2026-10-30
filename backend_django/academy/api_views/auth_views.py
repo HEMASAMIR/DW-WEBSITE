@@ -63,7 +63,7 @@ def _user_data(user):
         'username': user.username,
         'first_name': user.first_name,
         'last_name': user.last_name,
-        'phone_number': getattr(user, 'phone_number', None),
+        'phone_number': getattr(user, 'phone_number', None) or (getattr(user.academy_profile, 'phone', None) if hasattr(user, 'academy_profile') and user.academy_profile else None),
         'is_active': user.is_active,
         'is_staff': is_admin,
         'is_superuser': bool(user.is_superuser),
@@ -170,11 +170,14 @@ class RegisterAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if phone_number and len(phone_number) != 11:
-            return Response(
-                {'phone_number': ['يجب أن يكون رقم الهاتف 11 رقماً بالضبط.']},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        if phone_number:
+            clean_phone = re.sub(r'[\s\-\(\)]', '', phone_number)
+            if not re.match(r'^\+?[0-9]{7,16}$', clean_phone):
+                return Response(
+                    {'phone_number': ['رقم الهاتف غير صحيح. يرجى إدخال رقم صحيح مع كود الدولة.']},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            phone_number = clean_phone
 
         if User.objects.filter(email__iexact=email).exists():
             return Response(
@@ -189,10 +192,23 @@ class RegisterAPIView(APIView):
             first_name=first_name,
             last_name=last_name,
         )
-        # Store phone if the custom User model supports it
-        if phone_number and hasattr(user, 'phone_number'):
-            user.phone_number = phone_number
-            user.save(update_fields=['phone_number'])
+        # Store phone if the custom User model supports it or in AcademyStudent profile
+        if phone_number:
+            if hasattr(user, 'phone_number'):
+                user.phone_number = phone_number
+                user.save(update_fields=['phone_number'])
+            try:
+                from academy.models import AcademyStudent
+                AcademyStudent.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        'name': f"{first_name} {last_name}".strip() or user.username,
+                        'email': email,
+                        'phone': phone_number,
+                    }
+                )
+            except Exception:
+                pass
 
         return Response({
             'id': user.id,
@@ -573,7 +589,7 @@ class UserProfileAPIView(APIView):
             'user': {
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'phone_number': getattr(user, 'phone_number', None),
+                'phone_number': getattr(user, 'phone_number', None) or (getattr(user.academy_profile, 'phone', None) if hasattr(user, 'academy_profile') and user.academy_profile else None),
                 'profile_photo': profile_photo,
             },
         })
@@ -591,11 +607,25 @@ class UserProfileAPIView(APIView):
         if last_name is not None:
             user.last_name = last_name.strip()
             update_fields.append('last_name')
-        if phone_number is not None and hasattr(user, 'phone_number'):
-            if len(phone_number) != 11:
-                return Response({'phone_number': ['يجب أن يكون رقم الهاتف 11 رقماً.']}, status=status.HTTP_400_BAD_REQUEST)
-            user.phone_number = phone_number
-            update_fields.append('phone_number')
+        if phone_number is not None:
+            clean_phone = re.sub(r'[\s\-\(\)]', '', str(phone_number).strip())
+            if clean_phone and not re.match(r'^\+?[0-9]{7,16}$', clean_phone):
+                return Response({'phone_number': ['رقم الهاتف غير صحيح. يرجى إدخال رقم صحيح مع كود الدولة.']}, status=status.HTTP_400_BAD_REQUEST)
+            if hasattr(user, 'phone_number'):
+                user.phone_number = clean_phone
+                update_fields.append('phone_number')
+            try:
+                from academy.models import AcademyStudent
+                AcademyStudent.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        'name': f"{user.first_name} {user.last_name}".strip() or user.username,
+                        'email': user.email,
+                        'phone': clean_phone,
+                    }
+                )
+            except Exception:
+                pass
 
         if update_fields:
             user.save(update_fields=update_fields)
@@ -605,7 +635,7 @@ class UserProfileAPIView(APIView):
             'user': {
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'phone_number': getattr(user, 'phone_number', None),
+                'phone_number': getattr(user, 'phone_number', None) or (getattr(user.academy_profile, 'phone', None) if hasattr(user, 'academy_profile') and user.academy_profile else None),
                 'profile_photo': None,
             },
         })

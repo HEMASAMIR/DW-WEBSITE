@@ -10,6 +10,7 @@ import CouponBox from './CouponBox';
 import { track, priceValue } from '@/lib/analytics';
 import { PayMethodPicker, Field, inputCls, SentState, usePayOptions } from './OrderShell';
 import { Send, Loader2, ImagePlus, X, Clock3, AlertCircle } from 'lucide-react';
+import InternationalPhoneInput from '@/components/common/InternationalPhoneInput';
 
 import { t } from '@/lib/i18n';
 /**
@@ -59,6 +60,11 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
 
   const submit = async (e) => {
     e.preventDefault();
+    const digits = String(phone).replace(/\D/g, '');
+    if (digits.length < 8 || digits.length > 15) {
+      setError(t('رقم الهاتف غير صحيح، يرجى كتابة الرقم مع كود الدولة.'));
+      return;
+    }
     setSending(true);
     setError('');
     try {
@@ -139,20 +145,12 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         <Field label={t('الاسم بالكامل')}>
           <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
         </Field>
-        <Field label={t('رقم الواتساب')}>
-          <input
-            type="tel"
-            required
-            inputMode="numeric"
-            pattern="[0-9]{11}"
-            title={t('رقم الهاتف يجب أن يكون 11 رقماً')}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
-            placeholder="010xxxxxxxx"
-            dir="ltr"
-            className={`${inputCls} text-start`}
-          />
-        </Field>
+        <InternationalPhoneInput
+          label={t('رقم الواتساب / الموبايل')}
+          required
+          value={phone}
+          onChange={(val) => setPhone(val)}
+        />
         <PayMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
 
         {paymentMethod !== CASH_METHOD && (

@@ -399,7 +399,7 @@ class AdminUserManageAPIView(APIView):
             'is_active': u.is_active,
             'is_staff': u.is_staff or u.is_superuser,
             'date_joined': u.date_joined.isoformat() if u.date_joined else None,
-            'phone_number': getattr(u, 'phone_number', None),
+            'phone_number': getattr(u, 'phone_number', None) or (getattr(u.academy_profile, 'phone', None) if hasattr(u, 'academy_profile') and u.academy_profile else None),
             'profile_photo': None,
         } for u in users_qs]
 

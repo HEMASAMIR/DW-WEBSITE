@@ -29,8 +29,11 @@ class RegisterAPIView(APIView):
         if not email or not password or not first_name:
             return Response({'detail': 'يرجى إدخال كافة البيانات الأساسية المطلوبة.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if phone_number and len(phone_number) != 11:
-            return Response({'phone_number': ['phone_number must be exactly 11 digits.']}, status=status.HTTP_400_BAD_REQUEST)
+        if phone_number:
+            clean_phone = re.sub(r'[\s\-\(\)]', '', phone_number)
+            if not re.match(r'^\+?[0-9]{7,16}$', clean_phone):
+                return Response({'phone_number': ['phone_number must be a valid international number with country code.']}, status=status.HTTP_400_BAD_REQUEST)
+            phone_number = clean_phone
 
         if User.objects.filter(email=email).exists() or User.objects.filter(username=email).exists():
             return Response({'email': ['هذا البريد الإلكتروني مسجل بالفعل.']}, status=status.HTTP_400_BAD_REQUEST)
