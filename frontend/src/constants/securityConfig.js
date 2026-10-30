@@ -5,6 +5,8 @@ export const ALLOWED_PROTECTION_EMAILS = [
   'samir1@gmail.com',
   'admin@example.com',
   'e2e92162@example.com',
+  'is6862480@gmail.com',
+  '01055673184hs@gmail.com',
 ];
 
 export function isExemptFromProtection(user) {

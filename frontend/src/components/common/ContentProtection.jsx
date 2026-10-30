@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { isExemptFromProtection } from '@/constants/securityConfig';
 import { AlertTriangle, Lock } from 'lucide-react';
@@ -8,13 +9,17 @@ import { t } from '@/lib/i18n';
 
 export default function ContentProtection({ children }) {
   const { user } = useAuth();
+  const pathname = usePathname() || '';
   const [showWarning, setShowWarning] = useState(false);
   const [watermarkPos, setWatermarkPos] = useState({ top: 25, left: 35 });
   const exempt = isExemptFromProtection(user);
 
+  // Watermark is ONLY active on video lecture playback or protected reader pages
+  const isProtectedMediaPage = pathname.includes('/watch/') || pathname.includes('/read');
+
   // Dynamic moving watermark coordinates (moves smoothly every 6 seconds)
   useEffect(() => {
-    if (exempt || !user) return;
+    if (exempt || !user || !isProtectedMediaPage) return;
     const interval = setInterval(() => {
       setWatermarkPos({
         top: Math.floor(Math.random() * 65) + 15,
@@ -22,7 +27,7 @@ export default function ContentProtection({ children }) {
       });
     }, 6000);
     return () => clearInterval(interval);
-  }, [exempt, user]);
+  }, [exempt, user, isProtectedMediaPage]);
 
   // Safe keyboard protection for logged-in users: PrintScreen, Ctrl+P, Ctrl+U
   useEffect(() => {
@@ -94,8 +99,8 @@ export default function ContentProtection({ children }) {
     <div className="relative">
       {children}
 
-      {/* Forensic Moving Watermark (unobtrusive, pointer-events-none, protects lectures & platform) */}
-      {!exempt && user && userIdentifier && (
+      {/* Forensic Moving Watermark (ONLY on protected video player / book reader pages) */}
+      {!exempt && user && userIdentifier && isProtectedMediaPage && (
         <div
           className="fixed pointer-events-none select-none z-[999] transition-all duration-1000 ease-in-out opacity-25"
           style={{
