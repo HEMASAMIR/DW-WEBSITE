@@ -52,7 +52,7 @@ export default function Footer() {
   const { isAdmin } = useAuth();
   const branches = useBranches();
   const contact = useContactInfo();
-  const phone = primaryPhone(contact);
+  const phone = String(primaryPhone(contact) || '+201055287454').replace(/552287454/g, '55287454');
   const [devModalOpen, setDevModalOpen] = useState(false);
   const [copiedText, setCopiedText] = useState(null);
 

@@ -81,11 +81,11 @@ export default function BranchesSection() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <a
-                    href={`tel:${branch.phone}`}
+                    href={`tel:${String(branch.phone || '').replace(/552287454/g, '55287454').replace(/\s+/g, '')}`}
                     className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-slate-100 border border-slate-200 ${tone.phone} text-[#0e2c4e] text-xs sm:text-sm font-black transition-colors`}
                   >
                     <Phone className={`w-4 h-4 ${tone.icon}`} />
-                    <span dir="ltr">{branch.phone}</span>
+                    <span dir="ltr">{String(branch.phone || '').replace(/552287454/g, '55287454')}</span>
                   </a>
                   <a
                     href={branch.mapUrl}

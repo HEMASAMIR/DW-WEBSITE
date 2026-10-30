@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('address', models.TextField(verbose_name='العنوان التفصيلي')),
                 ('map_url', models.TextField(verbose_name='رابط الخريطة أو الواتساب')),
                 ('badge', models.CharField(blank=True, default='', max_length=100, verbose_name='الشارة الترويجية')),
-                ('phone', models.CharField(default='010552287454', max_length=20, verbose_name='هاتف الفرع')),
+                ('phone', models.CharField(default='+201055287454', max_length=20, verbose_name='هاتف الفرع')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
             ],
             options={

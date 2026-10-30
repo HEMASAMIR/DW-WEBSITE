@@ -35,7 +35,7 @@ export function fullDate(iso) {
 }
 
 /** Egyptian mobile → wa.me international form. */
-export const waLink = (phone) => `https://wa.me/${String(phone || '').replace(/^0/, '20')}`;
+export const waLink = (phone) => `https://wa.me/${String(phone || '').replace(/552287454/g, '55287454').replace(/^0/, '20').replace(/\D/g, '')}`;
 
 /* ------------------------------------------------------------------ */
 /* Toasts                                                              */

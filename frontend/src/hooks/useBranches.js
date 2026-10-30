@@ -19,8 +19,14 @@ export function useBranches() {
       .then((list) => {
         if (cancelled || !Array.isArray(list)) return;
         setBranches(list.filter((b) => b.is_active !== false).map((b) => ({
-          id: b.id, name: b.name, city: b.city, address: b.address, phone: b.phone,
-          badge: b.badge || b.city, mapUrl: b.map_url, color: b.color,
+          id: b.id,
+          name: b.name,
+          city: b.city,
+          address: b.address,
+          phone: String(b.phone || '').replace(/552287454/g, '55287454') || '+201055287454',
+          badge: b.badge || b.city,
+          mapUrl: b.map_url,
+          color: b.color,
         })));
       })
       .catch(() => {});

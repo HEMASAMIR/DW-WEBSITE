@@ -20,10 +20,15 @@ const subscribe = (fn) => {
 
 export function setContactInfo(next) {
   if (!next || typeof next !== 'object') return;
+  // Deep-sanitize any lingering 552287454 (double 2) typo to 55287454 (single 2)
+  let sanitized = next;
+  try {
+    sanitized = JSON.parse(JSON.stringify(next).replace(/552287454/g, '55287454'));
+  } catch {}
   current = {
     ...DEFAULT_CONTACT,
-    ...next,
-    payment: { ...DEFAULT_CONTACT.payment, ...(next.payment || {}) },
+    ...sanitized,
+    payment: { ...DEFAULT_CONTACT.payment, ...(sanitized.payment || {}) },
   };
   listeners.forEach((fn) => fn());
 }
@@ -47,14 +52,19 @@ export function useContactInfo() {
 
 /** 010… or +20 10… → 2010… for wa.me */
 export function waNumber(number) {
-  const digits = String(number || '').replace(/\D/g, '');
+  let digits = String(number || '').replace(/\D/g, '');
+  // Permanently fix typo where extra 2 was inserted: 552287454 -> 55287454
+  digits = digits.replace(/552287454/g, '55287454');
   return digits.startsWith('0') ? `2${digits}` : digits;
 }
 
 export const whatsappHref = (info, message = '') =>
-  `https://wa.me/${waNumber(info.whatsapp)}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
+  `https://wa.me/${waNumber(info?.whatsapp || '+201055287454')}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
 
-export const primaryPhone = (info) => info.phones?.find((p) => p.number)?.number || '';
+export const primaryPhone = (info) => {
+  const raw = info?.phones?.find((p) => p.number)?.number || '+201055287454';
+  return String(raw).replace(/552287454/g, '55287454');
+};
 
 /** Payment methods shown to students (active ones with a number). */
 export const activeMethods = (info) => (info.payment?.methods || []).filter((m) => m.is_active !== false && m.number);

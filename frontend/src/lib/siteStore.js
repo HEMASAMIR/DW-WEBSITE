@@ -35,6 +35,18 @@ const memoryCache = new Map();
 // family: 4 — some networks time out on the backend's IPv6 address.
 const http = axios.create({ baseURL: BACKEND_URL, timeout: 20000, family: 4 });
 
+export const BRANCH_COLORS = ['teal', 'sky', 'amber', 'rose', 'violet', 'emerald'];
+
+function sanitizeData(data) {
+  if (!data) return data;
+  try {
+    const raw = JSON.stringify(data).replace(/552287454/g, '55287454');
+    return JSON.parse(raw);
+  } catch {
+    return data;
+  }
+}
+
 export const DEFAULT_ANNOUNCEMENT = {
   is_active: true,
   tag: '📚 درس جديد',
@@ -71,34 +83,37 @@ const fileFor = (key, dir = resolvedDataDir) => path.join(dir, `${key}.json`);
 
 export async function readStore(key) {
   if (memoryCache.has(key)) {
-    return memoryCache.get(key);
+    return sanitizeData(memoryCache.get(key));
   }
 
   // 1. Try reading from resolvedDataDir (e.g. /tmp/dw_site_data or custom dir)
   try {
     const data = JSON.parse(await fs.readFile(fileFor(key), 'utf8'));
-    memoryCache.set(key, data);
-    return data;
+    const clean = sanitizeData(data);
+    memoryCache.set(key, clean);
+    return clean;
   } catch {}
 
   // 2. Try reading from project seed data if present
   try {
     const staticFile = path.join(process.cwd(), 'data', `${key}.json`);
     const data = JSON.parse(await fs.readFile(staticFile, 'utf8'));
-    memoryCache.set(key, data);
-    return data;
+    const clean = sanitizeData(data);
+    memoryCache.set(key, clean);
+    return clean;
   } catch {}
 
   // 3. Try reading from os.tmpdir() fallback
   try {
     const tmpFile = path.join(os.tmpdir(), 'dw_site_data', `${key}.json`);
     const data = JSON.parse(await fs.readFile(tmpFile, 'utf8'));
-    memoryCache.set(key, data);
-    return data;
+    const clean = sanitizeData(data);
+    memoryCache.set(key, clean);
+    return clean;
   } catch {}
 
   // 4. Default seed fallback
-  const def = DEFAULTS[key] ? DEFAULTS[key]() : null;
+  const def = sanitizeData(DEFAULTS[key] ? DEFAULTS[key]() : null);
   memoryCache.set(key, def);
   return def;
 }
@@ -237,7 +252,7 @@ export function cleanAnnouncement(a) {
 const PAYMENT_TYPES = ['vodafone', 'instapay', 'fawry', 'bank', 'other'];
 
 export function cleanContact(c) {
-  c = c || {};
+  c = sanitizeData(c || {});
   return {
     whatsapp: phoneDigits(c.whatsapp || DEFAULT_CONTACT.whatsapp),
     phones: list(c.phones)
