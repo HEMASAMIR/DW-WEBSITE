@@ -5,6 +5,7 @@ import { TOPICS } from '@/constants/siteContent';
 import { useContactInfo, waNumber, primaryPhone } from '@/lib/contactInfo';
 import { track } from '@/lib/analytics';
 import Reveal from '@/components/common/Reveal';
+import InternationalPhoneInput from '@/components/common/InternationalPhoneInput';
 import {
   Phone,
   MessageCircle,
@@ -94,11 +95,15 @@ export default function ContactSection() {
 
                 <a
                   onClick={() => track('contact', { method: 'phone', location: 'contact_section' })}
-                  href={`tel:${primaryPhone(contact)}`}
-                  className="py-3.5 px-6 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-sm flex items-center justify-center gap-2 border border-slate-300 hover:border-teal-400 transition-all shadow-sm active:scale-95"
+                  href={`tel:${(primaryPhone(contact) || '+201055287454').replace(/\s+/g, '')}`}
+                  className="py-3.5 px-5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-sm flex items-center justify-center gap-2 border border-slate-300 hover:border-teal-400 transition-all shadow-sm active:scale-95"
+                  title={t('اتصال مباشر')}
                 >
-                  <Phone className="w-4 h-4 text-teal-600" />
-                  <span>{t('اتصال تلفوني')}</span>
+                  <Phone className="w-4 h-4 text-teal-600 shrink-0" />
+                  <span>{t('اتصال:')}</span>
+                  <span dir="ltr" className="font-mono font-bold text-slate-900">
+                    {primaryPhone(contact) || '+201055287454'}
+                  </span>
                 </a>
               </div>
 
@@ -135,9 +140,9 @@ export default function ContactSection() {
                   </div>
                   
                   {/* Name & Phone Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-black text-slate-800 flex items-center gap-1.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                    <div>
+                      <label className="block text-xs font-black text-slate-800 mb-1.5 flex items-center gap-1.5">
                         <User className="w-3.5 h-3.5 text-teal-600" />
                         <span>{t('الاسم بالكامل')}</span>
                       </label>
@@ -147,23 +152,21 @@ export default function ContactSection() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder={t('أدخل اسمك الكريم')}
-                        className="w-full bg-white border border-slate-300/90 rounded-2xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 shadow-xs transition-all font-medium"
+                        className="w-full h-12 bg-white border-2 border-slate-200 rounded-2xl px-4 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 shadow-xs transition-all font-medium"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-black text-slate-800 flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-teal-600" />
-                        <span>{t('رقم الهاتف (الواتساب)')}</span>
-                      </label>
-                      <input
-                        type="tel"
+                    <div>
+                      <InternationalPhoneInput
+                        label={
+                          <span className="inline-flex items-center gap-1.5">
+                            <Phone className="w-3.5 h-3.5 text-teal-600" />
+                            <span>{t('رقم الهاتف (الواتساب)')}</span>
+                          </span>
+                        }
                         required
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="010xxxxxxxxx"
-                        dir="ltr"
-                        className="w-full bg-white border border-slate-300/90 rounded-2xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 text-start shadow-xs transition-all font-mono font-bold"
+                        onChange={(val) => setFormData({ ...formData, phone: val })}
                       />
                     </div>
                   </div>
