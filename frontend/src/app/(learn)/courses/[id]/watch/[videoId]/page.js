@@ -32,7 +32,7 @@ export default function WatchPage() {
     body = <Skeleton />;
   } else if (requiresLogin || (!loading && level && !canWatch)) {
     body = (
-      <Notice icon={Lock} text={requiresLogin ? t('سجّل الدخول لمشاهدة المحاضرات.') : expired ? t('اشتراكك السنوي في المستوى ده انتهى — جدّده عشان ترجع للمحاضرات.') : t('المستوى ده مش مفعّل على حسابك.')}>
+      <Notice icon={Lock} text={requiresLogin ? t('سجّل الدخول لمشاهدة المحاضرات.') : expired ? t('اشتراكك في المستوى ده انتهى (6 شهور) — جدّده عشان ترجع للمحاضرات.') : t('المستوى ده مش مفعّل على حسابك.')}>
         {requiresLogin ? (
           <button onClick={() => openAuthModal('login')} className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-6 py-2.5 rounded-full text-sm font-black">
             <LogIn className="w-4 h-4" /> {t('تسجيل الدخول')}

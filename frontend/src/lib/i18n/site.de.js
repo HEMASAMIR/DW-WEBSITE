@@ -819,27 +819,39 @@ const DE = {
   'كل مستوى بيوصلك للي بعده — وده مكانك دلوقتي': 'Jedes Niveau führt zum nächsten – hier stehst du gerade',
   'انت هنا': 'Du bist hier',
 
-  // ---- Coupons + yearly subscriptions (CouponBox, LevelView, couponsStore)
+  // ---- Coupons + level subscriptions (CouponBox, LevelView, couponsStore)
+  'اشتراكك في المستوى ده انتهى (6 شهور) — جدّده عشان ترجع للمحاضرات.':
+    'Dein 6-Monats-Abo für dieses Niveau ist abgelaufen – verlängere es, um wieder auf die Lektionen zuzugreifen.',
   'اشتراكك السنوي في المستوى ده انتهى — جدّده عشان ترجع للمحاضرات.':
-    'Dein Jahresabo für dieses Niveau ist abgelaufen – verlängere es, um wieder auf die Lektionen zuzugreifen.',
+    'Dein Abo für dieses Niveau ist abgelaufen – verlängere es, um wieder auf die Lektionen zuzugreifen.',
   'مفعّل لك لحد {date}':
     'Aktiv bis {date}',
+  'اشتراك 6 شهور من يوم التفعيل':
+    '6 Monate ab dem Tag der Freischaltung',
   'اشتراك سنة كاملة من يوم التفعيل':
     'Ein ganzes Jahr ab dem Tag der Freischaltung',
+  'اشتراكك انتهى (6 شهور)':
+    'Dein 6-Monats-Abo ist abgelaufen',
   'اشتراكك السنوي انتهى':
-    'Dein Jahresabo ist abgelaufen',
+    'Dein Abo ist abgelaufen',
   'جدّد اشتراكك':
     'Abo verlängern',
   'المدة':
     'Dauer',
+  '6 شهور':
+    '6 Monate',
   'سنة كاملة':
     'Ein ganzes Jahr',
+  'بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة 6 شهور.':
+    'Nach Bestätigung der Zahlung sind die Lektionen sofort in deinem Konto verfügbar – 6 Monate lang.',
   'بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة سنة كاملة.':
     'Nach Bestätigung der Zahlung sind die Lektionen sofort in deinem Konto verfügbar – ein ganzes Jahr lang.',
   'يوم':
     'Tage',
+  'اشتراك المستوى (6 شهور)':
+    'Niveau-Abo (6 Monate)',
   'اشتراكك السنوي':
-    'Dein Jahresabo',
+    'Dein Abo',
   'ساري لحد {date}':
     'Gültig bis {date}',
   'اتفعّل يوم {date}':
@@ -848,8 +860,10 @@ const DE = {
     'Dein Abo läuft bald ab – nur noch {n} Tage. Verlängere jetzt, damit deine Lektionen nicht gesperrt werden.',
   'كلّم الإدارة للتجديد':
     'Akademie zur Verlängerung kontaktieren',
+  'اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لـ 6 شهور جديدة.':
+    'Dein Abo lief vom {from} bis {to}. Verlängere es, um die Lektionen und Dateien des Niveaus für weitere 6 Monate zurückzubekommen.',
   'اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لسنة كاملة جديدة.':
-    'Dein Abo lief vom {from} bis {to}. Verlängere es, um die Lektionen und Dateien des Niveaus für ein weiteres ganzes Jahr zurückzubekommen.',
+    'Dein Abo lief vom {from} bis {to}. Verlängere es, um die Lektionen und Dateien des Niveaus für einen weiteren Zeitraum zurückzubekommen.',
   'تعذر التحقق من الكوبون، حاول تاني.':
     'Gutschein konnte nicht geprüft werden – bitte versuche es erneut.',
   'استخدمت الكوبون بتاعك قبل كده':

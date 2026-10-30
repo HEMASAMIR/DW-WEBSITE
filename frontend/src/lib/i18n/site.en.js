@@ -819,27 +819,39 @@ const EN = {
   'كل مستوى بيوصلك للي بعده — وده مكانك دلوقتي': 'Each level leads to the next — here’s where you are now',
   'انت هنا': 'You are here',
 
-  // ---- Coupons + yearly subscriptions (CouponBox, LevelView, couponsStore)
+  // ---- Coupons + level subscriptions (CouponBox, LevelView, couponsStore)
+  'اشتراكك في المستوى ده انتهى (6 شهور) — جدّده عشان ترجع للمحاضرات.':
+    'Your 6-month subscription to this level has ended — renew it to get back to the lectures.',
   'اشتراكك السنوي في المستوى ده انتهى — جدّده عشان ترجع للمحاضرات.':
-    'Your yearly subscription to this level has ended — renew it to get back to the lectures.',
+    'Your subscription to this level has ended — renew it to get back to the lectures.',
   'مفعّل لك لحد {date}':
     'Active until {date}',
+  'اشتراك 6 شهور من يوم التفعيل':
+    'A 6-month subscription from the day it’s activated',
   'اشتراك سنة كاملة من يوم التفعيل':
     'A full year from the day it’s activated',
+  'اشتراكك انتهى (6 شهور)':
+    'Your 6-month subscription has ended',
   'اشتراكك السنوي انتهى':
-    'Your yearly subscription has ended',
+    'Your subscription has ended',
   'جدّد اشتراكك':
     'Renew your subscription',
   'المدة':
     'Duration',
+  '6 شهور':
+    '6 Months',
   'سنة كاملة':
     'One full year',
+  'بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة 6 شهور.':
+    'Once payment is confirmed, the lectures open on your account immediately for 6 months.',
   'بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة سنة كاملة.':
     'Once the payment is confirmed, the lectures open on your account right away — for a full year.',
   'يوم':
     'days',
+  'اشتراك المستوى (6 شهور)':
+    'Level subscription (6 months)',
   'اشتراكك السنوي':
-    'Your yearly subscription',
+    'Your level subscription',
   'ساري لحد {date}':
     'Valid until {date}',
   'اتفعّل يوم {date}':
@@ -848,8 +860,10 @@ const EN = {
     'Your subscription is almost over — only {n} days left. Renew now so your lectures don’t lock.',
   'كلّم الإدارة للتجديد':
     'Contact the academy to renew',
+  'اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لـ 6 شهور جديدة.':
+    'Your subscription ran from {from} to {to}. Renew it to get the level’s lectures and files back for another 6 months.',
   'اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لسنة كاملة جديدة.':
-    'Your subscription ran from {from} to {to}. Renew it to get the level’s lectures and files back for another full year.',
+    'Your subscription ran from {from} to {to}. Renew it to get the level’s lectures and files back for another period.',
   'تعذر التحقق من الكوبون، حاول تاني.':
     'Couldn’t check the coupon — please try again.',
   'استخدمت الكوبون بتاعك قبل كده':

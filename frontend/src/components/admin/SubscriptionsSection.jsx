@@ -297,7 +297,7 @@ function YearChip({ year, now }) {
       title={fullDate(year.expires_at)}
     >
       <CalendarClock className="w-3 h-3" />
-      {d <= 0 ? t('خلصت سنته') : t('باقي {n} يوم', { n: d })}
+      {d <= 0 ? t('انتهى اشتراكه') : t('باقي {n} يوم', { n: d })}
     </p>
   );
 }

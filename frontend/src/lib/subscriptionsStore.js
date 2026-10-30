@@ -1,20 +1,28 @@
-// SERVER-ONLY. Yearly level subscriptions, kept by the website (the live backend's level access has
+// SERVER-ONLY. 6-Month level subscriptions, kept by the website (the live backend's level access has
 // no end date). One record per (student, level):
 //   { user_id, level_id, level_code, name, started_at, expires_at, status: 'active' | 'expired', expired_at? }
 //
-// • Approving a request / activating from the dashboard starts a fresh year (action "start").
+// • Approving a request / activating from the dashboard starts a fresh 6-month term (action "start").
 // • Revoking by hand removes the record (action "stop").
-// • The dashboard syncs on open: every active grant gets a record (its year counts from the backend's
+// • The dashboard syncs on open: every active grant gets a record (its 6 months count from the backend's
 //   granted_at), and the ones past expires_at come back as "due" — the dashboard revokes them on the
 //   backend and reports them back (action "expire").
 
 import { readStore, writeStore, withLock } from './siteStore';
 
-export const YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+export const SUBSCRIPTION_MONTHS = 6;
+export const SUBSCRIPTION_DAYS = 180;
+export const SUBSCRIPTION_MS = SUBSCRIPTION_DAYS * 24 * 60 * 60 * 1000;
+export const YEAR_MS = SUBSCRIPTION_MS; // Backward-compatible alias
 export const WARN_DAYS = 30;
 
 const key = (userId, levelId) => `${Number(userId)}:${Number(levelId)}`;
-const plusYear = (iso) => new Date(new Date(iso).getTime() + YEAR_MS).toISOString();
+export const plusDuration = (iso) => {
+  const d = new Date(iso);
+  d.setMonth(d.getMonth() + SUBSCRIPTION_MONTHS);
+  return d.toISOString();
+};
+const plusYear = plusDuration;
 
 export const loadSubscriptions = () => readStore('subscriptions');
 
@@ -27,7 +35,7 @@ export const updateSubscriptions = (fn) => withLock('subscriptions', async () =>
 
 const str = (v, max) => String(v ?? '').trim().slice(0, max);
 
-/** A fresh year from now (approve / activate / renew). */
+/** A fresh 6 months from now (approve / activate / renew). */
 export function startYear(list, { user_id, level_id, level_code, name }) {
   const now = new Date().toISOString();
   const record = {
@@ -36,7 +44,7 @@ export function startYear(list, { user_id, level_id, level_code, name }) {
     level_code: str(level_code, 10),
     name: str(name, 120),
     started_at: now,
-    expires_at: plusYear(now),
+    expires_at: plusDuration(now),
     status: 'active',
   };
   const rest = list.filter((r) => key(r.user_id, r.level_id) !== key(user_id, level_id));

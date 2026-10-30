@@ -504,7 +504,7 @@ function LockedLevel({ level, levels, subscription }) {
   const askAdmin = whatsappHref(contact, `مرحباً إدارة دويتشه فيلت 👋\nبعت طلب اشتراك في المستوى ${level.code} ومستني التفعيل على حسابي.`);
 
   const perks = [
-    { icon: CalendarCheck2, text: t('اشتراك سنة كاملة من يوم التفعيل') },
+    { icon: CalendarCheck2, text: t('اشتراك 6 شهور من يوم التفعيل') },
     { icon: PlayCircle, text: t('كل محاضرات المستوى مسجّلة وتتفرج عليها في أي وقت') },
     { icon: FileText, text: t('ملفات ومذكرات المستوى بتتفتح جوه الموقع') },
     ...(hasGroup ? [{ icon: MessageCircle, text: t('جروب واتساب خاص بطلاب المستوى') }] : []),
@@ -542,7 +542,7 @@ function LockedLevel({ level, levels, subscription }) {
     expired: (
       <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-400/15 border border-rose-300/40 text-xs font-black text-rose-200">
         <CalendarClock className="w-3.5 h-3.5" />
-        {t('اشتراكك السنوي انتهى')}
+        {t('اشتراكك انتهى (6 شهور)')}
       </span>
     ),
   }[status];
@@ -653,7 +653,7 @@ function TicketCard({ level, prevCode, price, oldPrice, discount, perks, status,
   const pending = status === 'pending';
   const details = [
     { label: t('المحاضرات'), value: t('مسجّلة') },
-    { label: t('المدة'), value: t('سنة كاملة') },
+    { label: t('المدة'), value: t('6 شهور') },
     { label: t('التفعيل'), value: t('على حسابك') },
   ];
 
@@ -723,7 +723,7 @@ function TicketCard({ level, prevCode, price, oldPrice, discount, perks, status,
                   <span className="text-base font-black text-slate-500">{t('ج.م')}</span>
                 </div>
               </div>
-              {!pending && <span className="text-[11px] font-bold text-slate-400 text-end leading-snug max-w-[8rem]">{t('اشتراك سنة كاملة من يوم التفعيل')}</span>}
+              {!pending && <span className="text-[11px] font-bold text-slate-400 text-end leading-snug max-w-[8rem]">{t('اشتراك 6 شهور من يوم التفعيل')}</span>}
             </div>
           )}
 
@@ -859,7 +859,7 @@ function Steps({ status }) {
   const steps = [
     { icon: Wallet, title: t('حوّل قيمة الاشتراك'), text: t('بأي طريقة من طرق الدفع المتاحة أو كاش في الفرع.') },
     { icon: Send, title: t('ابعت طلب الاشتراك'), text: t('من زرار «اشترك الآن» ومعاه صورة التحويل.') },
-    { icon: BadgeCheck, title: t('الإدارة تفعّل المستوى'), text: t('بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة سنة كاملة.') },
+    { icon: BadgeCheck, title: t('الإدارة تفعّل المستوى'), text: t('بعد تأكيد الدفع المحاضرات بتتفتح على حسابك فوراً ولمدة 6 شهور.') },
   ];
   const current = status === 'pending' ? 2 : 0;
 
@@ -1039,7 +1039,7 @@ function SubscriptionCard({ level, subscription, contact }) {
         <div className="min-w-0">
           <span className={`inline-flex items-center gap-1.5 text-[11px] font-black ${ending ? 'text-amber-700' : 'text-teal-700'}`}>
             <CalendarCheck2 className="w-3.5 h-3.5" />
-            {t('اشتراكك السنوي')}
+            {t('اشتراك المستوى (6 شهور)')}
           </span>
           <p className="text-base font-black text-slate-900 leading-tight mt-0.5">{t('ساري لحد {date}', { date: longDate(subscription.expires_at) })}</p>
           <p className="text-xs font-bold text-slate-500 mt-0.5">{t('اتفعّل يوم {date}', { date: longDate(subscription.started_at) })}</p>
@@ -1076,9 +1076,9 @@ function ExpiredPanel({ level, subscription, onRenew }) {
         </span>
         <div className="flex-1 space-y-2">
           <span className="text-xs font-black text-rose-600">{t('المستوى {code}', { code: level.code })}</span>
-          <h2 className="text-2xl font-black text-slate-900 leading-tight">{t('اشتراكك السنوي انتهى')}</h2>
+          <h2 className="text-2xl font-black text-slate-900 leading-tight">{t('اشتراكك انتهى (6 شهور)')}</h2>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            {t('اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لسنة كاملة جديدة.', {
+            {t('اشتراكك كان من {from} لحد {to}. جدّد اشتراكك عشان ترجع لمحاضرات المستوى وملفاته لـ 6 شهور جديدة.', {
               from: longDate(subscription.started_at),
               to: longDate(subscription.expires_at),
             })}
