@@ -39,7 +39,7 @@ const ERROR_TRANSLATIONS = [
   [/entirely numeric/i, 'كلمة المرور لازم متكونش أرقام بس.'],
   [/too short/i, 'كلمة المرور قصيرة، لازم 8 حروف على الأقل.'],
   [/too similar/i, 'كلمة المرور شبه بياناتك الشخصية، اختار واحدة مختلفة.'],
-  [/phone/i, 'رقم الهاتف غير صحيح، يرجى كتابة الرقم مع كود الدولة.'],
+  [/phone/i, 'يرجى إدخال رقم هاتف صحيح.'],
 ];
 
 function friendlyError(err, fallback) {

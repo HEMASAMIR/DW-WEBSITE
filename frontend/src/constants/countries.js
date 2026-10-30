@@ -218,15 +218,17 @@ export function parsePhoneNumber(raw = '', fallbackCountry = DEFAULT_COUNTRY) {
 }
 
 /**
- * Builds the E.164-compatible full international number
+ * Builds the full number:
+ * - For Egypt (EG): standard 11-digit national mobile format (010..., 011..., 012..., 015...)
+ * - For all other countries: international format with country code (+213..., +966...)
  */
 export function buildFullNumber(country, localNumber = '') {
   const digits = toLatinDigits(localNumber).replace(/\D/g, '');
   if (!digits) return '';
 
-  const dialDigits = country.dialCode.replace(/\D/g, '');
+  const dialDigits = (country?.dialCode || '').replace(/\D/g, '');
   let sanitized = digits;
-  if (sanitized.startsWith(dialDigits)) {
+  if (dialDigits && sanitized.startsWith(dialDigits) && sanitized.length > dialDigits.length) {
     sanitized = sanitized.slice(dialDigits.length);
   }
 
@@ -234,7 +236,12 @@ export function buildFullNumber(country, localNumber = '') {
     sanitized = sanitized.replace(/^0+/, '');
   }
 
-  return `${country.dialCode}${sanitized}`;
+  // Egyptian numbers in standard national 11-digit format (010..., 011..., 012..., 015...)
+  if (country?.code === 'EG') {
+    return `0${sanitized}`;
+  }
+
+  return `${country?.dialCode || '+20'}${sanitized}`;
 }
 
 /**

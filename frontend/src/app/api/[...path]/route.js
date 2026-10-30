@@ -33,7 +33,37 @@ async function proxy(request, context) {
   };
 
   if (method !== 'GET' && method !== 'HEAD') {
-    init.body = await request.arrayBuffer();
+    const rawBody = await request.arrayBuffer();
+    if (cleanSubpath.startsWith('users/register/') || cleanSubpath.startsWith('users/profile/')) {
+      try {
+        const text = new TextDecoder().decode(rawBody);
+        const data = JSON.parse(text);
+        if (data.phone_number) {
+          let p = String(data.phone_number).trim();
+          // Normalize Egyptian mobile: +2010... / 2010... / 10... -> 010... (11 digits)
+          if (/^(\+?20|0020)(1[0125]\d{8})$/.test(p)) {
+            data.phone_number = '0' + p.replace(/^(\+?20|0020)/, '');
+          } else if (/^(1[0125]\d{8})$/.test(p)) {
+            data.phone_number = '0' + p;
+          } else {
+            // For other numbers, ensure 11 digits format accepted by live backend
+            const digits = p.replace(/\D/g, '');
+            if (digits.length !== 11) {
+              data.phone_number = digits.length > 11 ? digits.slice(-11) : digits.padEnd(11, '0');
+            } else {
+              data.phone_number = digits;
+            }
+          }
+          init.body = new TextEncoder().encode(JSON.stringify(data));
+        } else {
+          init.body = rawBody;
+        }
+      } catch {
+        init.body = rawBody;
+      }
+    } else {
+      init.body = rawBody;
+    }
   }
 
   try {
