@@ -85,7 +85,7 @@ export default function DeviceSessionGuard() {
   if (!sessionTerminated) return null;
 
   const currentDevice = getDeviceInfo();
-  const rawWa = DEFAULT_CONTACT.whatsapp || '010552287454';
+  const rawWa = DEFAULT_CONTACT.whatsapp || '+201055287454';
   const cleanWa = rawWa.replace(/^0/, '20').replace(/\D/g, '');
   const waMsg = encodeURIComponent(
     `مرحباً إدارة دويتشه فيلت، أواجه مشكلة في تسجيل الدخول لحسابي (تم إنهاء الجلسة لدخول جهاز آخر). أرجو المساعدة في فك ربط الأجهزة لحسابي.`

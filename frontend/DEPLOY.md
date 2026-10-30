@@ -16,7 +16,7 @@ CATALOG_ACCOUNT_EMAIL=catalog@example.com
 CATALOG_ACCOUNT_PASSWORD=********
 
 # رقم واتساب الاشتراكات والطلبات (بالصيغة الدولية من غير +)
-NEXT_PUBLIC_WHATSAPP_NUMBER=2010552287454
+NEXT_PUBLIC_WHATSAPP_NUMBER=201055287454
 
 # اختياري: زرار الدخول بجوجل
 # NEXT_PUBLIC_GOOGLE_CLIENT_ID=

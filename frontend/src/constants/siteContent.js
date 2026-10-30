@@ -13,9 +13,9 @@ export const ACADEMY_INFO = {
  */
 export const DEFAULT_CONTACT = {
   // Local (010…) or international (2010…) — wa.me links are built from either.
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '010552287454',
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '+201055287454',
   phones: [
-    { id: 'p1', label: 'الخط الرئيسي', number: '010552287454' },
+    { id: 'p1', label: 'الخط الرئيسي', number: '+201055287454' },
     { id: 'p2', label: 'خط تاني', number: '01144151673' },
   ],
   payment: {
@@ -51,7 +51,7 @@ export const BRANCHES_DATA = [
     city: 'المنوفية',
     address: 'برج حجازي – الدور الثاني علوي، أمام مستشفى الجامعة مباشرة',
     mapUrl: 'https://maps.app.goo.gl/NJRj414R5yurS7Gs8?g_st=ac',
-    phone: '010552287454',
+    phone: '+201055287454',
     badge: 'فرع رئيسي',
   },
   {
@@ -69,7 +69,7 @@ export const BRANCHES_DATA = [
     city: 'الدقهلية',
     address: '١ شارع الشيخ الغزالي أمام مستشفى الجامعة البوابة الرئيسية',
     mapUrl: 'https://maps.app.goo.gl/PpTdBa3fkWC7WGYt5',
-    phone: '010552287454',
+    phone: '+201055287454',
     badge: 'الدقهلية',
   },
   {

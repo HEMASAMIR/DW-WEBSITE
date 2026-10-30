@@ -994,7 +994,7 @@ class DeutscheWeltAdmin {
       address: form.branchAddress.value.trim(),
       map_url: form.branchMapUrl.value.trim(),
       badge: form.branchBadge.value.trim(),
-      phone: '010552287454'
+      phone: '+201055287454'
     };
 
     try {

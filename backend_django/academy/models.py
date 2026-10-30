@@ -501,7 +501,7 @@ class Branch(models.Model):
     address = models.TextField(verbose_name="العنوان التفصيلي")
     map_url = models.TextField(verbose_name="رابط الخريطة أو الواتساب")
     badge = models.CharField(max_length=100, blank=True, default='', verbose_name="الشارة الترويجية")
-    phone = models.CharField(max_length=20, default='010552287454', verbose_name="هاتف الفرع")
+    phone = models.CharField(max_length=20, default='+201055287454', verbose_name="هاتف الفرع")
     order = models.PositiveSmallIntegerField(default=1, verbose_name="ترتيب العرض")
     is_active = models.BooleanField(default=True, verbose_name="ظاهر في الموقع")
     created_at = models.DateTimeField(auto_now_add=True)

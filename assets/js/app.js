@@ -387,7 +387,7 @@ const DEFAULT_BRANCHES = [
     city: 'المنوفية',
     address: 'برج حجازي – الدور الثاني علوي\nأمام مستشفى الجامعة مباشرة',
     mapUrl: 'https://maps.app.goo.gl/NJRj414R5yurS7Gs8?g_st=ac',
-    phone: '010552287454',
+    phone: '+201055287454',
     badge: '🏢 فرع رئيسي',
     type: 'physical'
   },
@@ -407,7 +407,7 @@ const DEFAULT_BRANCHES = [
     city: 'الدقهلية',
     address: '١ شارع الشيخ الغزالي أمام مستشفي الجامعة البوابة الرئيسية',
     mapUrl: 'https://maps.app.goo.gl/PpTdBa3fkWC7WGYt5',
-    phone: '010552287454',
+    phone: '+201055287454',
     badge: '📍 الدقهلية',
     type: 'physical'
   },
@@ -426,8 +426,8 @@ const DEFAULT_BRANCHES = [
     name: 'فرع الدراسة أونلاين (Online)',
     city: 'جميع المحافظات والدول',
     address: 'محاضرات تفاعلية مباشرة عبر Zoom / Teams لجميع المحافظات ودول العالم مع المتابعة المستمرة للمستويات',
-    mapUrl: 'https://wa.me/2010552287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D9%80%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D9%83%D9%88%D8%B1%D8%B3%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D9%88%D9%86%D9%84%D8%A7%D9%8A%D9%86',
-    phone: '010552287454',
+    mapUrl: 'https://wa.me/201055287454?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D9%87%D9%8A%D8%B1%20%D8%AE%D8%A7%D9%84%D8%AF%D9%80%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D9%83%D9%88%D8%B1%D8%B3%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A3%D9%88%D9%86%D9%84%D8%A7%D9%8A%D9%86',
+    phone: '+201055287454',
     badge: '💻 محاضرة مباشرة (Live)',
     type: 'online'
   }
@@ -834,7 +834,7 @@ class DeutscheWeltApp {
 
     // Pre-filled WhatsApp link with clear Level Activation Request
     const waText = encodeURIComponent(`مرحباً هير خالد (أكاديمية دويتشه فيلت) 👋\n\nأود تأكيد حجز الكورس وتفعيل مستواي الأونلاين:\n📌 *الكورس المطلوب:* ${course}\n👤 *الاسم بالكامل:* ${name}\n📱 *رقم الهاتف:* ${phone}\n💳 *طريقة الدفع المختارة:* ${payment}\n📝 *الملاحظات:* ${notes}\n\nيرجى تفعيل المستوى وإضافتي لجروب الواتساب الخاص بي وتزويدي برابط محاضرات Zoom المباشرة. شكراً جزيلاً! 🇩🇪`);
-    const waUrl = `https://wa.me/2010552287454?text=${waText}`;
+    const waUrl = `https://wa.me/201055287454?text=${waText}`;
 
     setTimeout(() => {
       window.open(waUrl, '_blank');
@@ -918,7 +918,7 @@ class DeutscheWeltApp {
     this.showToast('📚 تم تسجيل طلب الكتاب بنجاح في قاعدة البيانات! جاري تحويلك للواتساب للتأكيد...', 'success');
 
     const waText = encodeURIComponent(`مرحباً إدارة دويتشه فيلت 👋\nأريد تأكيد طلب شراء: *${bookName}* (الكمية: ${quantity})\nالاسم: ${name}\nالهاتف: ${phone}\nالعنوان للتوصيل: ${address}\nالمبلغ الإجمالي: ${order.total} جنيه.`);
-    const waUrl = `https://wa.me/2010552287454?text=${waText}`;
+    const waUrl = `https://wa.me/201055287454?text=${waText}`;
 
     setTimeout(() => {
       window.open(waUrl, '_blank');
