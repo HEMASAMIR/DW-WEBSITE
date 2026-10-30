@@ -68,7 +68,7 @@ export const BRANCHES_DATA = [
     name: 'فرع مدينة نصر',
     city: 'القاهرة',
     address: '١٦ ش شريف سامي - بالقرب من (كوبري المنهل / جامع السلام) - الدور الأول',
-    mapUrl: 'https://maps.app.goo.gl/i55RDUisL7wcdwf3A',
+    mapUrl: 'https://www.google.com/maps/place/Deutsche+Welt/data=!4m7!3m6!1s0x14583d02d12db1bf:0x9d4590b25ed97c44!8m2!3d30.0498059!4d31.354674!16s%2Fg%2F11ybh4h_tj!19sChIJv7Et0QI9WBQRRHzZXrKQRZ0',
     phone: '01144151673',
     badge: 'القاهرة',
   },
