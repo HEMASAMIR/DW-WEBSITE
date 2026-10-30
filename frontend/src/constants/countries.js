@@ -122,10 +122,23 @@ export function detectCountry(raw = '') {
   const digits = clean.replace(/\D/g, '');
   if (!digits) return null;
 
-  // 1. Direct major dial codes (213 for Algeria, 966 for Saudi, 971, 965, 49, 43, 41, 44, 20...)
-  const majorDials = ['213', '966', '971', '965', '962', '968', '973', '964', '961', '963', '970', '967', '249', '218', '216', '212', '49', '43', '41', '44', '90', '20'];
-  for (const dial of majorDials) {
-    if (digits.startsWith(dial) && digits.length >= dial.length + 4) {
+  // 1. Direct international dial codes without '+' or '00':
+  // 3-digit dial codes (Algeria 213, Saudi 966, UAE 971, Kuwait 965, Libya 218, Tunisia 216, Morocco 212, etc.)
+  const major3Dials = [
+    '213', '966', '971', '965', '962', '968', '973', '964', '961', '963',
+    '970', '967', '249', '218', '216', '212'
+  ];
+  for (const dial of major3Dials) {
+    if (digits.startsWith(dial) && digits.length >= 3) {
+      const found = COUNTRIES.find((c) => c.dialCode === '+' + dial);
+      if (found) return found;
+    }
+  }
+
+  // 2-digit dial codes (Germany 49, Austria 43, Switzerland 41, UK 44, Turkey 90, Egypt 20)
+  const major2Dials = ['49', '43', '41', '44', '90', '20'];
+  for (const dial of major2Dials) {
+    if (digits.startsWith(dial) && digits.length >= 4) {
       const found = COUNTRIES.find((c) => c.dialCode === '+' + dial);
       if (found) return found;
     }
@@ -133,32 +146,32 @@ export function detectCountry(raw = '') {
 
   // 2. National / Local Mobile prefixes:
   // Egypt (+20): 010, 011, 012, 015 or 10, 11, 12, 15
-  if (/^(01[0125]|1[0125]\d)/.test(digits)) {
+  if (/^(01[0125]|1[0125])/.test(digits) && digits.length >= 2) {
     return COUNTRIES.find((c) => c.code === 'EG');
   }
 
   // Algeria (+213): 055, 55, 056, 56, 054, 54, 06, 66, 07, 77
-  if (/^(0?5[456]|5[456]|0?[67]\d|66|77)/.test(digits) && digits.length >= 7) {
+  if (/^(0?5[456]|5[456]|0?[67]|66|77)/.test(digits) && digits.length >= 2) {
     return COUNTRIES.find((c) => c.code === 'DZ');
   }
 
   // Saudi Arabia (+966): 050, 50, 053, 53, 058, 58, 059, 59
-  if (/^(0?5[0389]|5[0389])/.test(digits) && digits.length >= 7) {
+  if (/^(0?5[0389]|5[0389])/.test(digits) && digits.length >= 2) {
     return COUNTRIES.find((c) => c.code === 'SA');
   }
 
   // Germany (+49): 015, 15, 016, 16, 017, 17
-  if (/^(0?1[567]|1[567])\d/.test(digits) && digits.length >= 8) {
+  if (/^(0?1[567]|1[567])/.test(digits) && digits.length >= 3) {
     return COUNTRIES.find((c) => c.code === 'DE');
   }
 
   // Jordan (+962): 077, 77, 078, 78, 079, 79
-  if (/^(0?7[789]|7[789])\d/.test(digits) && digits.length >= 8) {
+  if (/^(0?7[789]|7[789])/.test(digits) && digits.length >= 3) {
     return COUNTRIES.find((c) => c.code === 'JO');
   }
 
   // Libya (+218): 091, 91, 092, 92, 094, 94
-  if (/^(0?9[124]|9[124])\d/.test(digits) && digits.length >= 8) {
+  if (/^(0?9[124]|9[124])/.test(digits) && digits.length >= 3) {
     return COUNTRIES.find((c) => c.code === 'LY');
   }
 

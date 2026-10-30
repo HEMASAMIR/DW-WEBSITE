@@ -143,6 +143,13 @@ export default function InternationalPhoneInput({
     let raw = toLatinDigits(e.target.value);
     const trimmed = raw.trim();
 
+    if (!trimmed) {
+      setIsManualSelect(false);
+      setLocalNumber('');
+      onChange?.('', { country: selectedCountry, localNumber: '', isValid: false });
+      return;
+    }
+
     // Auto-detect country based on input (e.g. 551234567 -> Algeria, 010... -> Egypt, +213... -> Algeria, 966... -> Saudi)
     let countryToUse = selectedCountry;
     if (!isManualSelect || trimmed.startsWith('+') || trimmed.startsWith('00')) {
