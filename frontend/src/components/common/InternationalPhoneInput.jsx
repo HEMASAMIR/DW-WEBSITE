@@ -8,13 +8,37 @@ import {
   parsePhoneNumber,
   buildFullNumber,
   isPhoneValid,
-  findCountry,
+  detectCountry,
 } from '@/constants/countries';
-import { Phone, CheckCircle2, ChevronDown, Search, X } from 'lucide-react';
+import { CheckCircle2, ChevronDown, Search, X } from 'lucide-react';
 import { t } from '@/lib/i18n';
 
 /**
- * Modern International Phone Input with country selector and auto-formatting
+ * High-res flag image with emoji fallback
+ */
+function FlagIcon({ code, flag, className = 'w-5 h-3.5' }) {
+  const [hasError, setHasError] = useState(false);
+  const countryCode = code?.toLowerCase();
+
+  if (hasError || !countryCode) {
+    return <span className="text-base leading-none select-none">{flag}</span>;
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`https://flagcdn.com/w40/${countryCode}.png`}
+      srcSet={`https://flagcdn.com/w80/${countryCode}.png 2x`}
+      alt={code}
+      className={`${className} object-cover rounded-[3px] shadow-xs select-none shrink-0 inline-block`}
+      loading="lazy"
+      onError={() => setHasError(true)}
+    />
+  );
+}
+
+/**
+ * Modern International Phone Input with automatic country detection
  */
 export default function InternationalPhoneInput({
   value = '',
@@ -25,11 +49,11 @@ export default function InternationalPhoneInput({
   darkMode = false,
   placeholder,
   autoFocus = false,
-  showHint = true,
   className = '',
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [isManualSelect, setIsManualSelect] = useState(false);
   const dropdownRef = useRef(null);
   const searchInputRef = useRef(null);
   const phoneInputRef = useRef(null);
@@ -39,7 +63,7 @@ export default function InternationalPhoneInput({
   const [selectedCountry, setSelectedCountry] = useState(initialParsed.country || DEFAULT_COUNTRY);
   const [localNumber, setLocalNumber] = useState(initialParsed.localNumber || '');
 
-  // Keep internal state synchronized when value changes from outside (e.g. form reset or user load)
+  // Keep internal state synchronized when value changes from outside
   useEffect(() => {
     if (!value) {
       setLocalNumber('');
@@ -105,9 +129,10 @@ export default function InternationalPhoneInput({
 
   const handleCountrySelect = (country) => {
     setSelectedCountry(country);
+    setIsManualSelect(true);
     setIsOpen(false);
     setSearch('');
-    // Re-evaluate full number with new country
+
     const full = buildFullNumber(country, localNumber);
     const valid = isPhoneValid(country, localNumber);
     onChange?.(full, { country, localNumber, isValid: valid });
@@ -116,39 +141,35 @@ export default function InternationalPhoneInput({
 
   const handleInputChange = (e) => {
     let raw = toLatinDigits(e.target.value);
+    const trimmed = raw.trim();
 
-    // If user typed/pasted + or 00 or started with full international number
-    const cleanDigits = raw.replace(/\D/g, '');
-    if (raw.trim().startsWith('+') || raw.trim().startsWith('00') || cleanDigits.length >= 7) {
-      const parsed = parsePhoneNumber(raw, selectedCountry);
-      if (parsed.country.code !== selectedCountry.code) {
-        setSelectedCountry(parsed.country);
-        setLocalNumber(parsed.localNumber);
-        onChange?.(parsed.fullNumber, {
-          country: parsed.country,
-          localNumber: parsed.localNumber,
-          isValid: parsed.isValid,
-        });
-        return;
+    // Auto-detect country based on input (e.g. 551234567 -> Algeria, 010... -> Egypt, +213... -> Algeria, 966... -> Saudi)
+    let countryToUse = selectedCountry;
+    if (!isManualSelect || trimmed.startsWith('+') || trimmed.startsWith('00')) {
+      const autoCountry = detectCountry(raw);
+      if (autoCountry && autoCountry.code !== selectedCountry.code) {
+        countryToUse = autoCountry;
+        setSelectedCountry(autoCountry);
       }
     }
 
-    // Otherwise clean non-digits
-    const digits = raw.replace(/\D/g, '').slice(0, 15);
+    // Clean non-digits for the input
+    let digits = raw.replace(/\D/g, '').slice(0, 15);
+
+    // If user typed the country dial code into the input, strip it from localNumber so it doesn't duplicate
+    const dialDigits = countryToUse.dialCode.replace(/\D/g, '');
+    if (digits.startsWith(dialDigits) && digits.length > dialDigits.length) {
+      digits = digits.slice(dialDigits.length);
+    }
+
     setLocalNumber(digits);
 
-    const full = buildFullNumber(selectedCountry, digits);
-    const valid = isPhoneValid(selectedCountry, digits);
-    onChange?.(full, { country: selectedCountry, localNumber: digits, isValid: valid });
+    const full = buildFullNumber(countryToUse, digits);
+    const valid = isPhoneValid(countryToUse, digits);
+    onChange?.(full, { country: countryToUse, localNumber: digits, isValid: valid });
   };
 
   const isValid = useMemo(() => isPhoneValid(selectedCountry, localNumber), [selectedCountry, localNumber]);
-
-  // Placeholder hint depending on country
-  const dynamicPlaceholder = useMemo(() => {
-    if (placeholder) return placeholder;
-    return '1234567890';
-  }, [placeholder]);
 
   return (
     <div className={`relative ${className}`}>
@@ -180,11 +201,15 @@ export default function InternationalPhoneInput({
           }`}
           title={`${selectedCountry.nameAr} (${selectedCountry.dialCode})`}
         >
-          <span className="text-lg leading-none">{selectedCountry.flag}</span>
+          <FlagIcon code={selectedCountry.code} flag={selectedCountry.flag} />
           <span className="text-xs font-black tabular-nums" dir="ltr">
             {selectedCountry.dialCode}
           </span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
+          <ChevronDown
+            className={`w-3.5 h-3.5 transition-transform duration-200 ${
+              isOpen ? 'rotate-180' : ''
+            } ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}
+          />
         </button>
 
         {/* Local Number Input */}
@@ -200,7 +225,7 @@ export default function InternationalPhoneInput({
             dir="ltr"
             value={localNumber}
             onChange={handleInputChange}
-            placeholder={dynamicPlaceholder}
+            placeholder={placeholder || '1234567890'}
             className={`w-full h-full px-3 text-[15px] font-medium bg-transparent focus:outline-none placeholder:text-slate-400 text-start ${
               darkMode ? 'text-white' : 'text-slate-900'
             }`}
@@ -318,9 +343,11 @@ function CountryRow({ country, isSelected, darkMode, onSelect }) {
       }`}
     >
       <div className="flex items-center gap-2.5 truncate">
-        <span className="text-base leading-none shrink-0">{country.flag}</span>
+        <FlagIcon code={country.code} flag={country.flag} />
         <span className="truncate">{country.nameAr}</span>
-        <span className={`text-[11px] truncate ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>({country.nameEn})</span>
+        <span className={`text-[11px] truncate ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+          ({country.nameEn})
+        </span>
       </div>
       <span className="text-[11px] font-bold tabular-nums text-slate-400 shrink-0 ms-2" dir="ltr">
         {country.dialCode}
@@ -328,4 +355,3 @@ function CountryRow({ country, isSelected, darkMode, onSelect }) {
     </button>
   );
 }
-

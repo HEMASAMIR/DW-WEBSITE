@@ -2,8 +2,9 @@
 export const COUNTRIES = [
   // Priority countries (Arab world, German-speaking countries, and major diaspora)
   { code: 'EG', dialCode: '+20', flag: '🇪🇬', nameAr: 'مصر', nameEn: 'Egypt', nameDe: 'Ägypten', priority: true },
-  { code: 'DE', dialCode: '+49', flag: '🇩🇪', nameAr: 'ألمانيا', nameEn: 'Germany', nameDe: 'Deutschland', priority: true },
+  { code: 'DZ', dialCode: '+213', flag: '🇩🇿', nameAr: 'الجزائر', nameEn: 'Algeria', nameDe: 'Algerien', priority: true },
   { code: 'SA', dialCode: '+966', flag: '🇸🇦', nameAr: 'السعودية', nameEn: 'Saudi Arabia', nameDe: 'Saudi-Arabien', priority: true },
+  { code: 'DE', dialCode: '+49', flag: '🇩🇪', nameAr: 'ألمانيا', nameEn: 'Germany', nameDe: 'Deutschland', priority: true },
   { code: 'AE', dialCode: '+971', flag: '🇦🇪', nameAr: 'الإمارات', nameEn: 'United Arab Emirates', nameDe: 'VAE', priority: true },
   { code: 'KW', dialCode: '+965', flag: '🇰🇼', nameAr: 'الكويت', nameEn: 'Kuwait', nameDe: 'Kuwait', priority: true },
   { code: 'QA', dialCode: '+974', flag: '🇶🇦', nameAr: 'قطر', nameEn: 'Qatar', nameDe: 'Katar', priority: true },
@@ -18,7 +19,6 @@ export const COUNTRIES = [
   { code: 'SD', dialCode: '+249', flag: '🇸🇩', nameAr: 'السودان', nameEn: 'Sudan', nameDe: 'Sudan', priority: true },
   { code: 'LY', dialCode: '+218', flag: '🇱🇾', nameAr: 'ليبيا', nameEn: 'Libya', nameDe: 'Libyen', priority: true },
   { code: 'TN', dialCode: '+216', flag: '🇹🇳', nameAr: 'تونس', nameEn: 'Tunisia', nameDe: 'Tunesien', priority: true },
-  { code: 'DZ', dialCode: '+213', flag: '🇩🇿', nameAr: 'الجزائر', nameEn: 'Algeria', nameDe: 'Algerien', priority: true },
   { code: 'MA', dialCode: '+212', flag: '🇲🇦', nameAr: 'المغرب', nameEn: 'Morocco', nameDe: 'Marokko', priority: true },
   { code: 'AT', dialCode: '+43', flag: '🇦🇹', nameAr: 'النمسا', nameEn: 'Austria', nameDe: 'Österreich', priority: true },
   { code: 'CH', dialCode: '+41', flag: '🇨🇭', nameAr: 'سويسرا', nameEn: 'Switzerland', nameDe: 'Schweiz', priority: true },
@@ -105,6 +105,67 @@ export function findCountry(codeOrDial) {
 }
 
 /**
+ * Automatically detects country from any input (with or without +, national prefix or dial code)
+ */
+export function detectCountry(raw = '') {
+  const clean = toLatinDigits(String(raw)).trim();
+  if (!clean) return null;
+
+  let withPlus = clean;
+  if (withPlus.startsWith('00')) withPlus = '+' + withPlus.slice(2);
+  if (withPlus.startsWith('+')) {
+    const sorted = [...COUNTRIES].sort((a, b) => b.dialCode.length - a.dialCode.length);
+    const matched = sorted.find((c) => withPlus.startsWith(c.dialCode));
+    if (matched) return matched;
+  }
+
+  const digits = clean.replace(/\D/g, '');
+  if (!digits) return null;
+
+  // 1. Direct major dial codes (213 for Algeria, 966 for Saudi, 971, 965, 49, 43, 41, 44, 20...)
+  const majorDials = ['213', '966', '971', '965', '962', '968', '973', '964', '961', '963', '970', '967', '249', '218', '216', '212', '49', '43', '41', '44', '90', '20'];
+  for (const dial of majorDials) {
+    if (digits.startsWith(dial) && digits.length >= dial.length + 4) {
+      const found = COUNTRIES.find((c) => c.dialCode === '+' + dial);
+      if (found) return found;
+    }
+  }
+
+  // 2. National / Local Mobile prefixes:
+  // Egypt (+20): 010, 011, 012, 015 or 10, 11, 12, 15
+  if (/^(01[0125]|1[0125]\d)/.test(digits)) {
+    return COUNTRIES.find((c) => c.code === 'EG');
+  }
+
+  // Algeria (+213): 055, 55, 056, 56, 054, 54, 06, 66, 07, 77
+  if (/^(0?5[456]|5[456]|0?[67]\d|66|77)/.test(digits) && digits.length >= 7) {
+    return COUNTRIES.find((c) => c.code === 'DZ');
+  }
+
+  // Saudi Arabia (+966): 050, 50, 053, 53, 058, 58, 059, 59
+  if (/^(0?5[0389]|5[0389])/.test(digits) && digits.length >= 7) {
+    return COUNTRIES.find((c) => c.code === 'SA');
+  }
+
+  // Germany (+49): 015, 15, 016, 16, 017, 17
+  if (/^(0?1[567]|1[567])\d/.test(digits) && digits.length >= 8) {
+    return COUNTRIES.find((c) => c.code === 'DE');
+  }
+
+  // Jordan (+962): 077, 77, 078, 78, 079, 79
+  if (/^(0?7[789]|7[789])\d/.test(digits) && digits.length >= 8) {
+    return COUNTRIES.find((c) => c.code === 'JO');
+  }
+
+  // Libya (+218): 091, 91, 092, 92, 094, 94
+  if (/^(0?9[124]|9[124])\d/.test(digits) && digits.length >= 8) {
+    return COUNTRIES.find((c) => c.code === 'LY');
+  }
+
+  return null;
+}
+
+/**
  * Parses any incoming phone string into { country, localNumber, fullNumber, isValid }
  */
 export function parsePhoneNumber(raw = '', fallbackCountry = DEFAULT_COUNTRY) {
@@ -117,63 +178,29 @@ export function parsePhoneNumber(raw = '', fallbackCountry = DEFAULT_COUNTRY) {
     clean = '+' + clean.slice(2);
   }
 
-  // Sorted longest dial code first
-  const sorted = [...COUNTRIES].sort((a, b) => b.dialCode.length - a.dialCode.length);
+  // Auto-detect country
+  const detected = detectCountry(clean);
+  const country = detected || fallbackCountry;
 
-  // If starts with +, match dial code
-  if (clean.startsWith('+')) {
-    const matched = sorted.find((c) => clean.startsWith(c.dialCode));
-    if (matched) {
-      let local = clean.slice(matched.dialCode.length).replace(/\D/g, '');
-      const full = `${matched.dialCode}${local}`;
-      return {
-        country: matched,
-        localNumber: local,
-        fullNumber: full,
-        isValid: isPhoneValid(matched, local),
-      };
+  let local = clean;
+  // If local starts with dial code or +, clean it
+  if (local.startsWith('+')) {
+    local = local.slice(country.dialCode.length);
+  } else {
+    const d = country.dialCode.replace(/\D/g, '');
+    if (local.startsWith(d)) {
+      local = local.slice(d.length);
     }
   }
 
-  const digitsOnly = clean.replace(/\D/g, '');
+  const digitsOnly = local.replace(/\D/g, '');
+  const full = buildFullNumber(country, digitsOnly);
 
-  // Check if digits start with any dial code directly (e.g. 96650..., 49151..., 2010...)
-  if (digitsOnly.length >= 7) {
-    const matched = sorted.find((c) => {
-      const d = c.dialCode.replace(/\D/g, '');
-      return digitsOnly.startsWith(d) && digitsOnly.length > d.length;
-    });
-    if (matched) {
-      const d = matched.dialCode.replace(/\D/g, '');
-      const local = digitsOnly.slice(d.length);
-      return {
-        country: matched,
-        localNumber: local,
-        fullNumber: `${matched.dialCode}${local}`,
-        isValid: isPhoneValid(matched, local),
-      };
-    }
-  }
-
-  // If clean starts with 01 and 11 digits total (classic Egyptian mobile e.g. 01012345678)
-  if (/^01\d{9}$/.test(digitsOnly)) {
-    const egCountry = COUNTRIES.find((c) => c.code === 'EG') || DEFAULT_COUNTRY;
-    return {
-      country: egCountry,
-      localNumber: digitsOnly,
-      fullNumber: `+20${digitsOnly.slice(1)}`,
-      isValid: true,
-    };
-  }
-
-  // Otherwise, use fallbackCountry
-  const local = digitsOnly;
-  const normalizedFull = local ? buildFullNumber(fallbackCountry, local) : '';
   return {
-    country: fallbackCountry,
-    localNumber: local,
-    fullNumber: normalizedFull,
-    isValid: isPhoneValid(fallbackCountry, local),
+    country,
+    localNumber: digitsOnly,
+    fullNumber: full,
+    isValid: isPhoneValid(country, digitsOnly),
   };
 }
 
@@ -207,6 +234,6 @@ export function isPhoneValid(country, localNumber = '') {
   const full = buildFullNumber(country, digits);
   const totalDigits = full.replace(/\D/g, '');
 
-  // Any phone worldwide having between 7 and 15 digits total is valid
-  return totalDigits.length >= 7 && totalDigits.length <= 15;
+  // Any phone worldwide having between 6 and 16 digits total is valid
+  return totalDigits.length >= 6 && totalDigits.length <= 16;
 }
