@@ -55,6 +55,15 @@ export const BRANCHES_DATA = [
     badge: 'فرع رئيسي',
   },
   {
+    id: 'tanta',
+    name: 'فرع طنطا',
+    city: 'الغربية',
+    address: 'طنطا – محافظة الغربية',
+    mapUrl: 'https://maps.google.com',
+    phone: '+201055287454',
+    badge: 'الغربية',
+  },
+  {
     id: 'nasr-city',
     name: 'فرع مدينة نصر',
     city: 'القاهرة',
