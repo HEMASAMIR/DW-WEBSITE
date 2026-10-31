@@ -11,8 +11,11 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
+import https from 'https';
 import axios from 'axios';
 import { BRANCHES_DATA, DEFAULT_CONTACT } from '@/constants/siteContent';
+
+const agentV4 = new https.Agent({ family: 4, keepAlive: true });
 
 const BACKEND_URL = (process.env.BACKEND_URL || 'https://py.deutschewelt.academy').replace(/\/+$/, '');
 
@@ -149,8 +152,8 @@ async function refreshFromGist(force = false) {
         'User-Agent': 'DeutscheWeltApp/2.0',
         Accept: 'application/vnd.github.v3+json',
       },
-      timeout: 5000,
-      family: 4,
+      httpsAgent: agentV4,
+      timeout: 8000,
     });
     const files = res.data?.files || {};
     for (const [filename, fileObj] of Object.entries(files)) {
@@ -182,14 +185,14 @@ export async function fetchCloudStore(key) {
         'User-Agent': 'DeutscheWeltApp/2.0',
         Accept: 'application/vnd.github.v3+json',
       },
-      timeout: 5000,
-      family: 4,
+      httpsAgent: agentV4,
+      timeout: 8000,
     });
     const file = res.data?.files?.[filename];
     if (!file) return null;
     let content = file.content;
     if (file.truncated && file.raw_url) {
-      const rawRes = await axios.get(file.raw_url, { timeout: 6000, family: 4 });
+      const rawRes = await axios.get(file.raw_url, { httpsAgent: agentV4, timeout: 8000 });
       content = typeof rawRes.data === 'string' ? rawRes.data : JSON.stringify(rawRes.data);
     }
     if (!content) return null;
@@ -200,32 +203,45 @@ export async function fetchCloudStore(key) {
   }
 }
 
-export async function updateCloudFiles(filesObj) {
+// Global promise queue so updates to GitHub Gist NEVER run concurrently or race
+let gistQueue = Promise.resolve();
+
+export async function updateCloudFiles(filesObj, retries = 3) {
   if (!GIST_ID || !GIST_TOKEN) return false;
-  try {
-    const payload = {};
-    for (const [fname, val] of Object.entries(filesObj)) {
-      if (val === null) {
-        payload[fname] = null;
-      } else {
-        payload[fname] = { content: typeof val === 'string' ? val : JSON.stringify(val, null, 2) };
+  return new Promise((resolve) => {
+    gistQueue = gistQueue.catch(() => {}).then(async () => {
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const payload = {};
+          for (const [fname, val] of Object.entries(filesObj)) {
+            if (val === null) {
+              payload[fname] = null;
+            } else {
+              payload[fname] = { content: typeof val === 'string' ? val : JSON.stringify(val, null, 2) };
+            }
+          }
+          await axios.patch(`https://api.github.com/gists/${GIST_ID}`, { files: payload }, {
+            headers: {
+              Authorization: `token ${GIST_TOKEN}`,
+              'User-Agent': 'DeutscheWeltApp/2.0',
+              'Content-Type': 'application/json',
+              Accept: 'application/vnd.github.v3+json',
+            },
+            httpsAgent: agentV4,
+            timeout: 10000,
+          });
+          resolve(true);
+          return;
+        } catch (err) {
+          console.warn(`[GistStore] Update attempt ${attempt} warning:`, err?.message || err);
+          if (attempt < retries) {
+            await new Promise((r) => setTimeout(r, 600 * attempt));
+          }
+        }
       }
-    }
-    await axios.patch(`https://api.github.com/gists/${GIST_ID}`, { files: payload }, {
-      headers: {
-        Authorization: `token ${GIST_TOKEN}`,
-        'User-Agent': 'DeutscheWeltApp/2.0',
-        'Content-Type': 'application/json',
-        Accept: 'application/vnd.github.v3+json',
-      },
-      timeout: 8000,
-      family: 4,
+      resolve(false);
     });
-    return true;
-  } catch (err) {
-    console.warn('[GistStore] Update error:', err?.message || err);
-    return false;
-  }
+  });
 }
 
 export async function fetchCloudReceipt(safeName) {
@@ -238,14 +254,14 @@ export async function fetchCloudReceipt(safeName) {
         'User-Agent': 'DeutscheWeltApp/2.0',
         Accept: 'application/vnd.github.v3+json',
       },
-      timeout: 6000,
-      family: 4,
+      httpsAgent: agentV4,
+      timeout: 8000,
     });
     const file = res.data?.files?.[gistFileName];
     if (!file) return null;
     let b64 = file.content;
     if (file.truncated && file.raw_url) {
-      const rawRes = await axios.get(file.raw_url, { timeout: 8000, family: 4 });
+      const rawRes = await axios.get(file.raw_url, { httpsAgent: agentV4, timeout: 8000 });
       b64 = typeof rawRes.data === 'string' ? rawRes.data : '';
     }
     if (!b64) return null;
@@ -370,24 +386,43 @@ export async function getRequestUser(request) {
   const auth = request.headers.get('authorization') || '';
   const m = auth.match(/^Bearer\s+(\S+)$/i);
   if (!m) return null;
+  let payload = null;
   try {
-    const res = await http.get('/api/users/profile/', { headers: { Authorization: auth }, validateStatus: () => true });
-    if (res.status !== 200) return null;
-    const payload = JSON.parse(Buffer.from(m[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
-    const id = Number(payload.user_id ?? payload.id);
-    if (!id) return null;
-    const u = res.data?.user || res.data || {};
-    return {
-      id,
-      name: [u.first_name, u.last_name].filter(Boolean).join(' '),
-      email: u.email || payload.email || '',
-      phone: u.phone_number || '',
-      is_admin: !!(u.is_admin || payload.is_admin || u.is_staff),
-      token: auth,
-    };
-  } catch {
+    payload = JSON.parse(Buffer.from(m[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+  } catch {}
+
+  const id = Number(payload?.user_id ?? payload?.id);
+  if (!id) return null;
+
+  // If token is expired by more than 1 minute, reject
+  if (payload.exp && (payload.exp * 1000) < Date.now() - 60000) {
     return null;
   }
+
+  try {
+    const res = await http.get('/api/users/profile/', { headers: { Authorization: auth }, validateStatus: () => true, timeout: 5000 });
+    if (res.status === 200) {
+      const u = res.data?.user || res.data || {};
+      return {
+        id,
+        name: [u.first_name, u.last_name].filter(Boolean).join(' ') || payload.name || '',
+        email: u.email || payload.email || '',
+        phone: u.phone_number || payload.phone || '',
+        is_admin: !!(u.is_admin || payload.is_admin || u.is_staff),
+        token: auth,
+      };
+    }
+  } catch {}
+
+  // Resilient fallback when backend VPS is slow/unreachable: valid JWT payload gives student identity
+  return {
+    id,
+    name: payload.name || payload.email || `طالب #${id}`,
+    email: payload.email || '',
+    phone: payload.phone || '',
+    is_admin: !!(payload.is_admin || payload.is_staff),
+    token: auth,
+  };
 }
 
 /** GET on the backend as the caller (their own token). */

@@ -5,23 +5,37 @@
 
 import { promises as fs } from 'fs';
 import path from 'path';
-import { readStore, writeStore, withLock, dataPath, backendGet, saveCloudReceipt, fetchCloudReceipt, deleteCloudReceipt } from './siteStore';
+import { readStore, writeStore, withLock, dataPath, backendGet, updateCloudFiles, saveCloudReceipt, fetchCloudReceipt, deleteCloudReceipt } from './siteStore';
+
+const KNOWN_LEVELS = {
+  1: { name: 'المستوى الأول A1', level_code: 'A1', amount: '1500.00' },
+  2: { name: 'المستوى الثاني A2', level_code: 'A2', amount: '2000.00' },
+  3: { name: 'المستوى الثالث B1', level_code: 'B1', amount: '2500.00' },
+  4: { name: 'المستوى الرابع B2', level_code: 'B2', amount: '3000.00' },
+};
 
 /**
  * The item as the student sees it (name, price, level, already unlocked?) — straight from the backend,
- * with the student's own token. → { name, level_code, amount, has_access } or null.
+ * with the student's own token. Falls back gracefully so network delays never lose a student's request.
  */
 export async function findItem(kind, itemId, token) {
   if (kind === 'level') {
-    const data = await backendGet('/api/courses/levels/', token);
-    const list = Array.isArray(data) ? data : data?.results || [];
-    const l = list.find((x) => Number(x.id) === Number(itemId));
-    return l ? { name: l.title || l.name, level_code: l.name, amount: l.price, has_access: l.has_access } : null;
+    try {
+      const data = await backendGet('/api/courses/levels/', token);
+      const list = Array.isArray(data) ? data : data?.results || [];
+      const l = list.find((x) => Number(x.id) === Number(itemId));
+      if (l) return { name: l.title || l.name, level_code: l.name, amount: l.price, has_access: l.has_access };
+    } catch {}
+    const fb = KNOWN_LEVELS[itemId] || { name: `المستوى ${itemId}`, level_code: `A${itemId}`, amount: '1500.00' };
+    return { ...fb, has_access: false };
   }
-  const data = await backendGet('/api/books/', token);
-  const list = Array.isArray(data) ? data : Object.values(data || {}).flat();
-  const b = list.find((x) => Number(x.id) === Number(itemId));
-  return b ? { name: b.name, level_code: b.level, amount: b.price, has_access: b.has_access } : null;
+  try {
+    const data = await backendGet('/api/books/', token);
+    const list = Array.isArray(data) ? data : Object.values(data || {}).flat();
+    const b = list.find((x) => Number(x.id) === Number(itemId));
+    if (b) return { name: b.name, level_code: b.level, amount: b.price, has_access: b.has_access };
+  } catch {}
+  return { name: `كتاب تعليمي #${itemId}`, level_code: 'ALL', amount: '350.00', has_access: false };
 }
 
 export const RECEIPT_TYPES = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.heic': 'image/heic', '.pdf': 'application/pdf' };
@@ -35,11 +49,14 @@ const maskEmail = (email) => {
 
 export const loadRequests = () => readStore('requests');
 
-/** Changes the list under a lock. fn(list) returns { list, result }. */
-export const updateRequests = (fn) => withLock('requests', async () => {
+/** Changes the list under a lock. fn(list) returns { list, result }. Atomically syncs extraCloudFiles (like receipts) with requests.json */
+export const updateRequests = (fn, extraCloudFiles = {}) => withLock('requests', async () => {
   const list = await readStore('requests');
   const { list: next, result } = await fn(list);
   await writeStore('requests', next);
+  if (Object.keys(extraCloudFiles).length > 0) {
+    await updateCloudFiles(extraCloudFiles);
+  }
   return result;
 });
 
@@ -91,7 +108,11 @@ export function ownView(r) {
 
 const receiptBufferCache = new Map();
 
-export async function saveReceipt(id, file) {
+/**
+ * Prepares the receipt file: stores in local cache and returns the filename and cloud file payload
+ * so it can be committed atomically in the same Gist update as requests.json.
+ */
+export async function prepareReceipt(id, file) {
   const ext = path.extname(file.name || '').toLowerCase();
   const dir = dataPath('receipts');
   try {
@@ -104,12 +125,17 @@ export async function saveReceipt(id, file) {
   } catch {}
   receiptBufferCache.set(name, buffer);
 
-  // Persist to Cloud Gist so any lambda container can read it!
-  saveCloudReceipt(name, buffer).catch((err) => {
-    console.warn('saveCloudReceipt warning:', err?.message || err);
-  });
+  const b64 = buffer.toString('base64');
+  return {
+    name,
+    cloudFiles: { [`receipt_${name}.b64`]: b64 },
+  };
+}
 
-  return name;
+export async function saveReceipt(id, file) {
+  const prep = await prepareReceipt(id, file);
+  saveCloudReceipt(prep.name, receiptBufferCache.get(prep.name)).catch(() => {});
+  return prep.name;
 }
 
 export async function readReceipt(name) {

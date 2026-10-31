@@ -47,18 +47,8 @@ export const ACCESS_REQUEST_EVENT = 'dw:access-request';
 export const requestsService = {
   /** fields: { kind: 'level'|'book', item_id, full_name, phone, payment_method, note?, receipt?: File, coupon? } */
   create: async (fields) => {
-    let res;
-    // Coupons live on the website, so a request with one always goes there.
-    if (fields.coupon) {
-      res = (await apiClient.post(SITE_REQUESTS, toFormData(fields))).data;
-    } else {
-      try {
-        res = (await apiClient.post(API_ENDPOINTS.REQUESTS, toFormData(fields))).data;
-      } catch (err) {
-        if (!isMissingEndpoint(err)) throw err;
-        res = (await apiClient.post(SITE_REQUESTS, toFormData(fields))).data;
-      }
-    }
+    // All requests go directly to the website's persistent cloud store (/site-data/requests)
+    const res = (await apiClient.post(SITE_REQUESTS, toFormData(fields))).data;
     saveLocalRequest(fields, res);
     return res;
   },

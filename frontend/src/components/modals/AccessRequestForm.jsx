@@ -86,8 +86,8 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
       setError(t('رقم الهاتف غير صحيح، يرجى كتابة الرقم مع كود الدولة.'));
       return;
     }
-    if (paymentMethod !== CASH_METHOD && !receipt) {
-      setError(t('صورة إيصال التحويل مطلوبة وإلزامية لتأكيد الدفع وسرعة التفعيل.'));
+    if (!receipt) {
+      setError(t('⚠️ صورة إيصال التحويل مطلوبة وإلزامية لتأكيد الطلب والتفعيل.'));
       return;
     }
     setSending(true);
@@ -109,7 +109,8 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
 
       setSent('platform');
     } catch (err) {
-      sendOnWhatsapp();
+      const msg = getErrorMessage(err, t('تعذر إرسال الطلب للمنصة حالياً. يرجى التأكد من صورة الإيصال وإعادة المحاولة.'));
+      setError(msg);
     } finally {
       setSending(false);
     }
@@ -179,41 +180,50 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         />
         <PayMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
 
-        {paymentMethod !== CASH_METHOD && (
-          <Field label={<span>{t('صورة إيصال التحويل')} <strong className="text-rose-500 font-black">({t('إلزامي')}) *</strong></span>}>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*,application/pdf"
-              className="hidden"
-              onChange={(e) => setReceipt(e.target.files?.[0] || null)}
-            />
-            {receipt ? (
-              <div className="flex items-center gap-3 rounded-2xl border-2 border-emerald-400 bg-emerald-50 px-4 py-3 shadow-sm">
-                <ImagePlus className="w-5 h-5 text-emerald-600 shrink-0" />
-                <span className="flex-1 min-w-0 truncate text-xs font-bold text-emerald-800" dir="ltr">{receipt.name}</span>
-                <span className="text-[10px] font-black text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">{t('تم الإرفاق ✓')}</span>
-                <button
-                  type="button"
-                  onClick={() => { setReceipt(null); if (fileRef.current) fileRef.current.value = ''; }}
-                  className="p-1 rounded-lg hover:bg-emerald-100 text-emerald-700"
-                  aria-label={t('إزالة')}
-                >
-                  <X className="w-4 h-4" />
-                </button>
+        <Field label={<span>{t('صورة إيصال التحويل')} <strong className="text-rose-500 font-black">({t('إلزامي لا يمكن الإرسال بدونه')}) *</strong></span>}>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*,application/pdf"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              if (file && file.size > 8 * 1024 * 1024) {
+                setError(t('حجم صورة التحويل يجب ألا يتجاوز 8 ميجابايت.'));
+                return;
+              }
+              setReceipt(file);
+              if (file) setError('');
+            }}
+          />
+          {receipt ? (
+            <div className="flex items-center gap-3 rounded-2xl border-2 border-emerald-500 bg-emerald-50 px-4 py-3.5 shadow-sm">
+              <ImagePlus className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <span className="block truncate text-xs font-black text-emerald-900" dir="ltr">{receipt.name}</span>
+                <span className="text-[10px] text-emerald-600 font-bold">{(receipt.size / 1024).toFixed(0)} KB</span>
               </div>
-            ) : (
+              <span className="text-[11px] font-black text-emerald-700 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-xl shadow-xs">{t('تم الإرفاق بنجاح ✓')}</span>
               <button
                 type="button"
-                onClick={() => fileRef.current?.click()}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-rose-300 bg-rose-50/30 hover:border-teal-400 hover:bg-teal-50/50 py-4 text-xs font-black text-rose-700 hover:text-teal-700 transition-colors shadow-sm"
+                onClick={() => { setReceipt(null); if (fileRef.current) fileRef.current.value = ''; }}
+                className="p-1 rounded-lg hover:bg-emerald-200/60 text-emerald-700 transition-colors"
+                aria-label={t('إزالة')}
               >
-                <ImagePlus className="w-5 h-5 text-rose-500" />
-                <span>{t('ارفع سكرين / صورة التحويل (إجباري)')}</span>
+                <X className="w-4 h-4" />
               </button>
-            )}
-          </Field>
-        )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="w-full flex items-center justify-center gap-2.5 rounded-2xl border-2 border-dashed border-rose-400 bg-rose-50/60 hover:border-emerald-500 hover:bg-emerald-50/50 py-4 px-3 text-xs font-black text-rose-700 hover:text-emerald-800 transition-all shadow-sm group"
+            >
+              <ImagePlus className="w-5 h-5 text-rose-500 group-hover:scale-110 group-hover:text-emerald-600 transition-all" />
+              <span>{t('اضغط هنا لرفع سكرين / صورة التحويل')} <strong className="text-rose-600 group-hover:text-emerald-700 underline font-black">({t('مطلوب وإجباري')})</strong></span>
+            </button>
+          )}
+        </Field>
 
         <Field label={t('ملاحظة (اختياري)')}>
           <textarea
@@ -228,18 +238,41 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         <CouponBox kind={kind} itemId={itemId} applied={coupon} onChange={setCoupon} />
 
         {error && (
-          <p className="flex items-start gap-2 rounded-2xl bg-rose-50 border border-rose-200 px-4 py-3 text-xs font-bold text-rose-700">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /> {error}
-          </p>
+          <div className="rounded-2xl bg-rose-50 border border-rose-200 p-4 space-y-2">
+            <p className="flex items-start gap-2 text-xs font-black text-rose-700">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </p>
+            <div className="pt-1 flex items-center justify-between text-[11px]">
+              <span className="text-slate-500 font-bold">{t('لو واجهتك أي مشكلة:')}</span>
+              <button
+                type="button"
+                onClick={sendOnWhatsapp}
+                className="text-teal-700 hover:text-teal-900 font-black underline"
+              >
+                {t('إرسال التفاصيل للإدارة عبر واتساب 💬')}
+              </button>
+            </div>
+          </div>
         )}
 
         <button
           type="submit"
-          disabled={sending}
-          className="dw-shine w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-70 text-white font-black text-sm py-4 rounded-2xl shadow-lg shadow-emerald-500/25 transition-colors"
+          disabled={sending || !receipt}
+          className={`dw-shine w-full flex items-center justify-center gap-2 font-black text-sm py-4 rounded-2xl shadow-lg transition-all ${
+            !receipt
+              ? 'bg-slate-200 text-slate-500 cursor-not-allowed shadow-none border border-slate-300'
+              : 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/25 cursor-pointer'
+          }`}
         >
           {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-          <span>{sending ? t('جاري الإرسال...') : t('إرسال الطلب للإدارة')}</span>
+          <span>
+            {sending
+              ? t('جاري الإرسال...')
+              : !receipt
+                ? t('⚠️ يرجى إرفاق صورة الإيصال أولاً لتفعيل الزر')
+                : t('إرسال الطلب للإدارة ✨')}
+          </span>
         </button>
       </form>
     </div>

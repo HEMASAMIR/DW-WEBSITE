@@ -61,8 +61,14 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
       .catch((e) => setError(getErrorMessage(e, t('تعذر تحميل الطلبات.'))));
   }, [kind, status, level, query]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(load, [load]);
+  useEffect(() => {
+    load();
+    const timer = setInterval(() => {
+      // Auto-poll silently every 10s so new student requests pop up live on screen without refreshing!
+      if (!document.hidden) load();
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [load]);
 
   const counts = data?.counts || { by_status: {}, pending_by_level: {} };
   const totalPending = counts.by_status.pending || 0;

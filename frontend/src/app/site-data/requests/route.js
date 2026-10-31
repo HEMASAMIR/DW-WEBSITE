@@ -2,7 +2,7 @@ import path from 'path';
 import { isAdminRequest, getRequestUser } from '@/lib/siteStore';
 import { loadCoupons, evaluateCoupon } from '@/lib/couponsStore';
 import {
-  loadRequests, updateRequests, adminView, ownView, saveReceipt, findItem, RECEIPT_TYPES, MAX_RECEIPT_BYTES,
+  loadRequests, updateRequests, adminView, ownView, prepareReceipt, saveReceipt, findItem, RECEIPT_TYPES, MAX_RECEIPT_BYTES,
 } from '@/lib/requestsStore';
 
 // Students' level / book requests (see src/lib/requestsStore.js).
@@ -72,13 +72,12 @@ export async function POST(request) {
   if (!fullName) return json({ full_name: ['الاسم مطلوب.'] }, 400);
   if (!/^\+?[0-9]{7,16}$/.test(phone)) return json({ phone: ['رقم الهاتف غير صحيح. يرجى إدخال رقم صحيح مع كود الدولة.'] }, 400);
   const hasReceipt = receipt && typeof receipt === 'object' && receipt.size > 0;
-  if (paymentMethod !== 'نقدي بالفرع' && !hasReceipt) {
+  if (!hasReceipt) {
     return json({ receipt: ['صورة إيصال التحويل مطلوبة وإلزامية لتأكيد الطلب.'] }, 400);
   }
-  if (hasReceipt) {
-    if (!RECEIPT_TYPES[path.extname(receipt.name || '').toLowerCase()]) return json({ receipt: ['صورة التحويل يجب أن تكون صورة أو PDF.'] }, 400);
-    if (receipt.size > MAX_RECEIPT_BYTES) return json({ receipt: ['حجم صورة التحويل أكبر من 8 ميجا.'] }, 400);
-  }
+  const ext = path.extname(receipt.name || '').toLowerCase();
+  if (!RECEIPT_TYPES[ext]) return json({ receipt: ['صورة التحويل يجب أن تكون صورة (JPG, PNG, WebP) أو PDF.'] }, 400);
+  if (receipt.size > MAX_RECEIPT_BYTES) return json({ receipt: ['حجم صورة التحويل أكبر من 8 ميجا.'] }, 400);
 
   // The item as the student sees it (name, price, level, already unlocked?) — straight from the backend.
   const item = await findItem(kind, itemId, user.token);
@@ -86,6 +85,13 @@ export async function POST(request) {
   if (item.has_access) return json({ detail: kind === 'level' ? 'المستوى مفعّل على حسابك بالفعل.' : 'الكتاب مفعّل على حسابك بالفعل.' }, 400);
 
   const id = `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+  let preparedReceipt = null;
+  try {
+    preparedReceipt = await prepareReceipt(id, receipt);
+  } catch (err) {
+    console.warn('prepareReceipt warning:', err?.message || err);
+  }
+
   try {
     const created = await updateRequests(async (list) => {
       if (list.some((r) => r.user_id === user.id && r.kind === kind && r.item_id === itemId && r.status === 'pending')) {
@@ -115,13 +121,13 @@ export async function POST(request) {
         phone,
         payment_method: paymentMethod,
         note,
-        receipt: hasReceipt ? await saveReceipt(id, receipt) : null,
+        receipt: preparedReceipt ? preparedReceipt.name : null,
         status: 'pending',
         admin_note: '',
         created_at: new Date().toISOString(),
       };
       return { list: [...list, record], result: record };
-    });
+    }, preparedReceipt ? preparedReceipt.cloudFiles : {});
     if (created?.couponError) return json({ coupon: [created.couponError], detail: created.couponError }, 400);
     if (!created) {
       return json({ detail: 'عندك طلب لنفس العنصر قيد المراجعة بالفعل، هيتم تفعيله أول ما الإدارة تراجعه.' }, 400);
