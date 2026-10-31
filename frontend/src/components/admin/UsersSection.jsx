@@ -205,6 +205,9 @@ function UserDrawer({ userId, levels, books, onClose, onChanged }) {
       setU(d);
       setForm({ first_name: d.first_name, last_name: d.last_name, email: d.email, password: '' });
     }).catch((e) => { toast('err', getErrorMessage(e)); onClose(); });
+    adminService.getStudentActivity(userId).then((a) => {
+      setActivity(Array.isArray(a) ? a : []);
+    }).catch(() => {});
   }, [userId, toast, onClose]);
   useEffect(load, [load]);
 
@@ -338,17 +341,41 @@ function UserDrawer({ userId, levels, books, onClose, onChanged }) {
             <h4 className="text-sm font-black text-slate-900 mb-1 flex items-center gap-2"><Layers className="w-4 h-4 text-teal-600" />{' '}{t('المستويات (الكورسات)')}</h4>
             <p className="text-[11px] text-slate-500 mb-4">{u.is_admin ? t('الأدمن شايف كل المستويات تلقائياً.') : t('فعّل أو اقفل أي مستوى للطالب على طول.')}</p>
             <div className="space-y-2">
-              {levels.map((l) => (
-                <div key={l.id} className="flex items-center gap-3 rounded-2xl border border-slate-100 px-3 py-2.5">
-                  <LevelChip code={l.name} />
-                  <p className="flex-1 min-w-0 text-sm font-bold text-slate-800 truncate">{l.title}</p>
-                  <Switch
-                    checked={u.is_admin || levelIds.has(l.id)}
-                    disabled={u.is_admin || toggling === `level-${l.id}`}
-                    onChange={(v) => toggleAccess('level', l.id, v)}
-                  />
-                </div>
-              ))}
+              {levels.map((l) => {
+                const hasLevel = u.is_admin || levelIds.has(l.id);
+                return (
+                  <div key={l.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-100 p-3 bg-white">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <LevelChip code={l.name} />
+                      <p className="text-sm font-bold text-slate-800 truncate">{l.title}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {hasLevel && (
+                        <Btn
+                          variant="subtle"
+                          size="sm"
+                          icon={CalendarClock}
+                          className="!text-teal-700 !bg-teal-50 hover:!bg-teal-100 font-black text-xs"
+                          onClick={() => setEditingDays({
+                            user_id: userId,
+                            level_id: l.id,
+                            student_name: u.name,
+                            level_name: l.title,
+                            currentDays: 180,
+                          })}
+                        >
+                          {t('تعديل الأيام')}
+                        </Btn>
+                      )}
+                      <Switch
+                        checked={hasLevel}
+                        disabled={u.is_admin || toggling === `level-${l.id}`}
+                        onChange={(v) => toggleAccess('level', l.id, v)}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </Card>
 
@@ -368,6 +395,35 @@ function UserDrawer({ userId, levels, books, onClose, onChanged }) {
                   </div>
                 ))}
               </div>
+            )}
+          </Card>
+
+          <Card className="p-5">
+            <h4 className="text-sm font-black text-slate-900 mb-2 flex items-center gap-2">
+              <PlayCircle className="w-4 h-4 text-emerald-600" />
+              {t('نشاط مشاهدات الطالب للمحاضرات')}
+            </h4>
+            <p className="text-[11px] text-slate-500 mb-4">{t('سجل المحاضرات التي فتحها وشاهدها الطالب على المنصة')}</p>
+            {activity.length === 0 ? (
+              <div className="text-center py-6 text-slate-400 text-xs font-bold bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                <PlayCircle className="w-7 h-7 text-slate-300 mx-auto mb-1.5" />
+                <p>{t('لم يسجل الطالب أي مشاهدات بعد.')}</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">{t('يتم تسجيل المحاضرة تلقائياً فور تشغيل الفيديو.')}</p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {activity.map((a) => (
+                  <li key={a.id || a.video_id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </span>
+                      <span className="font-bold text-slate-800 truncate">{a.video_title || `محاضرة #${a.video_id}`}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-bold shrink-0">{timeAgo(a.watched_at)}</span>
+                  </li>
+                ))}
+              </ul>
             )}
           </Card>
 
@@ -399,6 +455,16 @@ function UserDrawer({ userId, levels, books, onClose, onChanged }) {
             </Card>
           )}
         </>
+      )}
+      {editingDays && (
+        <EditDaysModal
+          editing={editingDays}
+          onClose={() => setEditingDays(null)}
+          onSaved={() => {
+            load();
+            onChanged();
+          }}
+        />
       )}
     </Drawer>
   );

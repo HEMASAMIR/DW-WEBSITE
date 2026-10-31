@@ -14,7 +14,7 @@ import { translate as t } from './prefs';
  * Live backend (no requests API): who each level / book is unlocked for, one tab per level,
  * with "activate for a student" and "revoke". kind: 'level' | 'book'
  */
-export default function SubscriptionsSection({ kind, onChanged }) {
+export default function SubscriptionsSection({ kind = 'level', onChanged }) {
   const toast = useToast();
   const confirm = useConfirm();
   const isLevel = kind === 'level';

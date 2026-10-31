@@ -17,9 +17,10 @@ import BranchesSection from './BranchesSection';
 import AnnouncementSection from './AnnouncementSection';
 import ContactPaySection from './ContactPaySection';
 import CouponsSection from './CouponsSection';
+import SubscriptionsSection from './SubscriptionsSection';
 import {
   LayoutDashboard, GraduationCap, BookMarked, Users, Layers, BookOpen, MapPin, Megaphone,
-  Menu, X, LogOut, Home, RefreshCw, ShieldAlert, Loader2, ExternalLink, ChevronLeft, Sun, Moon, Languages, PhoneCall, Ticket,
+  Menu, X, LogOut, Home, RefreshCw, ShieldAlert, Loader2, ExternalLink, ChevronLeft, Sun, Moon, Languages, PhoneCall, Ticket, CalendarClock,
 } from 'lucide-react';
 
 // Labels are translation keys; they're translated where they render.
@@ -36,6 +37,7 @@ const NAV = [
     group: 'الإدارة',
     items: [
       { key: 'users', label: 'الطلاب والحسابات', icon: Users, tone: 'violet' },
+      { key: 'subscriptions', label: 'اشتراكات الكورسات والأيام', icon: CalendarClock, tone: 'teal' },
       { key: 'courses', label: 'الكورسات والمحاضرات', icon: Layers, tone: 'amber' },
       { key: 'books', label: 'الكتب', icon: BookOpen, tone: 'rose' },
       { key: 'branches', label: 'الفروع', icon: MapPin, tone: 'cyan' },
@@ -207,6 +209,7 @@ function Shell({ user }) {
   else if (tab === 'requests-level') section = <CombinedRequestsSection kind="level" {...sectionProps} />;
   else if (tab === 'requests-book') section = <CombinedRequestsSection kind="book" {...sectionProps} />;
   else if (tab === 'users') section = <UsersSection {...sectionProps} />;
+  else if (tab === 'subscriptions') section = <SubscriptionsSection {...sectionProps} />;
   else if (tab === 'courses') section = <CoursesSection {...sectionProps} />;
   else if (tab === 'books') section = <BooksSection {...sectionProps} />;
   else if (tab === 'branches') section = <BranchesSection {...sectionProps} />;

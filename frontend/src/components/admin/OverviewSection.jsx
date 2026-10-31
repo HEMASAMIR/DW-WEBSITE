@@ -53,7 +53,7 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
 
   return (
     <div className="space-y-6">
-      {pendingTotal > 0 && (
+      {pendingTotal > 0 ? (
         <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white p-5 sm:p-6 shadow-xl shadow-amber-500/25 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 animate-pulse-subtle">
           <div className="flex items-center gap-4">
             <span className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center shrink-0 shadow-inner">
@@ -79,6 +79,21 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
             onClick={() => goTo('requests-level')}
           >
             {t('مراجعة وتفعيل الطلبات الآن')}
+          </Btn>
+        </div>
+      ) : (
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 sm:p-5 shadow-lg shadow-teal-700/15 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-emerald-200" />
+            </span>
+            <div>
+              <p className="text-sm sm:text-base font-black">{t('جميع طلبات التفعيل تمت مراجعتها بالكامل')}</p>
+              <p className="text-xs text-teal-100 font-bold mt-0.5">{t('لا توجد طلبات معلقة حالياً. يتم تنبيهك فوراً بإشعار وصوت عند وصول أي طلب جديد.')}</p>
+            </div>
+          </div>
+          <Btn variant="white" size="sm" onClick={() => goTo('requests-level')} className="!text-teal-900 font-black shrink-0">
+            {t('سجل الطلبات')}
           </Btn>
         </div>
       )}
@@ -626,7 +641,7 @@ function RecentUsers({ users, goTo }) {
 
 
 function StudentWatchActivityPanel({ activity = [], goTo }) {
-  if (!activity || activity.length === 0) return null;
+  const hasItems = activity && activity.length > 0;
   return (
     <Card className="p-5 sm:p-6 mb-6">
       <CardTitle
@@ -635,31 +650,39 @@ function StudentWatchActivityPanel({ activity = [], goTo }) {
         sub={t('آخر المحاضرات التي تم مشاهدتها على المنصة')}
         action={<LinkBtn onClick={() => goTo('users')}>{t('سجل الطلاب')}</LinkBtn>}
       />
-      <ul className="divide-y divide-slate-100 mt-3">
-        {activity.slice(0, 8).map((act) => (
-          <li key={act.id || `${act.user_id}_${act.video_id}`} className="py-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-4 h-4" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-black text-slate-800 truncate">{act.user_name || act.user_email}</p>
-                <p className="text-xs text-slate-500 truncate" dir="auto">
-                  {act.video_title || t('محاضرة #{id}', { id: act.video_id })}
-                </p>
+      {hasItems ? (
+        <ul className="divide-y divide-slate-100 mt-3">
+          {activity.slice(0, 8).map((act) => (
+            <li key={act.id || `${act.user_id}_${act.video_id}`} className="py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-4 h-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-slate-800 truncate">{act.user_name || act.user_email}</p>
+                  <p className="text-xs text-slate-500 truncate" dir="auto">
+                    {act.video_title || t('محاضرة #{id}', { id: act.video_id })}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="text-end shrink-0">
-              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 block">
-                ✓ {t('تمت المشاهدة')}
-              </span>
-              <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
-                {timeAgo(act.watched_at)}
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
+              <div className="text-end shrink-0">
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 block">
+                  ✓ {t('تمت المشاهدة')}
+                </span>
+                <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
+                  {timeAgo(act.watched_at)}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="text-center py-6 text-slate-400 text-xs font-bold bg-slate-50/50 rounded-2xl border border-dashed border-slate-200 mt-3">
+          <PlayCircle className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+          <p>{t('سجل مشاهدات المحاضرات نشط الآن')}</p>
+          <p className="text-[11px] text-slate-400 mt-0.5">{t('يتم رصد نشاط الطالب تلقائياً فور تشغيل أي فيديو في الكورسات وتحديثه هنا.')}</p>
+        </div>
+      )}
     </Card>
   );
 }
