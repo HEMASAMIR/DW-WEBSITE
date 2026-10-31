@@ -83,11 +83,18 @@ export const adminService = {
       return { detail: 'تم حذف الطلب.' };
     }
   ),
-  viewReceipt: (id, onProgress) => {
-    return getAdminMode().then((mode) => {
-      const url = mode === 'legacy' ? `/site-data/requests/${id}/receipt/` : API_ENDPOINTS.ADMIN_REQUEST_RECEIPT(id);
-      return fetchFile(url, `receipt-${id}`, onProgress);
-    });
+  viewReceipt: async (id, onProgress) => {
+    // 1. All modern website requests store their receipts in /site-data/requests/${id}/receipt
+    // Try our dedicated site store first (fast, reliable, persistent in Gist)
+    try {
+      return await fetchFile(`/site-data/requests/${id}/receipt`, `receipt-${id}`, onProgress);
+    } catch (err) {
+      // 2. If it's a numeric ID and not found in site-data, fallback to backend endpoint
+      if (/^\d+$/.test(String(id))) {
+        return await fetchFile(API_ENDPOINTS.ADMIN_REQUEST_RECEIPT(id), `receipt-${id}`, onProgress);
+      }
+      throw err;
+    }
   },
 
   // ---- Users ----

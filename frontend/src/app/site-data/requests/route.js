@@ -76,7 +76,10 @@ export async function POST(request) {
     return json({ receipt: ['صورة إيصال التحويل مطلوبة وإلزامية لتأكيد الطلب.'] }, 400);
   }
   const ext = path.extname(receipt.name || '').toLowerCase();
-  if (!RECEIPT_TYPES[ext]) return json({ receipt: ['صورة التحويل يجب أن تكون صورة (JPG, PNG, WebP) أو PDF.'] }, 400);
+  const isImageMime = typeof receipt.type === 'string' && receipt.type.startsWith('image/');
+  if (!RECEIPT_TYPES[ext] && !isImageMime && ext !== '.pdf') {
+    return json({ receipt: ['صورة التحويل يجب أن تكون صورة (JPG, PNG, WebP) أو PDF.'] }, 400);
+  }
   if (receipt.size > MAX_RECEIPT_BYTES) return json({ receipt: ['حجم صورة التحويل أكبر من 8 ميجا.'] }, 400);
 
   // The item as the student sees it (name, price, level, already unlocked?) — straight from the backend.

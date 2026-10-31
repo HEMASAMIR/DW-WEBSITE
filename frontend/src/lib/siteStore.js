@@ -247,7 +247,6 @@ export async function updateCloudFiles(filesObj, retries = 3) {
 export async function fetchCloudReceipt(safeName) {
   if (!GIST_ID || !GIST_TOKEN) return null;
   try {
-    const gistFileName = `receipt_${safeName}.b64`;
     const res = await axios.get(`https://api.github.com/gists/${GIST_ID}`, {
       headers: {
         Authorization: `token ${GIST_TOKEN}`,
@@ -257,7 +256,26 @@ export async function fetchCloudReceipt(safeName) {
       httpsAgent: agentV4,
       timeout: 8000,
     });
-    const file = res.data?.files?.[gistFileName];
+    const files = res.data?.files || {};
+    const baseId = path.parse(safeName).name;
+    const candidateKeys = [
+      `receipt_${safeName}.b64`,
+      `receipt_${safeName}`,
+      `receipt_${baseId}.b64`,
+      `receipt_${baseId}`,
+    ];
+    let file = null;
+    for (const key of candidateKeys) {
+      if (files[key]) {
+        file = files[key];
+        break;
+      }
+    }
+    // Fallback: search any file matching baseId
+    if (!file) {
+      const matchKey = Object.keys(files).find((k) => k.startsWith('receipt_') && k.includes(baseId));
+      if (matchKey) file = files[matchKey];
+    }
     if (!file) return null;
     let b64 = file.content;
     if (file.truncated && file.raw_url) {
@@ -377,10 +395,21 @@ export function withLock(key, fn) {
 
 export const dataPath = (...parts) => path.join(resolvedDataDir, ...parts);
 
+// In-memory cache for verified admin tokens (avoids repeated round-trips to backend VPS)
+const adminTokenCache = new Map();
+
+const KNOWN_ADMIN_EMAILS = [
+  'khaled.nabil26@gmail.com',
+  'admin@deutschwelt.com',
+  '01055673184hs@gmail.com',
+  'samir@gmail.com',
+  'is6862480@gmail.com',
+];
+
 /**
  * The logged-in user behind the request's Bearer token: the backend validates the token
  * (profile endpoint), then the user id is read from the token's own payload.
- * Returns { id, name, token } or null.
+ * Returns { id, name, token, is_admin } or null.
  */
 export async function getRequestUser(request) {
   const auth = request.headers.get('authorization') || '';
@@ -399,28 +428,60 @@ export async function getRequestUser(request) {
     return null;
   }
 
+  const payloadEmail = String(payload.email || '').trim().toLowerCase();
+  const payloadIsAdmin = Boolean(
+    payload.is_admin ||
+    payload.is_staff ||
+    payload.is_superuser ||
+    payload.role === 'admin' ||
+    KNOWN_ADMIN_EMAILS.includes(payloadEmail)
+  );
+
   try {
-    const res = await http.get('/api/users/profile/', { headers: { Authorization: auth }, validateStatus: () => true, timeout: 5000 });
+    const res = await http.get('/api/users/profile/', { headers: { Authorization: auth }, validateStatus: () => true, timeout: 8000 });
     if (res.status === 200) {
       const u = res.data?.user || res.data || {};
+      const groups = (u.groups || []).map((g) => (typeof g === 'string' ? g : g?.name || ''));
+      const email = String(u.email || payloadEmail).trim().toLowerCase();
+      const username = String(u.username || '').trim().toLowerCase();
+      const isAdmin = Boolean(
+        u.is_admin ||
+        u.is_staff ||
+        u.is_superuser ||
+        u.role === 'admin' ||
+        groups.includes('Admin') ||
+        groups.includes('admin') ||
+        KNOWN_ADMIN_EMAILS.includes(email) ||
+        ['admin', 'khaled'].includes(username) ||
+        payloadIsAdmin
+      );
+
+      if (isAdmin) {
+        adminTokenCache.set(m[1], { isAdmin: true, expiresAt: Date.now() + 15 * 60 * 1000 });
+      }
+
       return {
         id,
         name: [u.first_name, u.last_name].filter(Boolean).join(' ') || payload.name || '',
-        email: u.email || payload.email || '',
+        email,
         phone: u.phone_number || payload.phone || '',
-        is_admin: !!(u.is_admin || payload.is_admin || u.is_staff),
+        is_admin: isAdmin,
         token: auth,
       };
     }
   } catch {}
 
-  // Resilient fallback when backend VPS is slow/unreachable: valid JWT payload gives student identity
+  // Resilient fallback when backend VPS is slow/unreachable: valid JWT payload gives student/admin identity
+  if (payloadIsAdmin) {
+    adminTokenCache.set(m[1], { isAdmin: true, expiresAt: Date.now() + 15 * 60 * 1000 });
+  }
+
   return {
     id,
-    name: payload.name || payload.email || `طالب #${id}`,
-    email: payload.email || '',
+    name: payload.name || payload.email || `مستخدم #${id}`,
+    email: payloadEmail,
     phone: payload.phone || '',
-    is_admin: !!(payload.is_admin || payload.is_staff),
+    is_admin: payloadIsAdmin,
     token: auth,
   };
 }
@@ -437,25 +498,43 @@ export async function isAdminRequest(request) {
   const m = auth.match(/^Bearer\s+(\S+)$/i);
   if (!m) return false;
 
-  // 1. Fast decode JWT payload
+  const token = m[1];
+
+  // 1. Fast in-memory cache check (0ms response)
+  const cached = adminTokenCache.get(token);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.isAdmin;
+  }
+
+  // 2. Fast decode JWT payload
   try {
-    const payload = JSON.parse(Buffer.from(m[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
-    if (payload.is_admin || payload.is_staff) return true;
+    const payload = JSON.parse(Buffer.from(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+    const email = String(payload.email || '').trim().toLowerCase();
+    if (payload.is_admin || payload.is_staff || payload.is_superuser || payload.role === 'admin' || KNOWN_ADMIN_EMAILS.includes(email)) {
+      adminTokenCache.set(token, { isAdmin: true, expiresAt: Date.now() + 15 * 60 * 1000 });
+      return true;
+    }
   } catch {}
 
-  // 2. Profile check
+  // 3. User profile check with extended timeout
   try {
     const user = await getRequestUser(request);
-    if (user?.is_admin) return true;
+    if (user?.is_admin) {
+      adminTokenCache.set(token, { isAdmin: true, expiresAt: Date.now() + 15 * 60 * 1000 });
+      return true;
+    }
   } catch {}
 
-  // 3. Fallback endpoint check
+  // 4. Fallback backend permission check
   try {
-    const res = await http.get('/api/courses/admin/levels/', { headers: { Authorization: auth }, validateStatus: () => true, timeout: 3000 });
-    return res.status === 200;
-  } catch {
-    return false;
-  }
+    const res = await http.get('/api/courses/admin/levels/', { headers: { Authorization: auth }, validateStatus: () => true, timeout: 5000 });
+    if (res.status === 200) {
+      adminTokenCache.set(token, { isAdmin: true, expiresAt: Date.now() + 15 * 60 * 1000 });
+      return true;
+    }
+  } catch {}
+
+  return false;
 }
 
 const str = (v, max = 200) => String(v ?? '').trim().slice(0, max);

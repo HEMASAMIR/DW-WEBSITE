@@ -113,7 +113,11 @@ const receiptBufferCache = new Map();
  * so it can be committed atomically in the same Gist update as requests.json.
  */
 export async function prepareReceipt(id, file) {
-  const ext = path.extname(file.name || '').toLowerCase();
+  let ext = path.extname(file.name || '').toLowerCase();
+  if (!ext && typeof file.type === 'string' && file.type.startsWith('image/')) {
+    ext = file.type === 'image/png' ? '.png' : file.type === 'image/webp' ? '.webp' : '.jpg';
+  }
+  if (!ext) ext = '.jpg';
   const dir = dataPath('receipts');
   try {
     await fs.mkdir(dir, { recursive: true });
@@ -121,7 +125,7 @@ export async function prepareReceipt(id, file) {
   const name = `${id}${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
   try {
-    await fs.writeFile(path.join(dir, name), buffer);
+    await fs.writeFile(path.join(/*turbopackIgnore: true*/ dir, name), buffer);
   } catch {}
   receiptBufferCache.set(name, buffer);
 
@@ -151,7 +155,7 @@ export async function readReceipt(name) {
         try {
           const dir = dataPath('receipts');
           await fs.mkdir(dir, { recursive: true });
-          await fs.writeFile(path.join(dir, safe), buf);
+          await fs.writeFile(path.join(/*turbopackIgnore: true*/ dir, safe), buf);
         } catch {}
       }
     }

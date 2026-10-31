@@ -7,19 +7,22 @@ export const dynamic = 'force-dynamic';
 export async function GET(request, { params }) {
   if (!(await isAdminRequest(request))) return Response.json({ detail: 'غير مصرح.' }, { status: 403 });
   const { id } = await params;
-  const r = (await loadRequests()).find((x) => x.id === id);
-  if (!r?.receipt) return Response.json({ detail: 'مفيش صورة تحويل للطلب ده.' }, { status: 404 });
+  const requests = await loadRequests();
+  const r = requests.find((x) => x.id === id);
+  const receiptTarget = r?.receipt || id;
+
   try {
-    const file = await readReceipt(r.receipt);
+    const file = await readReceipt(receiptTarget);
     return new Response(file.buf, {
       headers: {
-        'Content-Type': file.type,
-        'Content-Disposition': `inline; filename="${file.name}"`,
+        'Content-Type': file.type || 'image/jpeg',
+        'Content-Disposition': `inline; filename="${file.name || 'receipt.jpg'}"`,
         'Cache-Control': 'private, no-store',
         'X-Content-Type-Options': 'nosniff',
       },
     });
   } catch {
-    return Response.json({ detail: 'ملف التحويل مش موجود.' }, { status: 404 });
+    if (!r?.receipt) return Response.json({ detail: 'مفيش صورة تحويل للطلب ده.' }, { status: 404 });
+    return Response.json({ detail: 'ملف التحويل مش موجود أو جاري مزامنته.' }, { status: 404 });
   }
 }
