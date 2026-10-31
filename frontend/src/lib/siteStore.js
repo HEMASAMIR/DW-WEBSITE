@@ -434,9 +434,24 @@ export async function backendGet(pathname, auth) {
 /** True when the request's Bearer token belongs to an admin on the backend. */
 export async function isAdminRequest(request) {
   const auth = request.headers.get('authorization') || '';
-  if (!/^Bearer\s+\S+/i.test(auth)) return false;
+  const m = auth.match(/^Bearer\s+(\S+)$/i);
+  if (!m) return false;
+
+  // 1. Fast decode JWT payload
   try {
-    const res = await http.get('/api/courses/admin/levels/', { headers: { Authorization: auth }, validateStatus: () => true });
+    const payload = JSON.parse(Buffer.from(m[1].split('.')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+    if (payload.is_admin || payload.is_staff) return true;
+  } catch {}
+
+  // 2. Profile check
+  try {
+    const user = await getRequestUser(request);
+    if (user?.is_admin) return true;
+  } catch {}
+
+  // 3. Fallback endpoint check
+  try {
+    const res = await http.get('/api/courses/admin/levels/', { headers: { Authorization: auth }, validateStatus: () => true, timeout: 3000 });
     return res.status === 200;
   } catch {
     return false;

@@ -73,6 +73,7 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
   const counts = data?.counts || { by_status: {}, pending_by_level: {} };
   const totalPending = counts.by_status.pending || 0;
   const totalApproved = counts.by_status.approved || 0;
+  const requestList = Array.isArray(data?.results) ? data.results : Array.isArray(data) ? data : [];
 
   const tabs = useMemo(
     () => [...new Set([...levelCodes, ...Object.keys(counts.pending_by_level || {})])],
@@ -294,7 +295,7 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
             <Skeleton key={i} className="h-64 !rounded-3xl shadow-sm" />
           ))}
         </div>
-      ) : data.results.length === 0 ? (
+      ) : requestList.length === 0 ? (
         <Card className="p-10 sm:p-16 text-center border-2 border-dashed border-slate-200/80 bg-gradient-to-b from-white to-slate-50/50">
           <div className="max-w-md mx-auto space-y-4">
             <div className="relative mx-auto w-24 h-24 rounded-3xl bg-gradient-to-br from-teal-50 to-emerald-100/60 border border-teal-200 text-teal-600 flex items-center justify-center dw-float-slow shadow-xl shadow-teal-500/10">
@@ -335,7 +336,7 @@ export default function RequestsSection({ kind, onChanged, onSwitchToSubscribers
         </Card>
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-          {data.results.map((r, idx) => (
+          {requestList.map((r, idx) => (
             <div
               key={r.id}
               className="dw-card-enter"
