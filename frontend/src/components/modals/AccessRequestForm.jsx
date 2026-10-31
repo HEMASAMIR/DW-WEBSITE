@@ -58,35 +58,8 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
     return () => { cancelled = true; };
   }, [kind, itemId]);
 
-  const submit = async (e) => {
-    e.preventDefault();
-    const digits = String(phone).replace(/\D/g, '');
-    if (digits.length < 8 || digits.length > 15) {
-      setError(t('رقم الهاتف غير صحيح، يرجى كتابة الرقم مع كود الدولة.'));
-      return;
-    }
-    setSending(true);
-    setError('');
-    try {
-      await requestsService.create({
-        kind, item_id: itemId, full_name: name, phone, payment_method: paymentMethod, note, receipt, coupon: coupon?.code,
-      });
-      track('generate_lead', { item_type: kind, item_id: itemId, value: priceValue(payAmount), currency: 'EGP', channel: 'platform', coupon: coupon?.code });
-      window.dispatchEvent(new CustomEvent(ACCESS_REQUEST_EVENT, { detail: { kind, itemId } }));
-      setSent('platform');
-    } catch (err) {
-      if (isMissingEndpoint(err)) {
-        sendOnWhatsapp();
-        return;
-      }
-      setError(getErrorMessage(err, t('تعذر إرسال الطلب، حاول مرة أخرى.')));
-    } finally {
-      setSending(false);
-    }
-  };
-
   // i18n-keep: the WhatsApp message goes to the academy, always in Arabic
-  const sendOnWhatsapp = () => {
+  const buildWhatsappUrl = () => {
     const lines = [
       'مرحباً إدارة دويتشه فيلت 👋',
       kind === 'level' ? 'أود الاشتراك وتفعيل المستوى على حسابي في الموقع:' : 'أريد شراء الكتاب وتفعيله على حسابي في الموقع:',
@@ -101,13 +74,61 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
       paymentMethod !== CASH_METHOD ? `🔢 تم التحويل على رقم: ${numberForMethod(contact, paymentMethod)} (مرفق صورة التحويل)` : null,
       note ? `📝 ${note}` : null,
     ].filter((l) => l !== null && l !== undefined);
-    window.open(whatsappHref(contact, lines.join('\n')), '_blank', 'noopener,noreferrer');
+    return whatsappHref(contact, lines.join('\n'));
+  };
+
+  const [currentWaUrl, setCurrentWaUrl] = useState('');
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const digits = String(phone).replace(/\D/g, '');
+    if (digits.length < 8 || digits.length > 15) {
+      setError(t('رقم الهاتف غير صحيح، يرجى كتابة الرقم مع كود الدولة.'));
+      return;
+    }
+    setSending(true);
+    setError('');
+    const waUrl = buildWhatsappUrl();
+    setCurrentWaUrl(waUrl);
+
+    try {
+      await requestsService.create({
+        kind, item_id: itemId, full_name: name, phone, payment_method: paymentMethod, note, receipt, coupon: coupon?.code,
+      });
+      track('generate_lead', { item_type: kind, item_id: itemId, value: priceValue(payAmount), currency: 'EGP', channel: 'platform', coupon: coupon?.code });
+      window.dispatchEvent(new CustomEvent(ACCESS_REQUEST_EVENT, { detail: { kind, itemId } }));
+
+      // Automatically try opening WhatsApp so student can send confirmation directly
+      try {
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+      } catch {}
+
+      setSent('platform');
+    } catch (err) {
+      sendOnWhatsapp();
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const sendOnWhatsapp = () => {
+    const waUrl = buildWhatsappUrl();
+    setCurrentWaUrl(waUrl);
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
     track('generate_lead', { item_type: kind, item_id: itemId, value: priceValue(amount), currency: 'EGP', channel: 'whatsapp' });
     setSent('whatsapp');
   };
 
   if (sent === 'platform') {
-    return <SentState onClose={onClose} title={t('طلبك وصل للإدارة ✨')} text={sentText} showNumber={false} />;
+    return (
+      <SentState
+        onClose={onClose}
+        title={t('تم تسجيل طلبك بنجاح ✨')}
+        text={t('تم تسجيل طلبك على المنصة وفتح واتساب معك لتأكيد صورة التحويل والتفعيل الفوري.')}
+        showNumber={false}
+        whatsappUrl={currentWaUrl || buildWhatsappUrl()}
+      />
+    );
   }
   if (sent === 'whatsapp') {
     return (
@@ -115,7 +136,8 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         onClose={onClose}
         number={paymentMethod !== CASH_METHOD ? numberForMethod(contact, paymentMethod) : null}
         showNumber={paymentMethod !== CASH_METHOD}
-        text={t('ابعت الرسالة على واتساب ومعاها صورة التحويل. بعد تأكيد الدفع هيتفعّل على حسابك في الموقع.')}
+        whatsappUrl={currentWaUrl || buildWhatsappUrl()}
+        text={t('ابعت الرسالة على واتساب ومعاها صورة التحويل. بعد تأكيد الدفع هيتفعّل على حسابك في الموقع فوراً.')}
       />
     );
   }

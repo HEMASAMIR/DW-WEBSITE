@@ -12,6 +12,34 @@ function toFormData(fields) {
   return fd;
 }
 
+function saveLocalRequest(fields, res) {
+  if (typeof window === 'undefined') return;
+  try {
+    const list = JSON.parse(localStorage.getItem('dw_my_requests') || '[]');
+    const record = {
+      id: res?.id || `local-${Date.now()}`,
+      kind: fields.kind,
+      item_id: fields.item_id,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      full_name: fields.full_name,
+      phone: fields.phone,
+      payment_method: fields.payment_method,
+    };
+    const next = [record, ...list.filter((x) => !(x.kind === fields.kind && String(x.item_id) === String(fields.item_id)))].slice(0, 30);
+    localStorage.setItem('dw_my_requests', JSON.stringify(next));
+  } catch {}
+}
+
+function getLocalRequests() {
+  if (typeof window === 'undefined') return [];
+  try {
+    return JSON.parse(localStorage.getItem('dw_my_requests') || '[]');
+  } catch {
+    return [];
+  }
+}
+
 /** Fired on window after a request is sent, so open pages can switch to "under review". */
 export const ACCESS_REQUEST_EVENT = 'dw:access-request';
 
@@ -19,26 +47,45 @@ export const ACCESS_REQUEST_EVENT = 'dw:access-request';
 export const requestsService = {
   /** fields: { kind: 'level'|'book', item_id, full_name, phone, payment_method, note?, receipt?: File, coupon? } */
   create: async (fields) => {
+    let res;
     // Coupons live on the website, so a request with one always goes there.
-    if (fields.coupon) return (await apiClient.post(SITE_REQUESTS, toFormData(fields))).data;
-    try {
-      return (await apiClient.post(API_ENDPOINTS.REQUESTS, toFormData(fields))).data;
-    } catch (err) {
-      if (!isMissingEndpoint(err)) throw err;
-      return (await apiClient.post(SITE_REQUESTS, toFormData(fields))).data;
+    if (fields.coupon) {
+      res = (await apiClient.post(SITE_REQUESTS, toFormData(fields))).data;
+    } else {
+      try {
+        res = (await apiClient.post(API_ENDPOINTS.REQUESTS, toFormData(fields))).data;
+      } catch (err) {
+        if (!isMissingEndpoint(err)) throw err;
+        res = (await apiClient.post(SITE_REQUESTS, toFormData(fields))).data;
+      }
     }
+    saveLocalRequest(fields, res);
+    return res;
   },
 
   /** The logged-in student's own requests only. */
   mine: async () => {
-    let data;
+    let data = [];
     try {
-      ({ data } = await apiClient.get(API_ENDPOINTS.MY_REQUESTS));
+      const res = await apiClient.get(API_ENDPOINTS.MY_REQUESTS);
+      data = res.data;
     } catch (err) {
-      if (!isMissingEndpoint(err)) throw err;
-      ({ data } = await apiClient.get(SITE_REQUESTS, { params: { mine: 1 } }));
+      if (isMissingEndpoint(err)) {
+        try {
+          const res = await apiClient.get(SITE_REQUESTS, { params: { mine: 1 } });
+          data = res.data;
+        } catch {}
+      }
     }
-    return Array.isArray(data) ? data : [];
+    const serverList = Array.isArray(data) ? data : [];
+    const localList = getLocalRequests();
+    const merged = [...serverList];
+    localList.forEach((local) => {
+      if (!merged.some((s) => s.kind === local.kind && String(s.item_id) === String(local.item_id))) {
+        merged.push(local);
+      }
+    });
+    return merged;
   },
 };
 

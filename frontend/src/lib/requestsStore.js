@@ -89,22 +89,32 @@ export function ownView(r) {
   };
 }
 
+const receiptBufferCache = new Map();
+
 export async function saveReceipt(id, file) {
   const ext = path.extname(file.name || '').toLowerCase();
   const dir = dataPath('receipts');
   await fs.mkdir(dir, { recursive: true });
   const name = `${id}${ext}`;
-  await fs.writeFile(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await fs.writeFile(path.join(dir, name), buffer);
+  receiptBufferCache.set(name, buffer);
   return name;
 }
 
 export async function readReceipt(name) {
   const safe = path.basename(name);
-  const buf = await fs.readFile(dataPath('receipts', safe));
+  let buf = receiptBufferCache.get(safe);
+  if (!buf) {
+    buf = await fs.readFile(dataPath('receipts', safe));
+    receiptBufferCache.set(safe, buf);
+  }
   return { buf, type: RECEIPT_TYPES[path.extname(safe).toLowerCase()] || 'application/octet-stream', name: safe };
 }
 
 export async function deleteReceipt(name) {
   if (!name) return;
-  await fs.unlink(dataPath('receipts', path.basename(name))).catch(() => {});
+  const safe = path.basename(name);
+  receiptBufferCache.delete(safe);
+  await fs.unlink(dataPath('receipts', safe)).catch(() => {});
 }

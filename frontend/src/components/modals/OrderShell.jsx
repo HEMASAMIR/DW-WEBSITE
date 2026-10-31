@@ -98,11 +98,11 @@ export function Field({ label, children }) {
 export const inputCls =
   'w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-teal-500 transition-colors';
 
-export function SentState({ text, onClose, title = t('تم تجهيز طلبك على واتساب'), showNumber = true, number }) {
+export function SentState({ text, onClose, title = t('تم تجهيز طلبك على واتساب'), showNumber = true, number, whatsappUrl }) {
   const info = useContactInfo();
   const transferNumber = number || activeMethods(info)[0]?.number;
   return (
-    <div className="text-center py-10 space-y-4 max-w-md mx-auto">
+    <div className="text-center py-8 space-y-4 max-w-md mx-auto">
       <span className="relative inline-flex">
         <span className="absolute inset-0 rounded-full bg-emerald-400/40 animate-ping" />
         <CheckCircle2 className="relative w-20 h-20 text-emerald-500" />
@@ -113,6 +113,22 @@ export function SentState({ text, onClose, title = t('تم تجهيز طلبك �
         <p className="text-sm text-slate-600">
           {t('رقم التحويل:')} <strong className="text-[#0e2c4e]" dir="ltr">{transferNumber}</strong>
         </p>
+      )}
+      {whatsappUrl && (
+        <div className="pt-2">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm py-3.5 px-6 rounded-2xl shadow-lg shadow-emerald-600/25 transition-all hover:scale-[1.02]"
+          >
+            <span>💬</span>
+            <span>{t('إرسال إشعار التحويل عبر واتساب فوراً')}</span>
+          </a>
+          <p className="text-xs text-slate-500 font-bold mt-2">
+            {t('مهم جداً: أرسل صورة التحويل عبر واتساب لسرعة مراجعة وتفعيل الحساب.')}
+          </p>
+        </div>
       )}
       <button onClick={onClose} className="mt-2 bg-[#0e2c4e] hover:bg-teal-700 text-white font-black text-sm px-8 py-3 rounded-2xl transition-colors">
         {t('تمام')}
