@@ -70,19 +70,20 @@ export default function WatchPage() {
 function Watch({ level, content, videoId }) {
   const { openFileViewer } = useModal();
   const [tab, setTab] = useState('discussion');
-  const { videos, files } = content;
+  const { videos = [], files = [] } = content || {};
+
+  const index = Math.max(0, (videos || []).findIndex((v) => String(v.id) === String(videoId)));
+  const active = videos[index];
+  const prev = videos[index - 1];
+  const next = videos[index + 1];
 
   // New lesson → show the top bar + player (the sticky header would otherwise cover the top bar).
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (active?.id) {
+    if (active?.id && level?.id) {
       coursesService.trackWatch(level.id, active.id, active.title);
     }
   }, [videoId, active?.id, active?.title, level?.id]);
-  const index = Math.max(0, videos.findIndex((v) => String(v.id) === String(videoId)));
-  const active = videos[index];
-  const prev = videos[index - 1];
-  const next = videos[index + 1];
 
   const viewFile = (file) =>
     openFileViewer({ title: file.name, load: (onProgress) => coursesService.viewFile(level.id, file, onProgress) });
