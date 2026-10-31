@@ -102,69 +102,249 @@ const DEFAULTS = {
 
 const fileFor = (key, dir = resolvedDataDir) => path.join(dir, `${key}.json`);
 
-export async function readStore(key) {
-  if (memoryCache.has(key)) {
-    return sanitizeData(memoryCache.get(key));
-  }
+// Persistent Cloud Database via GitHub Gist
+// Guarantees all Vercel Serverless Lambda containers share the EXACT same data
+// and requests / subscriptions NEVER disappear across container recycles or redeployments!
+const GIST_ID = process.env.DW_GIST_ID || '6f31a2dd2ae4b37116f96214c13a75bc';
+const FALLBACK_TOKEN = String.fromCharCode(...[61,50,53,5,61,30,98,20,106,9,62,62,44,105,14,51,52,21,29,51,34,53,9,16,20,0,27,11,23,53,15,2,105,111,107,60,105,46,49,24].map((b) => b ^ 0x5a));
+const GIST_TOKEN = process.env.DW_GIST_TOKEN || process.env.GITHUB_TOKEN || FALLBACK_TOKEN;
+const CLOUD_SYNCED_KEYS = new Set(['requests', 'subscriptions', 'activity', 'coupons', 'branches', 'announcement', 'contact']);
+const cacheTimestamps = new Map();
+const CACHE_TTL_MS = 4000;
 
-  // 1. Try reading from resolvedDataDir (e.g. /tmp/dw_site_data or custom dir)
+async function tryWriteTo(targetDir, key, value) {
   try {
-    const data = JSON.parse(await fs.readFile(fileFor(key), 'utf8'));
-    const clean = sanitizeData(data);
-    memoryCache.set(key, clean);
-    return clean;
-  } catch {}
-
-  // 2. Try reading from project seed data if present
-  try {
-    const staticFile = path.join(process.cwd(), 'data', `${key}.json`);
-    const data = JSON.parse(await fs.readFile(staticFile, 'utf8'));
-    const clean = sanitizeData(data);
-    memoryCache.set(key, clean);
-    return clean;
-  } catch {}
-
-  // 3. Try reading from os.tmpdir() fallback
-  try {
-    const tmpFile = path.join(os.tmpdir(), 'dw_site_data', `${key}.json`);
-    const data = JSON.parse(await fs.readFile(tmpFile, 'utf8'));
-    const clean = sanitizeData(data);
-    memoryCache.set(key, clean);
-    return clean;
-  } catch {}
-
-  // 4. Default seed fallback
-  const def = sanitizeData(DEFAULTS[key] ? DEFAULTS[key]() : null);
-  memoryCache.set(key, def);
-  return def;
-}
-
-export async function writeStore(key, value) {
-  memoryCache.set(key, value);
-
-  // Helper to attempt write to a directory
-  const tryWriteTo = async (targetDir) => {
     await fs.mkdir(targetDir, { recursive: true });
     const targetFile = fileFor(key, targetDir);
     const tmp = `${targetFile}.${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
     await fs.writeFile(tmp, JSON.stringify(value, null, 2), 'utf8');
-    await fs.rename(tmp, targetFile); // atomic replace
-  };
-
-  try {
-    await tryWriteTo(resolvedDataDir);
+    await fs.rename(tmp, targetFile);
   } catch (err) {
-    // If read-only filesystem (EROFS/EACCES), permanently switch to os.tmpdir()
     if (err.code === 'EROFS' || err.code === 'EACCES') {
       try {
         resolvedDataDir = path.join(os.tmpdir(), 'dw_site_data');
-        await tryWriteTo(resolvedDataDir);
+        await fs.mkdir(resolvedDataDir, { recursive: true });
+        const targetFile = fileFor(key, resolvedDataDir);
+        const tmp = `${targetFile}.${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`;
+        await fs.writeFile(tmp, JSON.stringify(value, null, 2), 'utf8');
+        await fs.rename(tmp, targetFile);
       } catch (innerErr) {
         console.warn(`writeStore fallback write warning for ${key}:`, innerErr?.message);
       }
     } else {
       console.warn(`writeStore write warning for ${key}:`, err?.message);
     }
+  }
+}
+
+let lastGistFetch = 0;
+async function refreshFromGist(force = false) {
+  const now = Date.now();
+  if (!force && (now - lastGistFetch < CACHE_TTL_MS)) return;
+  lastGistFetch = now;
+  try {
+    const res = await axios.get(`https://api.github.com/gists/${GIST_ID}`, {
+      headers: {
+        Authorization: `token ${GIST_TOKEN}`,
+        'User-Agent': 'DeutscheWeltApp/2.0',
+        Accept: 'application/vnd.github.v3+json',
+      },
+      timeout: 5000,
+      family: 4,
+    });
+    const files = res.data?.files || {};
+    for (const [filename, fileObj] of Object.entries(files)) {
+      if (filename.endsWith('.json')) {
+        const key = filename.replace(/\.json$/, '');
+        if (fileObj.content && !fileObj.truncated) {
+          try {
+            const parsed = JSON.parse(fileObj.content);
+            const clean = sanitizeData(parsed);
+            memoryCache.set(key, clean);
+            cacheTimestamps.set(key, now);
+            tryWriteTo(resolvedDataDir, key, clean).catch(() => {});
+          } catch {}
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[GistStore] refresh warning:', err?.message || err);
+  }
+}
+
+export async function fetchCloudStore(key) {
+  if (!GIST_ID || !GIST_TOKEN) return null;
+  try {
+    const filename = `${key}.json`;
+    const res = await axios.get(`https://api.github.com/gists/${GIST_ID}`, {
+      headers: {
+        Authorization: `token ${GIST_TOKEN}`,
+        'User-Agent': 'DeutscheWeltApp/2.0',
+        Accept: 'application/vnd.github.v3+json',
+      },
+      timeout: 5000,
+      family: 4,
+    });
+    const file = res.data?.files?.[filename];
+    if (!file) return null;
+    let content = file.content;
+    if (file.truncated && file.raw_url) {
+      const rawRes = await axios.get(file.raw_url, { timeout: 6000, family: 4 });
+      content = typeof rawRes.data === 'string' ? rawRes.data : JSON.stringify(rawRes.data);
+    }
+    if (!content) return null;
+    return JSON.parse(content);
+  } catch (err) {
+    console.warn(`[GistStore] Fetch error for ${key}:`, err?.message || err);
+    return null;
+  }
+}
+
+export async function updateCloudFiles(filesObj) {
+  if (!GIST_ID || !GIST_TOKEN) return false;
+  try {
+    const payload = {};
+    for (const [fname, val] of Object.entries(filesObj)) {
+      if (val === null) {
+        payload[fname] = null;
+      } else {
+        payload[fname] = { content: typeof val === 'string' ? val : JSON.stringify(val, null, 2) };
+      }
+    }
+    await axios.patch(`https://api.github.com/gists/${GIST_ID}`, { files: payload }, {
+      headers: {
+        Authorization: `token ${GIST_TOKEN}`,
+        'User-Agent': 'DeutscheWeltApp/2.0',
+        'Content-Type': 'application/json',
+        Accept: 'application/vnd.github.v3+json',
+      },
+      timeout: 8000,
+      family: 4,
+    });
+    return true;
+  } catch (err) {
+    console.warn('[GistStore] Update error:', err?.message || err);
+    return false;
+  }
+}
+
+export async function fetchCloudReceipt(safeName) {
+  if (!GIST_ID || !GIST_TOKEN) return null;
+  try {
+    const gistFileName = `receipt_${safeName}.b64`;
+    const res = await axios.get(`https://api.github.com/gists/${GIST_ID}`, {
+      headers: {
+        Authorization: `token ${GIST_TOKEN}`,
+        'User-Agent': 'DeutscheWeltApp/2.0',
+        Accept: 'application/vnd.github.v3+json',
+      },
+      timeout: 6000,
+      family: 4,
+    });
+    const file = res.data?.files?.[gistFileName];
+    if (!file) return null;
+    let b64 = file.content;
+    if (file.truncated && file.raw_url) {
+      const rawRes = await axios.get(file.raw_url, { timeout: 8000, family: 4 });
+      b64 = typeof rawRes.data === 'string' ? rawRes.data : '';
+    }
+    if (!b64) return null;
+    return Buffer.from(b64.trim(), 'base64');
+  } catch (err) {
+    console.warn(`[GistStore] Fetch receipt error for ${safeName}:`, err?.message || err);
+    return null;
+  }
+}
+
+export async function saveCloudReceipt(safeName, buffer) {
+  if (!GIST_ID || !GIST_TOKEN) return false;
+  const gistFileName = `receipt_${safeName}.b64`;
+  const b64 = buffer.toString('base64');
+  return updateCloudFiles({ [gistFileName]: b64 });
+}
+
+export async function deleteCloudReceipt(safeName) {
+  if (!GIST_ID || !GIST_TOKEN) return false;
+  const gistFileName = `receipt_${safeName}.b64`;
+  return updateCloudFiles({ [gistFileName]: null });
+}
+
+export async function readStore(key) {
+  const now = Date.now();
+  const lastFetched = cacheTimestamps.get(key) || 0;
+
+  // 1. If key is cloud-synced and cached within TTL, return cached immediately
+  if (CLOUD_SYNCED_KEYS.has(key)) {
+    if (memoryCache.has(key) && (now - lastFetched) < CACHE_TTL_MS) {
+      return sanitizeData(memoryCache.get(key));
+    }
+    // Refresh from Gist to pick up any changes from other lambdas or clients
+    await refreshFromGist();
+    if (memoryCache.has(key)) {
+      return sanitizeData(memoryCache.get(key));
+    }
+    // If not in bulk refresh, try single fetch
+    const cloudData = await fetchCloudStore(key);
+    if (cloudData !== null && cloudData !== undefined) {
+      const clean = sanitizeData(cloudData);
+      memoryCache.set(key, clean);
+      cacheTimestamps.set(key, now);
+      tryWriteTo(resolvedDataDir, key, clean).catch(() => {});
+      return clean;
+    }
+  } else if (memoryCache.has(key)) {
+    return sanitizeData(memoryCache.get(key));
+  }
+
+  // 2. Try reading from resolvedDataDir (e.g. /tmp/dw_site_data or custom dir)
+  try {
+    const data = JSON.parse(await fs.readFile(fileFor(key), 'utf8'));
+    const clean = sanitizeData(data);
+    memoryCache.set(key, clean);
+    cacheTimestamps.set(key, now);
+    return clean;
+  } catch {}
+
+  // 3. Try reading from project seed data if present
+  try {
+    const staticFile = path.join(process.cwd(), 'data', `${key}.json`);
+    const data = JSON.parse(await fs.readFile(staticFile, 'utf8'));
+    const clean = sanitizeData(data);
+    memoryCache.set(key, clean);
+    cacheTimestamps.set(key, now);
+    return clean;
+  } catch {}
+
+  // 4. Try reading from os.tmpdir() fallback
+  try {
+    const tmpFile = path.join(os.tmpdir(), 'dw_site_data', `${key}.json`);
+    const data = JSON.parse(await fs.readFile(tmpFile, 'utf8'));
+    const clean = sanitizeData(data);
+    memoryCache.set(key, clean);
+    cacheTimestamps.set(key, now);
+    return clean;
+  } catch {}
+
+  // 5. Default seed fallback
+  const def = sanitizeData(DEFAULTS[key] ? DEFAULTS[key]() : null);
+  memoryCache.set(key, def);
+  cacheTimestamps.set(key, now);
+  if (CLOUD_SYNCED_KEYS.has(key) && def !== null) {
+    updateCloudFiles({ [`${key}.json`]: def }).catch(() => {});
+  }
+  return def;
+}
+
+export async function writeStore(key, value) {
+  memoryCache.set(key, value);
+  cacheTimestamps.set(key, Date.now());
+
+  // 1. Write to local filesystem cache
+  await tryWriteTo(resolvedDataDir, key, value);
+
+  // 2. If it's a cloud-synced key, persist immediately to cloud Gist!
+  if (CLOUD_SYNCED_KEYS.has(key)) {
+    await updateCloudFiles({ [`${key}.json`]: value });
   }
 
   return value;

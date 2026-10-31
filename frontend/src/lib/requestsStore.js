@@ -5,7 +5,7 @@
 
 import { promises as fs } from 'fs';
 import path from 'path';
-import { readStore, writeStore, withLock, dataPath, backendGet } from './siteStore';
+import { readStore, writeStore, withLock, dataPath, backendGet, saveCloudReceipt, fetchCloudReceipt, deleteCloudReceipt } from './siteStore';
 
 /**
  * The item as the student sees it (name, price, level, already unlocked?) — straight from the backend,
@@ -94,11 +94,21 @@ const receiptBufferCache = new Map();
 export async function saveReceipt(id, file) {
   const ext = path.extname(file.name || '').toLowerCase();
   const dir = dataPath('receipts');
-  await fs.mkdir(dir, { recursive: true });
+  try {
+    await fs.mkdir(dir, { recursive: true });
+  } catch {}
   const name = `${id}${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(path.join(dir, name), buffer);
+  try {
+    await fs.writeFile(path.join(dir, name), buffer);
+  } catch {}
   receiptBufferCache.set(name, buffer);
+
+  // Persist to Cloud Gist so any lambda container can read it!
+  saveCloudReceipt(name, buffer).catch((err) => {
+    console.warn('saveCloudReceipt warning:', err?.message || err);
+  });
+
   return name;
 }
 
@@ -106,8 +116,25 @@ export async function readReceipt(name) {
   const safe = path.basename(name);
   let buf = receiptBufferCache.get(safe);
   if (!buf) {
-    buf = await fs.readFile(dataPath('receipts', safe));
-    receiptBufferCache.set(safe, buf);
+    try {
+      buf = await fs.readFile(dataPath('receipts', safe));
+    } catch {
+      // Not on local disk; fetch from persistent cloud Gist!
+      buf = await fetchCloudReceipt(safe);
+      if (buf) {
+        try {
+          const dir = dataPath('receipts');
+          await fs.mkdir(dir, { recursive: true });
+          await fs.writeFile(path.join(dir, safe), buf);
+        } catch {}
+      }
+    }
+    if (buf) {
+      receiptBufferCache.set(safe, buf);
+    }
+  }
+  if (!buf) {
+    throw new Error('Receipt not found');
   }
   return { buf, type: RECEIPT_TYPES[path.extname(safe).toLowerCase()] || 'application/octet-stream', name: safe };
 }
@@ -117,4 +144,5 @@ export async function deleteReceipt(name) {
   const safe = path.basename(name);
   receiptBufferCache.delete(safe);
   await fs.unlink(dataPath('receipts', safe)).catch(() => {});
+  deleteCloudReceipt(safe).catch(() => {});
 }

@@ -1,5 +1,5 @@
 import { isAdminRequest, getRequestUser } from '@/lib/siteStore';
-import { updateRequests, adminView, deleteReceipt } from '@/lib/requestsStore';
+import { loadRequests, updateRequests, adminView, deleteReceipt } from '@/lib/requestsStore';
 
 // One request. Admins only.
 //   PATCH { status: 'approved' | 'rejected', admin_note? } — the dashboard unlocks the item on the
