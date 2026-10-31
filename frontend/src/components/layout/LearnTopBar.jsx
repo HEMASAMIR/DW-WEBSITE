@@ -27,7 +27,7 @@ export default function LearnTopBar() {
         {/* Brand → home */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0" title={t('الرئيسية')}>
           <Image src="/assets/images/logo-mark.png" alt="Deutsche Welt" width={682} height={425} sizes="200px" className="h-9 w-auto" />
-          <span className="hidden sm:block font-serif font-bold text-xl text-[#0e2c4e] tracking-tight" dir="ltr">Deutsche welt</span>
+          <span className="hidden sm:block font-serif font-bold text-xl text-[#0e2c4e] tracking-tight" dir="ltr">Deutsche Welt</span>
         </Link>
 
         {/* Section switcher */}

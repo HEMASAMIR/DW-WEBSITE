@@ -96,7 +96,7 @@ export default function Header() {
           />
           <div className="hidden sm:flex flex-col whitespace-nowrap">
             <span className="font-serif font-bold text-xl lg:text-2xl text-[#0e2c4e] tracking-tight leading-tight" dir="ltr">
-              Deutsche welt
+              Deutsche Welt
             </span>
             <span className="text-[11px] text-slate-500 font-bold tracking-wide flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
