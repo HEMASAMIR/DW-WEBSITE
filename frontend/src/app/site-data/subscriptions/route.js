@@ -1,6 +1,6 @@
 import { isAdminRequest, getRequestUser } from '@/lib/siteStore';
 import {
-  loadSubscriptions, updateSubscriptions, startYear, stopYear, syncYears, expireYears, ownSubscriptionView,
+  loadSubscriptions, updateSubscriptions, startYear, stopYear, setDaysLeft, syncYears, expireYears, ownSubscriptionView,
 } from '@/lib/subscriptionsStore';
 
 // Yearly level subscriptions (see src/lib/subscriptionsStore.js).
@@ -39,6 +39,11 @@ export async function POST(request) {
     if (!Number(body.user_id) || !Number(body.level_id)) return json({ detail: 'بيانات غير صحيحة.' }, 400);
     const result = await updateSubscriptions(async (list) => (action === 'start' ? startYear(list, body) : stopYear(list, body)));
     return json({ detail: 'تم.', record: action === 'start' ? result : null });
+  }
+  if (action === 'set_days') {
+    if (!Number(body.user_id) || !Number(body.level_id)) return json({ detail: 'بيانات غير صحيحة.' }, 400);
+    const result = await updateSubscriptions(async (list) => setDaysLeft(list, body));
+    return json({ detail: 'تم تحديث عدد الأيام المتبقية للاشتراك بنجاح.', ...result });
   }
   if (action === 'sync') {
     const rows = Array.isArray(body.rows) ? body.rows.slice(0, 20000) : [];

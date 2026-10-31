@@ -6,7 +6,7 @@ import { getErrorMessage } from '@/services/api';
 import { Card, Btn, LevelChip, StatusBadge, Avatar, Skeleton, ErrorBox, Empty, money, timeAgo, fullDate, dateLocale, useToast } from './ui';
 import {
   Users, UserPlus, GraduationCap, BookMarked, Wallet, BadgeCheck, ArrowLeft, Check, X, Sparkles, TrendingUp, Inbox,
-  BookPlus, MapPinPlus, Zap, Activity, ChartPie, Layers, BookOpen,
+  BookPlus, MapPinPlus, Zap, Activity, ChartPie, Layers, BookOpen, BellRing, PlayCircle, CheckCircle2, Clock,
 } from 'lucide-react';
 import { translate as t } from './prefs';
 
@@ -30,7 +30,7 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
   const act = async (req, approve) => {
     setBusy(req.id);
     try {
-      const res = approve ? await adminService.approveRequest(req.id) : await adminService.rejectRequest(req.id);
+      const res = approve ? await adminService.approveRequest(req.id, '', req) : await adminService.rejectRequest(req.id, '', req);
       toast('ok', res.detail);
       load();
       onChanged();
@@ -53,6 +53,36 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
 
   return (
     <div className="space-y-6">
+      {pendingTotal > 0 && (
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white p-5 sm:p-6 shadow-xl shadow-amber-500/25 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 animate-pulse-subtle">
+          <div className="flex items-center gap-4">
+            <span className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center shrink-0 shadow-inner">
+              <BellRing className="w-7 h-7 text-white animate-bounce" />
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-200 animate-ping" />
+                <h3 className="text-lg sm:text-xl font-black">
+                  {t('يوجد {n} طلبات تفعيل جديدة بانتظار المراجعة!', { n: pendingTotal })}
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-amber-100 font-bold mt-1">
+                {t('{a} طلب كورسات و {b} طلب كتب بحاجة لمراجعة صورة التحويل والتفعيل للطلاب فوراً.', { a: s.pending_level_requests || 0, b: s.pending_book_requests || 0 })}
+              </p>
+            </div>
+          </div>
+          <Btn
+            variant="white"
+            size="lg"
+            icon={ArrowLeft}
+            className="font-black !text-amber-800 shadow-md shrink-0"
+            onClick={() => goTo('requests-level')}
+          >
+            {t('مراجعة وتفعيل الطلبات الآن')}
+          </Btn>
+        </div>
+      )}
+
       {/* Hero */}
       <div className="relative overflow-hidden rounded-[2rem] bg-[#0a2340] text-white p-6 sm:p-8 shadow-xl shadow-[#0a2340]/20">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_90%_at_100%_0%,rgba(20,184,166,0.45),transparent_60%),radial-gradient(ellipse_60%_80%_at_0%_100%,rgba(245,158,11,0.3),transparent_60%)]" />
@@ -71,17 +101,15 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
             </p>
             <h2 className="text-2xl sm:text-4xl font-black">{greeting}{t('،')}{' '}{adminName} 👋</h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              {legacy
-                ? t('كل حاجة في الأكاديمية تحت إيدك: الطلاب، والاشتراكات، والكورسات، والكتب، والفروع.')
-                : pendingTotal > 0
-                ? <>{t('عندك')}{' '}<strong className="text-amber-300">{pendingTotal}{' '}{t('طلب')}</strong>{' '}{t('مستني موافقتك — الطالب بيتفعّل أول ما تقبل.')}</>
+              {pendingTotal > 0
+                ? <>{t('عندك')}{' '}<strong className="text-amber-300">{pendingTotal}{' '}{t('طلب تفعيل جديد')}</strong>{' '}{t('مستني موافقتك وتأكيد صورة التحويل.')}</>
                 : t('مفيش طلبات مستنية دلوقتي، كل حاجة تمام ✨')}
             </p>
           </div>
           <div className="lg:col-span-2 grid grid-cols-3 gap-2.5">
             <HeroStat value={s.students} label={t('طالب')} />
             <HeroStat value={s.active_level_subscriptions} label={t('اشتراك')} />
-            <HeroStat value={legacy ? s.levels : pendingTotal} label={legacy ? t('مستوى') : t('طلب مستني')} gold />
+            <HeroStat value={pendingTotal} label={t('طلبات مستنية')} gold={pendingTotal > 0} />
           </div>
         </div>
       </div>
@@ -90,11 +118,7 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         <Kpi icon={Users} tone="teal" label={t('إجمالي الطلاب')} value={s.students.toLocaleString('en-US')}
           sub={hasJoinDates ? t('+{n} الأسبوع ده', { n: s.new_students_7d }) : t('كل الحسابات المسجلة')} onClick={() => goTo('users')} />
-        {legacy ? (
-          <Kpi icon={BookMarked} tone="amber" label={t('الكتب')} value={s.books} sub={t('{n} تفعيل للطلاب', { n: s.active_book_accesses })} onClick={() => goTo('books')} />
-        ) : (
-          <Kpi icon={Inbox} tone="amber" label={t('طلبات مستنية')} value={pendingTotal} sub={t('{a} كورسات • {b} كتب', { a: s.pending_level_requests, b: s.pending_book_requests })} pulse={pendingTotal > 0} onClick={() => goTo('requests-level')} />
-        )}
+        <Kpi icon={Inbox} tone="amber" label={t('طلبات مستنية')} value={pendingTotal} sub={t('{a} كورسات • {b} كتب', { a: s.pending_level_requests, b: s.pending_book_requests })} pulse={pendingTotal > 0} onClick={() => goTo('requests-level')} />
         <Kpi icon={BadgeCheck} tone="violet" label={t('اشتراكات مفعّلة')} value={s.active_level_subscriptions} sub={t('{n} كتاب مفعّل', { n: s.active_book_accesses })} onClick={() => goTo('requests-level')} />
         {legacy ? (
           <Kpi icon={Layers} tone="emerald" label={t('المستويات')} value={s.levels} sub={t('الأسعار والنشر')} onClick={() => goTo('courses')} />
@@ -168,6 +192,8 @@ export default function OverviewSection({ adminName, goTo, onChanged, legacy }) 
           </div>
         </Card>
       </div>
+
+      <StudentWatchActivityPanel activity={data.recent_activity || []} goTo={goTo} />
 
       {/* Each level on its own */}
       <LevelsPanel levels={data.levels} activations={data.recent_activations || []} goTo={goTo} signups={!legacy ? data.signups_14d : null} />
@@ -593,6 +619,46 @@ function RecentUsers({ users, goTo }) {
             </li>
           );
         })}
+      </ul>
+    </Card>
+  );
+}
+
+
+function StudentWatchActivityPanel({ activity = [], goTo }) {
+  if (!activity || activity.length === 0) return null;
+  return (
+    <Card className="p-5 sm:p-6 mb-6">
+      <CardTitle
+        icon={PlayCircle}
+        title={t('نشاط مشاهدات الطلاب للمحاضرات')}
+        sub={t('آخر المحاضرات التي تم مشاهدتها على المنصة')}
+        action={<LinkBtn onClick={() => goTo('users')}>{t('سجل الطلاب')}</LinkBtn>}
+      />
+      <ul className="divide-y divide-slate-100 mt-3">
+        {activity.slice(0, 8).map((act) => (
+          <li key={act.id || `${act.user_id}_${act.video_id}`} className="py-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-4 h-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-black text-slate-800 truncate">{act.user_name || act.user_email}</p>
+                <p className="text-xs text-slate-500 truncate" dir="auto">
+                  {act.video_title || t('محاضرة #{id}', { id: act.video_id })}
+                </p>
+              </div>
+            </div>
+            <div className="text-end shrink-0">
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 block">
+                ✓ {t('تمت المشاهدة')}
+              </span>
+              <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
+                {timeAgo(act.watched_at)}
+              </span>
+            </div>
+          </li>
+        ))}
       </ul>
     </Card>
   );

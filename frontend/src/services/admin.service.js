@@ -148,6 +148,12 @@ export const adminService = {
   /** Revokes levels whose year is over → { expired, records } */
   syncSubscriptions: () => legacyAdmin.syncSubscriptions(),
   getSubscriptionRecords: async () => (await apiClient.get('/site-data/subscriptions', { params: { all: 1 } })).data,
+  setSubscriptionDays: async (userId, levelId, days) =>
+    (await apiClient.post('/site-data/subscriptions', { action: 'set_days', user_id: userId, level_id: levelId, days })).data,
+
+  // ---- Student video watch activity (stored by the website: src/app/site-data/activity) ----
+  getStudentActivity: async (userId) => (await apiClient.get('/site-data/activity', { params: { user_id: userId } })).data,
+  getRecentActivity: async () => (await apiClient.get('/site-data/activity', { params: { recent: 1 } })).data,
 
   // ---- Contact numbers & payment methods (stored by the website: src/app/site-data/contact) ----
   getContact: async () => (await apiClient.get('/site-data/contact')).data,

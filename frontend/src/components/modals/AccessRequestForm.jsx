@@ -86,6 +86,10 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
       setError(t('رقم الهاتف غير صحيح، يرجى كتابة الرقم مع كود الدولة.'));
       return;
     }
+    if (paymentMethod !== CASH_METHOD && !receipt) {
+      setError(t('صورة إيصال التحويل مطلوبة وإلزامية لتأكيد الدفع وسرعة التفعيل.'));
+      return;
+    }
     setSending(true);
     setError('');
     const waUrl = buildWhatsappUrl();
@@ -176,7 +180,7 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
         <PayMethodPicker value={paymentMethod} onChange={setPaymentMethod} />
 
         {paymentMethod !== CASH_METHOD && (
-          <Field label={t('صورة التحويل (بتسرّع التفعيل)')}>
+          <Field label={<span>{t('صورة إيصال التحويل')} <strong className="text-rose-500 font-black">({t('إلزامي')}) *</strong></span>}>
             <input
               ref={fileRef}
               type="file"
@@ -185,9 +189,10 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
               onChange={(e) => setReceipt(e.target.files?.[0] || null)}
             />
             {receipt ? (
-              <div className="flex items-center gap-3 rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-4 py-3">
+              <div className="flex items-center gap-3 rounded-2xl border-2 border-emerald-400 bg-emerald-50 px-4 py-3 shadow-sm">
                 <ImagePlus className="w-5 h-5 text-emerald-600 shrink-0" />
                 <span className="flex-1 min-w-0 truncate text-xs font-bold text-emerald-800" dir="ltr">{receipt.name}</span>
+                <span className="text-[10px] font-black text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">{t('تم الإرفاق ✓')}</span>
                 <button
                   type="button"
                   onClick={() => { setReceipt(null); if (fileRef.current) fileRef.current.value = ''; }}
@@ -201,9 +206,10 @@ export default function AccessRequestForm({ kind, itemId, amount, onClose, sentT
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 hover:border-teal-400 hover:bg-teal-50/50 py-4 text-xs font-black text-slate-500 hover:text-teal-700 transition-colors"
+                className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-rose-300 bg-rose-50/30 hover:border-teal-400 hover:bg-teal-50/50 py-4 text-xs font-black text-rose-700 hover:text-teal-700 transition-colors shadow-sm"
               >
-                <ImagePlus className="w-5 h-5" /> {t('ارفع سكرين التحويل')}
+                <ImagePlus className="w-5 h-5 text-rose-500" />
+                <span>{t('ارفع سكرين / صورة التحويل (إجباري)')}</span>
               </button>
             )}
           </Field>

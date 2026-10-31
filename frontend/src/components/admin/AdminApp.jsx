@@ -178,13 +178,23 @@ function Shell({ user }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  const prevPendingRef = React.useRef(0);
   const refreshCounts = useCallback(() => {
-    adminService.getPendingCount().then((c) => setPending({ level: c.level || 0, book: c.book || 0 })).catch(() => {});
-  }, []);
+    adminService.getPendingCount().then((c) => {
+      const lev = c.level || 0;
+      const bk = c.book || 0;
+      const tot = lev + bk;
+      if (prevPendingRef.current > 0 && tot > prevPendingRef.current) {
+        toast('ok', t('🔔 وصل طلب تفعيل جديد الآن!'));
+      }
+      prevPendingRef.current = tot;
+      setPending({ level: lev, book: bk });
+    }).catch(() => {});
+  }, [toast]);
 
   useEffect(() => {
     refreshCounts();
-    const id = setInterval(refreshCounts, 60000); // new requests show up without reloading
+    const id = setInterval(refreshCounts, 20000); // Poll every 20s so new requests appear quickly
     return () => clearInterval(id);
   }, [refreshCounts]);
 
@@ -356,10 +366,10 @@ function Shell({ user }) {
               {totalPending > 0 && tab !== 'requests-level' && tab !== 'requests-book' && (
                 <button
                   onClick={() => setTab(pending.level ? 'requests-level' : 'requests-book')}
-                  className="hidden sm:inline-flex items-center gap-2 h-10 px-4 rounded-full bg-amber-100 border border-amber-200 text-amber-800 text-xs font-black hover:bg-amber-200"
+                  className="inline-flex items-center gap-2 h-10 px-3.5 sm:px-4 rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/25 transition-all hover:scale-105 active:scale-95 animate-pulse"
                 >
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                  {t('{n} طلب مستني موافقتك', { n: totalPending })}
+                  <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
+                  <span>🔔 {t('{n} طلب تفعيل مستني', { n: totalPending })}</span>
                 </button>
               )}
               <PrefsSwitches />

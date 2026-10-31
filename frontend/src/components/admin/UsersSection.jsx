@@ -9,9 +9,10 @@ import {
   Skeleton, Empty, ErrorBox, Avatar, PhoneActions, timeAgo, fullDate, money, useToast, useConfirm,
 } from './ui';
 import {
-  Users, UserPlus, Search, ChevronLeft, ChevronRight, ShieldCheck, Trash2, Save, KeyRound, X, BookOpen, Layers, History, Crown,
+  Users, UserPlus, Search, ChevronLeft, ChevronRight, ShieldCheck, Trash2, Save, KeyRound, X, BookOpen, Layers, History, Crown, CalendarClock, PlayCircle, CheckCircle2,
 } from 'lucide-react';
 import { translate as t } from './prefs';
+import { EditDaysModal } from './SubscriptionsSection';
 
 export default function UsersSection({ onChanged }) {
   const [search, setSearch] = useState('');
@@ -196,6 +197,8 @@ function UserDrawer({ userId, levels, books, onClose, onChanged }) {
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
   const [toggling, setToggling] = useState(null);
+  const [editingDays, setEditingDays] = useState(null);
+  const [activity, setActivity] = useState([]);
 
   const load = useCallback(() => {
     adminService.getUser(userId).then((d) => {

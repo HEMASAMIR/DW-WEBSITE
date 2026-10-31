@@ -1,15 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { formatDuration } from '@/services/courses.service';
+import { formatDuration, coursesService } from '@/services/courses.service';
 import { formatTotal, totalSeconds } from './useLevelContent';
-import { PlayCircle, Clock, ListVideo } from 'lucide-react';
+import { PlayCircle, Clock, ListVideo, CheckCircle2 } from 'lucide-react';
 
 import { t } from '@/lib/i18n';
 /** Lessons list (sidebar on the watch page). Each item links to its own watch page. */
 export default function Playlist({ levelId, videos, activeId }) {
   const total = totalSeconds(videos);
+  const [watched, setWatched] = useState([]);
+
+  useEffect(() => {
+    setWatched(coursesService.getWatchedVideos());
+  }, [activeId]);
   return (
     <div className="rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-slate-200 bg-gradient-to-l from-teal-50 to-white">
@@ -24,6 +29,7 @@ export default function Playlist({ levelId, videos, activeId }) {
       <ol className="max-h-[70vh] overflow-y-auto divide-y divide-slate-100">
         {videos.map((vid, idx) => {
           const isActive = String(vid.id) === String(activeId);
+          const isWatched = watched.includes(String(vid.id)) || isActive;
           return (
             <li key={vid.id}>
               <Link
@@ -35,10 +41,20 @@ export default function Playlist({ levelId, videos, activeId }) {
               >
                 <span
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
-                    isActive ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-700'
+                    isActive
+                      ? 'bg-teal-600 text-white'
+                      : isWatched
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-slate-100 text-slate-500 group-hover:bg-teal-100 group-hover:text-teal-700'
                   }`}
                 >
-                  {isActive ? <span className="dw-eq" aria-label={t('قيد التشغيل')}><span /><span /><span /></span> : idx + 1}
+                  {isActive ? (
+                    <span className="dw-eq" aria-label={t('قيد التشغيل')}><span /><span /><span /></span>
+                  ) : isWatched ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  ) : (
+                    idx + 1
+                  )}
                 </span>
                 <span className="relative w-24 aspect-video rounded-lg overflow-hidden bg-slate-200 shrink-0">
                   {vid.thumbnail_url ? (
@@ -46,6 +62,11 @@ export default function Playlist({ levelId, videos, activeId }) {
                     <img src={vid.thumbnail_url} alt="" className="w-full h-full object-cover" loading="lazy" />
                   ) : (
                     <PlayCircle className="w-6 h-6 text-slate-400 absolute inset-0 m-auto" />
+                  )}
+                  {isWatched && (
+                    <span className="absolute bottom-1 end-1 bg-emerald-600/90 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                      ✓ {t('شاهدت')}
+                    </span>
                   )}
                 </span>
                 <span className="flex-1 min-w-0">
@@ -55,12 +76,19 @@ export default function Playlist({ levelId, videos, activeId }) {
                   >
                     {vid.title}
                   </span>
-                  {vid.length > 0 && (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 mt-1">
-                      <Clock className="w-3 h-3" />
-                      {formatDuration(vid.length)}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    {vid.length > 0 && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500">
+                        <Clock className="w-3 h-3" />
+                        {formatDuration(vid.length)}
+                      </span>
+                    )}
+                    {isWatched && (
+                      <span className="text-[10px] font-black text-emerald-600 inline-flex items-center gap-0.5">
+                        <CheckCircle2 className="w-3 h-3" /> {t('تمت المشاهدة')}
+                      </span>
+                    )}
+                  </div>
                 </span>
               </Link>
             </li>

@@ -75,7 +75,10 @@ function Watch({ level, content, videoId }) {
   // New lesson → show the top bar + player (the sticky header would otherwise cover the top bar).
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [videoId]);
+    if (active?.id) {
+      coursesService.trackWatch(level.id, active.id, active.title);
+    }
+  }, [videoId, active?.id, active?.title, level?.id]);
   const index = Math.max(0, videos.findIndex((v) => String(v.id) === String(videoId)));
   const active = videos[index];
   const prev = videos[index - 1];

@@ -55,6 +55,38 @@ export function stopYear(list, { user_id, level_id }) {
   return { list: list.filter((r) => key(r.user_id, r.level_id) !== key(user_id, level_id)), result: true };
 }
 
+/** Sets or resets the remaining subscription days for a student on a specific level. */
+export function setDaysLeft(list, { user_id, level_id, days }) {
+  const d = Math.max(1, parseInt(days, 10) || 180);
+  const now = Date.now();
+  const expiresAt = new Date(now + d * 86400000).toISOString();
+  let updated = false;
+  const next = list.map((r) => {
+    if (key(r.user_id, r.level_id) === key(user_id, level_id)) {
+      updated = true;
+      return {
+        ...r,
+        expires_at: expiresAt,
+        status: 'active',
+        expired_at: undefined,
+      };
+    }
+    return r;
+  });
+  if (!updated) {
+    next.push({
+      user_id: Number(user_id),
+      level_id: Number(level_id),
+      level_code: '',
+      name: '',
+      started_at: new Date(now).toISOString(),
+      expires_at: expiresAt,
+      status: 'active',
+    });
+  }
+  return { list: next, result: { success: true, days: d, expires_at: expiresAt } };
+}
+
 /**
  * rows: every active level grant on the backend [{ user_id, level_id, level_code, name, granted_at }].
  * Returns the new list and the records whose year is over (still active on the backend).

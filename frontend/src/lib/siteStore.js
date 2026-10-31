@@ -97,6 +97,7 @@ const DEFAULTS = {
   requests: () => [],
   coupons: () => [],
   subscriptions: () => [],
+  activity: () => [],
 };
 
 const fileFor = (key, dir = resolvedDataDir) => path.join(dir, `${key}.json`);

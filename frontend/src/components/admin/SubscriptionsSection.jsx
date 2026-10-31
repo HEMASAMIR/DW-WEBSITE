@@ -23,6 +23,7 @@ export default function SubscriptionsSection({ kind, onChanged }) {
   const [level, setLevel] = useState('');
   const [search, setSearch] = useState('');
   const [granting, setGranting] = useState(false);
+  const [editingDays, setEditingDays] = useState(null);
   const [busy, setBusy] = useState(null);
   // Levels are yearly: when each one ends (src/lib/subscriptionsStore.js).
   const [years, setYears] = useState([]);
@@ -154,9 +155,42 @@ export default function SubscriptionsSection({ kind, onChanged }) {
               </div>
               <div className="hidden md:block w-44 text-end">
                 <p className="text-xs font-bold text-slate-500" title={fullDate(r.granted_at)}>{r.granted_at ? t('اتفعّل {when}', { when: timeAgo(r.granted_at) }) : '—'}</p>
-                <YearChip year={isLevel ? yearOf.get(`${r.user_id}:${r.item_id}`) : null} now={now} />
+                <YearChip
+                  year={isLevel ? yearOf.get(`${r.user_id}:${r.item_id}`) : null}
+                  now={now}
+                  onClick={() => {
+                    if (!isLevel) return;
+                    const y = yearOf.get(`${r.user_id}:${r.item_id}`);
+                    setEditingDays({
+                      user_id: r.user_id,
+                      level_id: r.item_id,
+                      student_name: r.name,
+                      level_name: r.item_name,
+                      currentDays: y ? daysLeft(y) : 180,
+                    });
+                  }}
+                />
                 {r.notes && <p className="text-[10px] text-slate-400 truncate flex items-center gap-1 justify-end" title={r.notes}><StickyNote className="w-3 h-3" /> {r.notes}</p>}
               </div>
+              {isLevel && (
+                <Btn
+                  variant="subtle"
+                  size="sm"
+                  icon={CalendarClock}
+                  onClick={() => {
+                    const y = yearOf.get(`${r.user_id}:${r.item_id}`);
+                    setEditingDays({
+                      user_id: r.user_id,
+                      level_id: r.item_id,
+                      student_name: r.name,
+                      level_name: r.item_name,
+                      currentDays: y ? daysLeft(y) : 180,
+                    });
+                  }}
+                >
+                  {t('تعديل الأيام')}
+                </Btn>
+              )}
               <Btn variant="dangerSoft" size="sm" icon={UserMinus} loading={busy === `${r.item_id}-${r.user_id}`} onClick={() => revoke(r)}>
                 {t('إلغاء')}
               </Btn>
@@ -172,6 +206,14 @@ export default function SubscriptionsSection({ kind, onChanged }) {
           defaultCode={level}
           onClose={() => setGranting(false)}
           onDone={() => { setGranting(false); load(true); onChanged(); }}
+        />
+      )}
+
+      {editingDays && (
+        <EditDaysModal
+          target={editingDays}
+          onClose={() => setEditingDays(null)}
+          onDone={() => { setEditingDays(null); load(true); onChanged(); }}
         />
       )}
     </div>
@@ -286,18 +328,110 @@ function GrantModal({ kind, items, defaultCode, onClose, onDone }) {
 }
 
 /** Days left in a student's year on a level (amber in the last 30 days). */
-function YearChip({ year, now }) {
+function YearChip({ year, now, onClick }) {
   if (!year) return null;
   const d = Math.ceil((new Date(year.expires_at).getTime() - now) / 86400000);
   return (
-    <p
-      className={`mt-0.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black ${
+    <button
+      type="button"
+      onClick={onClick}
+      className={`mt-0.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black hover:opacity-80 transition-opacity cursor-pointer ${
         d <= 0 ? 'bg-rose-50 text-rose-700' : d <= 30 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'
       }`}
       title={fullDate(year.expires_at)}
     >
       <CalendarClock className="w-3 h-3" />
       {d <= 0 ? t('انتهى اشتراكه') : t('باقي {n} يوم', { n: d })}
-    </p>
+      <span className="text-[9px] underline ms-1 opacity-75">{t('تعديل')}</span>
+    </button>
+  );
+}
+
+export function EditDaysModal({ target, onClose, onDone }) {
+  const toast = useToast();
+  const [days, setDays] = useState(target.currentDays > 0 ? target.currentDays : 180);
+  const [saving, setSaving] = useState(false);
+
+  const presets = [
+    { label: '+30 يوم (شهر)', val: (target.currentDays > 0 ? target.currentDays : 0) + 30 },
+    { label: '+60 يوم (شهرين)', val: (target.currentDays > 0 ? target.currentDays : 0) + 60 },
+    { label: '+90 يوم (3 شهور)', val: (target.currentDays > 0 ? target.currentDays : 0) + 90 },
+    { label: '180 يوم (6 شهور)', val: 180 },
+    { label: '365 يوم (سنة)', val: 365 },
+  ];
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await adminService.setSubscriptionDays(target.user_id, target.level_id, days);
+      toast('ok', t('تم تحديث عدد الأيام المتبقية للاشتراك بنجاح ✨'));
+      onDone();
+    } catch (err) {
+      toast('err', getErrorMessage(err, t('تعذر تحديث الأيام.')));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal title={t('إعادة تعيين عدد الأيام المتبقية للاشتراك')} onClose={onClose}>
+      <form onSubmit={submit} className="space-y-4 p-1">
+        <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3.5 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-black text-slate-800">{target.student_name}</p>
+            <p className="text-xs font-bold text-slate-500 mt-0.5">{target.level_name}</p>
+          </div>
+          <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-800">
+            {target.currentDays > 0 ? t('الحالي: {n} يوم', { n: target.currentDays }) : t('الاشتراك منتهي')}
+          </span>
+        </div>
+
+        <div>
+          <label className="block text-xs font-black text-slate-600 mb-1.5">{t('خيارات سريعة لإضافة أو تمديد المدة:')}</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {presets.map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() => setDays(p.val)}
+                className={`text-xs font-black py-2.5 px-3 rounded-xl border text-center transition-all ${
+                  Number(days) === Number(p.val)
+                    ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                    : 'bg-white border-slate-200 text-slate-700 hover:border-teal-300'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <Field label={t('أو اكتب عدد الأيام المتبقية يدوياً')}>
+          <div className="relative">
+            <input
+              type="number"
+              min="1"
+              max="2000"
+              required
+              value={days}
+              onChange={(e) => setDays(e.target.value)}
+              className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-teal-500"
+            />
+            <span className="absolute end-4 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">{t('يوم')}</span>
+          </div>
+        </Field>
+
+        <p className="text-[11px] font-bold text-slate-500 bg-teal-50/50 p-2.5 rounded-xl border border-teal-100/50">
+          {t('تاريخ الانتهاء الجديد:')}{' '}
+          <strong className="text-teal-800">{new Date(Date.now() + Math.max(1, Number(days) || 1) * 86400000).toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>
+        </p>
+
+        <div className="flex justify-end gap-2 pt-2">
+          <Btn variant="subtle" type="button" onClick={onClose}>{t('إلغاء')}</Btn>
+          <Btn variant="primary" type="submit" loading={saving}>{t('حفظ المدة الجديدة')}</Btn>
+        </div>
+      </form>
+    </Modal>
   );
 }

@@ -102,7 +102,36 @@ export const coursesService = {
 
   viewFile: (levelId, file, onProgress) =>
     withAdminAccess('level', levelId, () => fetchFile(API_ENDPOINTS.COURSE_FILE_VIEW(levelId, file.id), file.name || 'file', onProgress)),
+
+  trackWatch: (levelId, videoId, videoTitle) => trackVideoWatch(levelId, videoId, videoTitle),
+  getWatchedVideos: () => getLocalWatchedVideos(),
 };
+
+export async function trackVideoWatch(levelId, videoId, videoTitle) {
+  if (typeof window !== 'undefined') {
+    try {
+      const watched = JSON.parse(localStorage.getItem('dw_watched_videos') || '[]');
+      if (!watched.includes(String(videoId))) {
+        watched.push(String(videoId));
+        localStorage.setItem('dw_watched_videos', JSON.stringify(watched));
+      }
+    } catch {}
+  }
+  try {
+    return (await apiClient.post('/site-data/activity', { level_id: levelId, video_id: videoId, video_title: videoTitle })).data;
+  } catch {
+    return null;
+  }
+}
+
+export function getLocalWatchedVideos() {
+  if (typeof window === 'undefined') return [];
+  try {
+    return JSON.parse(localStorage.getItem('dw_watched_videos') || '[]');
+  } catch {
+    return [];
+  }
+}
 
 export function formatDuration(seconds) {
   const total = Math.max(0, Math.round(Number(seconds) || 0));

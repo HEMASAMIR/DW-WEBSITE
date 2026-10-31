@@ -149,12 +149,29 @@ export const legacyAdmin = {
       };
     });
 
+    let pendingRequests = [];
+    let pendingLevelCount = 0;
+    let pendingBookCount = 0;
+    try {
+      const { data: reqData } = await apiClient.get('/site-data/requests', { params: { status: 'pending' } });
+      const results = reqData?.results || (Array.isArray(reqData) ? reqData : []);
+      pendingRequests = results;
+      pendingLevelCount = results.filter((r) => r.kind === 'level').length;
+      pendingBookCount = results.filter((r) => r.kind === 'book').length;
+    } catch {}
+
+    let recentActivity = [];
+    try {
+      const { data: actData } = await apiClient.get('/site-data/activity', { params: { recent: 1 } });
+      recentActivity = Array.isArray(actData) ? actData : [];
+    } catch {}
+
     return {
       stats: {
         students: students.length,
         new_students_7d: students.filter((u) => joinedAt(u) >= now - 7 * 86400000).length,
-        pending_level_requests: 0,
-        pending_book_requests: 0,
+        pending_level_requests: pendingLevelCount,
+        pending_book_requests: pendingBookCount,
         active_level_subscriptions: snap.levels.reduce((s, l) => s + (Number(l.access_count) || 0), 0),
         active_book_accesses: snap.books.reduce((s, b) => s + b.readers, 0),
         levels: snap.levels.length,
@@ -168,7 +185,8 @@ export const legacyAdmin = {
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
         .map((l) => ({ id: l.id, name: l.name, title: l.title, subscribers: Number(l.access_count) || 0, pending: 0, is_active: l.is_active !== false })),
       signups_14d: signups,
-      recent_requests: [],
+      recent_requests: pendingRequests.slice(0, 10),
+      recent_activity: recentActivity.slice(0, 15),
       // Every book with its readers, so the overview can show each one on its own.
       books: [...snap.books]
         .map((b) => ({ id: b.id, name: b.name, level: b.level, readers: b.readers || 0, is_active: b.is_active !== false })),

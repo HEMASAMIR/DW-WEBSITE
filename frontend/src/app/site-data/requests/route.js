@@ -72,6 +72,9 @@ export async function POST(request) {
   if (!fullName) return json({ full_name: ['الاسم مطلوب.'] }, 400);
   if (!/^\+?[0-9]{7,16}$/.test(phone)) return json({ phone: ['رقم الهاتف غير صحيح. يرجى إدخال رقم صحيح مع كود الدولة.'] }, 400);
   const hasReceipt = receipt && typeof receipt === 'object' && receipt.size > 0;
+  if (paymentMethod !== 'نقدي بالفرع' && !hasReceipt) {
+    return json({ receipt: ['صورة إيصال التحويل مطلوبة وإلزامية لتأكيد الطلب.'] }, 400);
+  }
   if (hasReceipt) {
     if (!RECEIPT_TYPES[path.extname(receipt.name || '').toLowerCase()]) return json({ receipt: ['صورة التحويل يجب أن تكون صورة أو PDF.'] }, 400);
     if (receipt.size > MAX_RECEIPT_BYTES) return json({ receipt: ['حجم صورة التحويل أكبر من 8 ميجا.'] }, 400);
